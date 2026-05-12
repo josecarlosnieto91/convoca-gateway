@@ -1,0 +1,714 @@
+<?php
+/**
+ * Admin settings page for Redsys gateway credentials.
+ *
+ * @package Convoca\Gateway
+ */
+
+namespace Convoca\Gateway;
+
+if (!defined('ABSPATH')) {
+    exit;
+}
+
+class Admin_Settings
+{
+
+    /** Option key. */
+    private const OPTION = 'bdg_settings';
+
+    public function __construct()
+    {
+        add_action('admin_menu', [$this, 'add_menu']);
+        add_action('admin_init', [$this, 'register_settings']);
+        add_action('wp_ajax_bdg_diagnostic_run', [$this, 'ajax_diagnostic_run']);
+        add_action('wp_ajax_bdg_diagnostic_fix', [$this, 'ajax_diagnostic_fix']);
+        add_action('admin_notices', [$this, 'secret_key_warning']);
+    }
+
+    /**
+     * Show admin notice if secret key decryption failed.
+     */
+    public function secret_key_warning(): void
+    {
+        if (!get_option('bdg_secret_needs_reentry')) {
+            return;
+        }
+        ?>
+        <div class="biodevas-alert biodevas-alert--danger" style="display:block;margin-bottom:20px;">
+            <p>
+                <strong>Biodevas Gateway:</strong> La clave secreta de Redsys no se pudo descifrar correctamente.
+                Esto puede deberse a un cambio en las claves de seguridad de WordPress.
+                Por favor, <a href="<?php echo esc_url(admin_url('admin.php?page=bdg-settings')); ?>">vuelve a introducir la clave secreta</a>.
+            </p>
+        </div><?php
+    }
+
+    public function add_menu(): void
+    {
+        add_submenu_page(
+            'bdg-payments',
+            __('Ajustes del TPV', 'convoca-gateway'),
+            __('Configuración', 'convoca-gateway'),
+            'manage_options',
+            'bdg-settings',
+            [$this, 'render_page']
+        );
+
+        // Add hidden detail page for tab selection (it's called from Admin_Payments)
+        add_submenu_page(
+            null, // Hidden
+            __('Detalle de Pago', 'convoca-gateway'),
+            __('Detalle', 'convoca-gateway'),
+            'bdg_view_payments',
+            'bdg-payments-detail',
+            [new Admin_Payments(), 'render_page']
+        );
+    }
+
+    public function register_settings(): void
+    {
+        register_setting('bdg_settings_group', self::OPTION, [
+            'sanitize_callback' => [$this, 'sanitize'],
+        ]);
+
+        add_settings_section(
+            'bdg_redsys',
+            __('Configuración Redsys (Caja Rural de Asturias)', 'convoca-gateway'),
+            fn() => print '<p>Introduce los datos proporcionados por tu banco para el TPV Virtual.</p>',
+            'bdg-settings'
+        );
+
+        $fields = [
+            'merchant_code' => ['label' => 'FUC (Código comercio)', 'type' => 'text', 'desc' => 'Ejemplo: 999008881 (test)'],
+            'bizum_merchant_code' => ['label' => 'FUC Bizum', 'type' => 'text', 'desc' => 'Si se rellena, se habilitará el pago por Bizum'],
+            'terminal'      => ['label' => 'Terminal', 'type' => 'text', 'desc' => 'Normalmente 001'],
+            'secret_key'    => ['label' => 'Clave secreta (SHA-256)', 'type' => 'password', 'desc' => 'La clave de firma proporcionada por el banco'],
+            'environment'   => [
+                'label'   => 'Entorno',
+                'type'    => 'select',
+                'options' => ['test' => 'Test (sandbox)', 'production' => 'Producción'],
+                'desc'    => '⚠️ Usa "Test" durante el desarrollo',
+            ],
+        ];
+
+        foreach ($fields as $key => $field) {
+            add_settings_field(
+                'bdg_' . $key,
+                $field['label'],
+                fn() => $this->render_form_field($key, $field),
+                'bdg-settings',
+                'bdg_redsys'
+            );
+        }
+
+        // Transfer section.
+        add_settings_section(
+            'bdg_transfer',
+            __('Configuración Transferencia Bancaria', 'convoca-gateway'),
+            fn() => print '<p>Datos para mostrar a los usuarios que elijan pagar por transferencia.</p>',
+            'bdg-settings'
+        );
+
+        $transfer_fields = [
+            'iban'         => ['label' => 'IBAN', 'type' => 'text', 'desc' => 'ESxx xxxx xxxx xxxx xxxx xxxx'],
+            'beneficiary'  => ['label' => 'Titular / Beneficiario', 'type' => 'text', 'desc' => 'Nombre de la asociación'],
+            'instructions' => ['label' => 'Instrucciones adicionales', 'type' => 'textarea', 'desc' => 'Ej: "Indica tu nombre y DNI en el concepto"'],
+        ];
+
+        foreach ($transfer_fields as $key => $field) {
+            add_settings_field(
+                'bdg_' . $key,
+                $field['label'],
+                fn() => $this->render_form_field($key, $field),
+                'bdg-settings',
+                'bdg_transfer'
+            );
+        }
+
+        // Emails section (Standard).
+        add_settings_section(
+            'bdg_emails',
+            __('Notificaciones por Email', 'convoca-gateway'),
+            fn() => print '<p>' . __('Configura los correos automáticos tras un pago con éxito.', 'convoca-gateway') . '</p>',
+            'bdg-settings'
+        );
+
+        $email_fields = [
+            'email_confirmation' => ['label' => __('Habilitar confirmación de pago', 'convoca-gateway'), 'type' => 'checkbox', 'desc' => __('Envía un email al usuario cuando el pago se completa.', 'convoca-gateway')],
+            'email_sender_name'  => ['label' => __('Nombre del remitente', 'convoca-gateway'), 'type' => 'text', 'desc' => 'Ej: Biodevas Asociación'],
+        ];
+
+        foreach ($email_fields as $key => $field) {
+            add_settings_field(
+                'bdg_' . $key,
+                $field['label'],
+                fn() => $this->render_form_field($key, $field),
+                'bdg-settings',
+                'bdg_emails'
+            );
+        }
+
+        // Email Templates section (Tab: Correos).
+        $email_templates = [
+            'email_success_subject' => ['label' => __('Asunto (Éxito)', 'convoca-gateway'), 'type' => 'text', 'desc' => __('Asunto del correo tras un pago exitoso.', 'convoca-gateway')],
+            'email_success_body'    => ['label' => __('Cuerpo (Éxito)', 'convoca-gateway'), 'type' => 'textarea', 'desc' => __('Contenido del correo tras un pago exitoso.', 'convoca-gateway')],
+            'email_failed_subject'  => ['label' => __('Asunto (Fallo)', 'convoca-gateway'), 'type' => 'text', 'desc' => __('Asunto del correo tras un pago fallido.', 'convoca-gateway')],
+            'email_failed_body'     => ['label' => __('Cuerpo (Fallo)', 'convoca-gateway'), 'type' => 'textarea', 'desc' => __('Contenido del correo tras un pago fallido.', 'convoca-gateway')],
+        ];
+
+        add_settings_section(
+            'bdg_email_templates',
+            __('Personalización de Plantillas', 'convoca-gateway'),
+            fn() => print '<p>' . __('Usa variables: {importe}, {metodo}, {fecha}, {producto}, {enlace_inscripcion}', 'convoca-gateway') . '</p>',
+            'bdg-settings-emails'
+        );
+
+        foreach ($email_templates as $key => $field) {
+            add_settings_field(
+                'bdg_' . $key,
+                $field['label'],
+                fn() => $this->render_form_field($key, $field),
+                'bdg-settings-emails',
+                'bdg_email_templates'
+            );
+        }
+
+        // Pages section.
+        add_settings_section(
+            'bdg_pages',
+            __('Páginas de pago', 'convoca-gateway'),
+            fn() => print '<p>Crea páginas con los shortcodes indicados y selecciónalas aquí.</p>',
+            'bdg-settings'
+        );
+
+        $page_fields = [
+            'payment_page_id' => 'Página de pago ([biodevas_pago])',
+            'ok_page_id'      => 'Página de éxito ([biodevas_pago_ok])',
+            'ko_page_id'      => 'Página de error ([biodevas_pago_ko])',
+        ];
+
+        foreach ($page_fields as $key => $label) {
+            add_settings_field(
+                'bdg_' . $key,
+                $label,
+                fn() => $this->render_page_dropdown($key),
+                'bdg-settings',
+                'bdg_pages'
+            );
+        }
+    }
+
+    /**
+     * Render a standard form field.
+     */
+    private function render_form_field(string $key, array $field): void
+    {
+        // Check if constant is defined in wp-config.php.
+        $is_constant = false;
+        if ($key === 'secret_key' && defined('BDG_SECRET_KEY')) {
+            $is_constant = true;
+        }
+        if ($key === 'merchant_code' && defined('BDG_MERCHANT_CODE')) {
+            $is_constant = true;
+        }
+        if ($key === 'bizum_merchant_code' && defined('BDG_BIZUM_MERCHANT_CODE')) {
+            $is_constant = true;
+        }
+
+        if ($is_constant) {
+            printf(
+                '<input type="text" value="********" class="regular-text" disabled>
+                 <p class="description"><em>%s</em></p>',
+                esc_html__('Definido en wp-config.php', 'convoca-gateway')
+            );
+            return;
+        }
+
+        $settings = get_option(self::OPTION, []);
+        $value    = $settings[$key] ?? '';
+        $type     = $field['type'] ?? 'text';
+
+        // Don't show encrypted secret key value.
+        if ($key === 'secret_key' && str_starts_with($value, 'enc:')) {
+            $value = '';
+        }
+
+        if ($type === 'select') {
+            printf('<select name="%s[%s]">', esc_attr(self::OPTION), esc_attr($key));
+            foreach ($field['options'] as $v => $l) {
+                printf('<option value="%s" %s>%s</option>', esc_attr($v), selected($value, $v, false), esc_html($l));
+            }
+            echo '</select>';
+        } elseif ($type === 'checkbox') {
+            printf(
+                '<input type="checkbox" name="%s[%s]" value="1" %s>',
+                esc_attr(self::OPTION),
+                esc_attr($key),
+                checked($value, '1', false)
+            );
+        } elseif ($type === 'textarea') {
+            printf(
+                '<textarea name="%s[%s]" class="regular-text" rows="4">%s</textarea>',
+                esc_attr(self::OPTION),
+                esc_attr($key),
+                esc_textarea($value)
+            );
+        } else {
+            printf(
+                '<input type="%s" name="%s[%s]" value="%s" class="regular-text" %s>',
+                esc_attr($type),
+                esc_attr(self::OPTION),
+                esc_attr($key),
+                esc_attr($value),
+                $key === 'secret_key' ? 'placeholder="' . esc_attr__('Introduce clave para actualizar...', 'convoca-gateway') . '"' : ''
+            );
+        }
+
+        if (!empty($field['desc'])) {
+            printf('<p class="description">%s</p>', esc_html($field['desc']));
+        }
+    }
+
+    /**
+     * Render a page dropdown.
+     */
+    private function render_page_dropdown(string $key): void
+    {
+        $settings = get_option(self::OPTION, []);
+        $selected = (int) ($settings[$key] ?? 0);
+
+        wp_dropdown_pages([
+            'name'             => self::OPTION . '[' . esc_attr($key) . ']',
+            'selected'         => $selected,
+            'show_option_none' => '— Seleccionar página —',
+            'option_none_value' => 0,
+        ]);
+    }
+
+    /**
+     * Sanitize settings before saving.
+     */
+    public function sanitize(array $input): array
+    {
+        // Invalidate diagnostic cache to reflect changes immediately
+        Diagnostic::run_all(true);
+
+        $old_settings = get_option(self::OPTION, []);
+        $new_secret   = $input['secret_key'] ?? '';
+        $errors = [];
+
+        // Validate merchant_code: must be exactly 9 digits (FUC)
+        $merchant_code = sanitize_text_field($input['merchant_code'] ?? '');
+        if (!empty($merchant_code) && !preg_match('/^\d{9}$/', $merchant_code)) {
+            $errors[] = __('El código de comercio debe tener exactamente 9 dígitos.', 'convoca-gateway');
+        }
+
+        // Validate terminal: must be numeric, max 3 digits
+        $terminal = sanitize_text_field($input['terminal'] ?? '001');
+        if (!empty($terminal) && !preg_match('/^\d{1,3}$/', $terminal)) {
+            $errors[] = __('El número de terminal debe tener entre 1 y 3 dígitos.', 'convoca-gateway');
+        }
+
+        // Validate environment
+        $environment = in_array($input['environment'] ?? '', ['test', 'production'], true) ? $input['environment'] : 'test';
+
+        // Validate IBAN format if provided
+        $iban = sanitize_text_field($input['iban'] ?? '');
+        if (!empty($iban) && !preg_match('/^[A-Z]{2}\d{2}[\dA-Z]{10,30}$/', strtoupper(str_replace(' ', '', $iban)))) {
+            $errors[] = __('El IBAN no tiene un formato válido.', 'convoca-gateway');
+        }
+
+        // Show errors if any
+        if (!empty($errors)) {
+            add_settings_error('bdg_settings', 'bdg_validation', implode('<br>', $errors), 'error');
+        }
+
+        // Handle secret key: only update if new value provided.
+        if (empty($new_secret)) {
+            $secret_to_save = $old_settings['secret_key'] ?? '';
+        } else {
+            if (strlen($new_secret) < 16) {
+                add_settings_error('bdg_settings', 'bdg_secret_short', __('La clave secreta debe tener al menos 16 caracteres.', 'convoca-gateway'), 'error');
+            }
+            $secret_to_save = Redsys_Client::encrypt_key($new_secret);
+        }
+
+        return [
+            'merchant_code'       => sanitize_text_field($input['merchant_code'] ?? ''),
+            'bizum_merchant_code' => sanitize_text_field($input['bizum_merchant_code'] ?? ''),
+            'terminal'            => sanitize_text_field($input['terminal'] ?? '001'),
+            'secret_key'          => $secret_to_save,
+            'environment'         => in_array($input['environment'] ?? '', ['test', 'production']) ? $input['environment'] : 'test',
+            'iban'                => sanitize_text_field($input['iban'] ?? ''),
+            'beneficiary'         => sanitize_text_field($input['beneficiary'] ?? ''),
+            'instructions'        => sanitize_textarea_field($input['instructions'] ?? ''),
+            'payment_page_id'     => absint($input['payment_page_id'] ?? 0),
+            'ok_page_id'          => absint($input['ok_page_id'] ?? 0),
+            'ko_page_id'          => absint($input['ko_page_id'] ?? 0),
+            'email_confirmation'  => isset($input['email_confirmation']) ? '1' : '0',
+            'email_sender_name'   => sanitize_text_field($input['email_sender_name'] ?? ''),
+            'email_success_subject' => sanitize_text_field($input['email_success_subject'] ?? ''),
+            'email_success_body'    => wp_kses_post($input['email_success_body'] ?? ''),
+            'email_failed_subject'  => sanitize_text_field($input['email_failed_subject'] ?? ''),
+            'email_failed_body'     => wp_kses_post($input['email_failed_body'] ?? ''),
+        ];
+    }
+
+    public function render_page(): void
+    {
+        if (!current_user_can('manage_options')) {
+            return;
+        }
+
+        // Security Guard: Check if critical dependencies are missing
+        if (!class_exists('\\Convoca\\Core\\Utils')) {
+            echo '<div class="notice notice-warning"><p>⚠️ ' . esc_html__('Biodevas Common no está activo. Algunas funciones de la pasarela podrían no estar disponibles.', 'convoca-gateway') . '</p></div>';
+        }
+
+        $settings = get_option(self::OPTION, []);
+        $env      = $settings['environment'] ?? 'test';
+        $active_tab = $_GET['tab'] ?? 'general';
+        ?>
+        <div class="wrap bdg-settings-wrap">
+            <div class="bdg-admin-header" style="display: flex; align-items: center; gap: 20px; margin-bottom: 20px;">
+                <img src="<?php echo esc_url(CONVOCA_IMAGES_URL . 'logo.png'); ?>" alt="Biodevas Gateway" style="width: 80px; height: 80px; border-radius: 12px; box-shadow: 0 4px 12px rgba(0,0,0,0.1);">
+                <div>
+                    <h1 style="margin: 0; padding: 0;"><?php esc_html_e('Pasarela de pago — Redsys', 'convoca-gateway'); ?></h1>
+                    <p style="margin: 5px 0 0; color: #666; font-size: 1.1em;"><?php _e('Configuración y estado de transacciones', 'convoca-gateway'); ?></p>
+                </div>
+            </div>
+
+            <nav class="nav-tab-wrapper">
+                <a href="?page=bdg-settings&tab=general" class="nav-tab <?php echo $active_tab === 'general' ? 'nav-tab-active' : ''; ?>">
+                    <?php _e('General', 'convoca-gateway'); ?>
+                </a>
+                <a href="?page=bdg-settings&tab=emails" class="nav-tab <?php echo $active_tab === 'emails' ? 'nav-tab-active' : ''; ?>">
+                    <?php _e('Correos', 'convoca-gateway'); ?>
+                </a>
+                <a href="?page=bdg-settings&tab=status" class="nav-tab <?php echo $active_tab === 'status' ? 'nav-tab-active' : ''; ?>">
+                    <?php _e('Estado', 'convoca-gateway'); ?>
+                    <?php
+                    $badge = Diagnostic::get_menu_badge();
+                    if ($badge['severity'] !== 'ok'): ?>
+                        <span class="bdg-diagnostic-badge bdg-badge--<?php echo esc_attr($badge['severity']); ?>">
+                            <?php echo $badge['severity'] === 'error' ? '✗' : '⚠'; ?>
+                        </span>
+                    <?php endif; ?>
+                </a>
+            </nav>
+
+            <?php if ($active_tab === 'status'): ?>
+                <?php $this->render_status_tab(); ?>
+            <?php elseif ($active_tab === 'general'): ?>
+                <?php if ($env === 'test'): ?>
+                    <div class="biodevas-alert biodevas-alert--info" style="display:block;margin-bottom:20px;">
+                        <p>🧪 <strong>Modo TEST activo.</strong> Los pagos se procesan en el sandbox de Redsys.
+                            Tarjeta de prueba: <code>4548 8120 4940 0004</code> — CVV: <code>123</code> — Caducidad: <code>12/34</code>
+                        </p>
+                    </div>
+                <?php else: ?>
+                    <div class="biodevas-alert biodevas-alert--warning" style="display:block;margin-bottom:20px;">
+                        <p>⚡ <strong>Modo PRODUCCIÓN activo.</strong> Los pagos son reales y van a Caja Rural de Asturias.</p>
+                    </div>
+                <?php endif; ?>
+            <?php endif; ?>
+
+            <?php if ($active_tab !== 'status'): ?>
+            <form method="post" action="options.php">
+                <?php
+                settings_fields('bdg_settings_group');
+                
+                if ($active_tab === 'emails') {
+                    do_settings_sections('bdg-settings-emails');
+                    ?>
+                    <hr>
+                    <button type="button" class="button js-bdg-preview-email" data-type="success"><?php _e('Previsualizar Éxito', 'convoca-gateway'); ?></button>
+                    <button type="button" class="button js-bdg-preview-email" data-type="failed"><?php _e('Previsualizar Fallo', 'convoca-gateway'); ?></button>
+                    <?php
+                } else {
+                    do_settings_sections('bdg-settings');
+                }
+
+                submit_button(__('Guardar configuración', 'convoca-gateway'));
+                ?>
+            </form>
+            <?php endif; ?>
+        </div>
+
+        <script>
+        document.addEventListener('DOMContentLoaded', function() {
+            // Preview Emails
+            document.querySelectorAll('.js-bdg-preview-email').forEach(function(btn) {
+                btn.addEventListener('click', function() {
+                    const type = this.dataset.type;
+                    const subjectInput = type === 'success' ? document.querySelector('input[name="bdg_settings[email_success_subject]"]') : document.querySelector('input[name="bdg_settings[email_failed_subject]"]');
+                    const bodyInput = type === 'success' ? document.querySelector('textarea[name="bdg_settings[email_success_body]"]') : document.querySelector('textarea[name="bdg_settings[email_failed_body]"]');
+                    
+                    const previewWindow = window.open('', '_blank', 'width=600,height=400');
+                    if (previewWindow) {
+                        previewWindow.document.write('<h3>' + (subjectInput ? subjectInput.value : '') + '</h3><hr>' + (bodyInput ? bodyInput.value.replace(/\\n/g, '<br>') : ''));
+                        previewWindow.document.close();
+                    }
+                });
+            });
+
+            // Run Diagnostic
+            const btnDiagnostic = document.getElementById('bdg-run-diagnostic');
+            if (btnDiagnostic) {
+                btnDiagnostic.addEventListener('click', function() {
+                    const btn = this;
+                    btn.disabled = true;
+                    btn.textContent = 'Ejecutando...';
+                    
+                    const fd = new FormData();
+                    fd.append('action', 'bdg_diagnostic_run');
+                    fd.append('nonce', '<?php echo wp_create_nonce('bdg_diagnostic_nonce'); ?>');
+                    
+                    fetch(ajaxurl, {
+                        method: 'POST',
+                        body: fd
+                    })
+                    .then(r => r.json())
+                    .then(response => {
+                        if (response.success) {
+                            location.reload();
+                        } else {
+                            alert(response.data.message || 'Error al ejecutar diagnóstico');
+                            btn.disabled = false;
+                            btn.textContent = 'Forzar comprobación';
+                        }
+                    }).catch(() => {
+                        alert('Error de conexión.');
+                        btn.disabled = false;
+                        btn.textContent = 'Forzar comprobación';
+                    });
+                });
+            }
+
+            // Diagnostic Fixes
+            document.querySelectorAll('.bdg-fix-button').forEach(function(btn) {
+                btn.addEventListener('click', function() {
+                    const fix = this.dataset.fix;
+                    this.disabled = true;
+                    this.textContent = 'Aplicando...';
+                    
+                    const fd = new FormData();
+                    fd.append('action', 'bdg_diagnostic_fix');
+                    fd.append('nonce', '<?php echo wp_create_nonce('bdg_diagnostic_nonce'); ?>');
+                    fd.append('fix', fix);
+                    
+                    fetch(ajaxurl, {
+                        method: 'POST',
+                        body: fd
+                    })
+                    .then(r => r.json())
+                    .then(response => {
+                        if (response.success) {
+                            alert(response.data.message);
+                            location.reload();
+                        } else {
+                            alert(response.data.message || 'Error al aplicar reparación');
+                            this.disabled = false;
+                            this.textContent = 'Reparar';
+                        }
+                    }).catch(() => {
+                        alert('Error de conexión.');
+                        this.disabled = false;
+                        this.textContent = 'Reparar';
+                    });
+                });
+            });
+        });
+        </script>
+        <style>
+        .bdg-diagnostic-badge { margin-left: 5px; }
+        .bdg-badge--ok { color: #46b450; }
+        .bdg-badge--warning { color: #f56e28; }
+        .bdg-badge--error { color: #dc3232; }
+        .bdg-diagnostic-row { padding: 12px; border-bottom: 1px solid #e0e0e0; }
+        .bdg-diagnostic-row:last-child { border-bottom: none; }
+        .bdg-diagnostic-row .bdg-severity-icon { font-size: 1.2em; margin-right: 8px; }
+        .bdg-diagnostic-row .bdg-severity-ok { color: #46b450; }
+        .bdg-diagnostic-row .bdg-severity-warning { color: #f56e28; }
+        .bdg-diagnostic-row .bdg-severity-error { color: #dc3232; }
+        .bdg-diagnostic-row .bdg-message { display: block; margin-top: 4px; color: #666; font-size: 0.9em; }
+        .bdg-diagnostic-row .bdg-fix-info { display: block; margin-top: 4px; color: #dc3232; font-size: 0.9em; }
+        .bdg-diagnostic-children { margin-left: 20px; border-left: 2px solid #e0e0e0; padding-left: 10px; margin-top: 8px; }
+        .bdg-summary { display: flex; align-items: center; gap: 10px; margin-bottom: 20px; padding: 15px; background: #f8f9fa; border-radius: 8px; }
+        .bdg-summary-icon { font-size: 2em; }
+        .bdg-summary-text h3 { margin: 0; }
+        .bdg-summary-text p { margin: 5px 0 0 0; color: #666; }
+        </style>
+        <?php
+    }
+
+    private function render_status_tab(): void
+    {
+        $results = Diagnostic::run_all();
+        $has_errors = Diagnostic::has_errors($results);
+        $has_warnings = Diagnostic::has_warnings($results);
+        
+        if ($has_errors) {
+            $summary_icon = '✗';
+            $summary_class = 'error';
+            $summary_text = 'Hay errores de configuración que deben resolverse';
+            $summary_title = 'Estado: Errores detectados';
+        } elseif ($has_warnings) {
+            $summary_icon = '⚠';
+            $summary_class = 'warning';
+            $summary_text = 'Hay advertencias que podrían afectar el funcionamiento';
+            $summary_title = 'Estado: Advertencias';
+        } else {
+            $summary_icon = '✓';
+            $summary_class = 'success';
+            $summary_text = 'Todos los componentes están configurados correctamente';
+            $summary_title = 'Estado: Todo correcto';
+        }
+        ?>
+        <div class="bdg-diagnostic-wrapper">
+            <div class="bdg-summary">
+                <div class="bdg-summary-icon bdg-badge--<?php echo esc_attr($summary_class); ?>">
+                    <?php echo $summary_icon; ?>
+                </div>
+                <div class="bdg-summary-text">
+                    <h3><?php echo esc_html($summary_title); ?></h3>
+                    <p><?php echo esc_html($summary_text); ?></p>
+                </div>
+                <button type="button" id="bdg-run-diagnostic" class="button button-primary" style="margin-left: auto;">
+                    Forzar comprobación
+                </button>
+            </div>
+
+            <div class="bdg-diagnostic-results">
+                <?php foreach ($results as $result): ?>
+                    <?php
+                    $severity = $result['severity'];
+                    $icon = $severity === 'ok' ? '✓' : ($severity === 'warning' ? '⚠' : '✗');
+                    ?>
+                    <div class="bdg-diagnostic-row">
+                        <div class="bdg-diagnostic-header">
+                            <span class="bdg-severity-icon bdg-severity-<?php echo esc_attr($severity); ?>">
+                                <?php echo $icon; ?>
+                            </span>
+                            <strong><?php echo esc_html($result['title']); ?></strong>
+                        </div>
+                        <span class="bdg-message"><?php echo esc_html($result['message']); ?></span>
+                        <?php if (!empty($result['fix'])): ?>
+                            <span class="bdg-fix-info"><?php echo esc_html($result['fix']); ?></span>
+                            <?php if (!empty($result['fix_callback'])): ?>
+                                <button type="button" class="button button-small bdg-fix-button" data-fix="<?php echo esc_attr($result['slug']); ?>">
+                                    Reparar
+                                </button>
+                            <?php endif; ?>
+                        <?php endif; ?>
+                        
+                        <?php if (!empty($result['children'])): ?>
+                            <div class="bdg-diagnostic-children">
+                                <?php foreach ($result['children'] as $child): ?>
+                                    <?php
+                                    $child_severity = $child['severity'];
+                                    $child_icon = $child_severity === 'ok' ? '✓' : ($child_severity === 'warning' ? '⚠' : '✗');
+                                    ?>
+                                    <div class="bdg-diagnostic-row">
+                                        <span class="bdg-severity-icon bdg-severity-<?php echo esc_attr($child_severity); ?>">
+                                            <?php echo $child_icon; ?>
+                                        </span>
+                                        <span><?php echo esc_html($child['title']); ?></span>
+                                        <span class="bdg-message"><?php echo esc_html($child['message']); ?></span>
+                                        <?php if (!empty($child['fix'])): ?>
+                                            <span class="bdg-fix-info"><?php echo esc_html($child['fix']); ?></span>
+                                            <?php if (!empty($child['fix_callback'])): ?>
+                                                <button type="button" class="button button-small bdg-fix-button" data-fix="<?php echo esc_attr($child['slug']); ?>">
+                                                    Reparar
+                                                </button>
+                                            <?php endif; ?>
+                                        <?php endif; ?>
+                                    </div>
+                                <?php endforeach; ?>
+                            </div>
+                        <?php endif; ?>
+                    </div>
+                <?php endforeach; ?>
+            </div>
+        </div>
+        <?php
+    }
+
+    public function ajax_diagnostic_run(): void
+    {
+        check_ajax_referer('bdg_diagnostic_nonce', 'nonce');
+        
+        if (!current_user_can('manage_options')) {
+            wp_send_json_error(['message' => 'Sin permisos']);
+        }
+
+        Diagnostic::run_all(true);
+        wp_send_json_success(['message' => 'Diagnóstico completado']);
+    }
+
+    public function ajax_diagnostic_fix(): void
+    {
+        check_ajax_referer('bdg_diagnostic_nonce', 'nonce');
+        
+        if (!current_user_can('manage_options')) {
+            wp_send_json_error(['message' => 'Sin permisos']);
+        }
+
+        $fix = sanitize_text_field($_POST['fix'] ?? '');
+        
+        $result = ['success' => false, 'message' => 'Acción no encontrada'];
+        
+        switch ($fix) {
+            case 'terminal':
+                $result = Diagnostic::fix_default_terminal();
+                break;
+            case 'ok_page':
+            case 'ko_page':
+            case 'return_pages':
+                $result = Diagnostic::fix_create_pages();
+                break;
+        }
+
+        if ($result['success']) {
+            Diagnostic::run_all(true);
+            wp_send_json_success($result);
+        } else {
+            wp_send_json_error($result);
+        }
+    }
+
+    private function has_errors(array $results): bool
+    {
+        foreach ($results as $result) {
+            if (isset($result['children'])) {
+                foreach ($result['children'] as $child) {
+                    if ($child['severity'] === 'error') {
+                        return true;
+                    }
+                }
+            }
+            if (($result['severity'] ?? '') === 'error') {
+                return true;
+            }
+        }
+        return false;
+    }
+
+    private function has_warnings(array $results): bool
+    {
+        foreach ($results as $result) {
+            if (isset($result['children'])) {
+                foreach ($result['children'] as $child) {
+                    if ($child['severity'] === 'warning') {
+                        return true;
+                    }
+                }
+            }
+            if (($result['severity'] ?? '') === 'warning') {
+                return true;
+            }
+        }
+        return false;
+    }
+}
