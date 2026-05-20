@@ -1,0 +1,25 @@
+<?xml version="1.0"?>
+<ruleset name="Convoca">
+  <description>WordPress Coding Standards for Convoca plugins</description>
+  
+  <file>.</file>
+  <exclude-pattern>*/vendor/*</exclude-pattern>
+  <exclude-pattern>*/node_modules/*</exclude-pattern>
+  <exclude-pattern>*/tests/*</exclude-pattern>
+
+  <arg name="extensions" value="php"/>
+  <arg value="sp"/>
+
+  <rule ref="WordPress">
+    <exclude name="WordPress.Files.FileName"/>
+    <exclude name="WordPress.NamingConventions"/>
+  </rule>
+
+  <rule ref="WordPress.WP.I18n">
+    <properties>
+      <property name="text_domain" type="array">
+        <element value="convoca"/>
+      </property>
+    </properties>
+  </rule>
+</ruleset>
