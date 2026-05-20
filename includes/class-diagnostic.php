@@ -151,7 +151,7 @@ class Diagnostic
         if ($ok_page_id > 0) {
             $ok_page = get_post($ok_page_id);
             if ($ok_page && $ok_page->post_status === 'publish') {
-                $has_ok_shortcode = has_shortcode($ok_page->post_content, 'biodevas_pago_ok');
+                $has_ok_shortcode = has_shortcode($ok_page->post_content, 'convoca_pago_ok');
                 if ($has_ok_shortcode) {
                     $results['ok_page'] = self::result('ok_page', 'Página de pago OK', 'Configurada y con shortcode', self::SEVERITY_OK);
                 } else {
@@ -170,7 +170,7 @@ class Diagnostic
         if ($ko_page_id > 0) {
             $ko_page = get_post($ko_page_id);
             if ($ko_page && $ko_page->post_status === 'publish') {
-                $has_ko_shortcode = has_shortcode($ko_page->post_content, 'biodevas_pago_ko');
+                $has_ko_shortcode = has_shortcode($ko_page->post_content, 'convoca_pago_ko');
                 if ($has_ko_shortcode) {
                     $results['ko_page'] = self::result('ko_page', 'Página de pago error', 'Configurada y con shortcode', self::SEVERITY_OK);
                 } else {

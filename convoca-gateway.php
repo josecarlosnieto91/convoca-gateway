@@ -1,7 +1,7 @@
 <?php
 /**
  * Plugin Name: Convoca Gateway — Payment Gateway
- * Plugin URI: https://biodevas.org
+ * Plugin URI: https://convoca.org
  * Description: Redsys payment gateway (card + Bizum).
  * Version: 2.6.1
  * Author:      Jose Carlos Nieto Ramos
@@ -19,7 +19,7 @@ if (!defined('ABSPATH')) {
     exit;
 }
 
-/* ── Startup guard: biodevas-common must be active ── */
+/* ── Startup guard: convoca-common must be active ── */
 if (!class_exists('\\Convoca\\Core\\Utils')) {
     add_action('admin_notices', function () {
         echo '<div class="notice notice-error"><p>' .
@@ -89,7 +89,7 @@ add_action('plugins_loaded', function () {
 
 /* ── REST API Notifications ───────────────────── */
 add_action('rest_api_init', function () {
-    register_rest_route('biodevas-gateway/v1', '/notify', [
+    register_rest_route('convoca-gateway/v1', '/notify', [
         'methods' => 'POST',
         'callback' => function (\WP_REST_Request $request) {
             $handler = new \Convoca\Gateway\Payment_Handler();

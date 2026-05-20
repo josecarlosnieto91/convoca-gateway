@@ -1,5 +1,5 @@
 {
-    "name": "biodevas/convoca-gateway",
+    "name": "convoca/convoca-gateway",
     "description": "Convoca Plugin",
     "type": "wordpress-plugin",
     "require": {

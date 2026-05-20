@@ -37,11 +37,11 @@ class Payment_Handler
         add_action('wp_enqueue_scripts', [$this, 'register_assets']);
 
         // Payment page shortcode.
-        add_shortcode('biodevas_pago', [$this, 'render_payment_page']);
+        add_shortcode('convoca_pago', [$this, 'render_payment_page']);
 
         // Return pages.
-        add_shortcode('biodevas_pago_ok', [$this, 'render_ok_page']);
-        add_shortcode('biodevas_pago_ko', [$this, 'render_ko_page']);
+        add_shortcode('convoca_pago_ok', [$this, 'render_ok_page']);
+        add_shortcode('convoca_pago_ko', [$this, 'render_ko_page']);
     }
 
     public function register_assets(): void
