@@ -311,7 +311,7 @@ class Admin_Payments extends \WP_List_Table
 
         // Handle re-send email
         if (isset($_POST['bdg_resend_email']) && check_admin_referer('bdg_resend_' . $id)) {
-            do_action('biodevas_gateway_resend_email', $id);
+            do_action('convoca_gateway_resend_email', $id);
             echo '<div class="updated"><p>' . __('Email reenviado a la cola.', 'convoca-gateway') . '</p></div>';
         }
 
@@ -522,7 +522,7 @@ class Admin_Payments extends \WP_List_Table
             $id
         );
 
-        do_action('biodevas_gateway_payment_refunded', $id);
+        do_action('convoca_gateway_payment_refunded', $id);
     }
 
     /**
@@ -541,6 +541,6 @@ class Admin_Payments extends \WP_List_Table
         );
 
         $meta = CPT_Pago::get_meta($id);
-        \Convoca\Core\Utils::do_action('biodevas_gateway_payment_completed', 'biodevas_payment_completed', $id, $meta['origin'], (int) $meta['origin_id'], $meta);
+        \Convoca\Core\Utils::do_action('convoca_gateway_payment_completed', 'biodevas_payment_completed', $id, $meta['origin'], (int) $meta['origin_id'], $meta);
     }
 }

@@ -15,8 +15,8 @@ class Email_Notifications
 {
     public function __construct()
     {
-        add_action('biodevas_payment_completed', [$this, 'send_success_email'], 10, 4);
-        add_action('biodevas_payment_failed', [$this, 'send_failed_email'], 10, 2);
+        add_action('convoca_payment_completed', [$this, 'send_success_email'], 10, 4);
+        add_action('convoca_payment_failed', [$this, 'send_failed_email'], 10, 2);
     }
 
     /**

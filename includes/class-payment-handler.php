@@ -1071,7 +1071,7 @@ class Payment_Handler
         ];
 
         // Allow extending the IP list via filter (e.g., if Redsys changes their ranges)
-        $allowed_ips = apply_filters('biodevas_gateway_redsys_allowed_ips', $allowed_ips);
+        $allowed_ips = apply_filters('convoca_gateway_redsys_allowed_ips', $allowed_ips);
 
         return in_array($ip, $allowed_ips, true);
     }
@@ -1155,9 +1155,9 @@ class Payment_Handler
 
                 // Get fresh meta for the hooks
                 $meta = CPT_Pago::get_meta($pago_id);
-                \Convoca\Core\Utils::do_action('biodevas_gateway_payment_completed', 'biodevas_payment_completed', $pago_id, $meta['origin'], (int) $meta['origin_id'], $meta);
+                \Convoca\Core\Utils::do_action('convoca_gateway_payment_completed', 'biodevas_payment_completed', $pago_id, $meta['origin'], (int) $meta['origin_id'], $meta);
             } else {
-                \Convoca\Core\Utils::do_action('biodevas_gateway_payment_failed', 'biodevas_payment_failed', $pago_id, $response_code);
+                \Convoca\Core\Utils::do_action('convoca_gateway_payment_failed', 'biodevas_payment_failed', $pago_id, $response_code);
             }
 
             if ($savepoint_depth === 0) {
