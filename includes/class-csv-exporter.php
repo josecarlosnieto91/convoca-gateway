@@ -47,7 +47,7 @@ class CSV_Exporter {
 		header( 'Pragma: no-cache' );
 		header( 'Expires: 0' );
 
-		$output = fopen( 'php://output', 'w' ); .
+		$output = fopen('php://output', 'w' );
 
 		// Add BOM for Excel UTF-8 compatibility.
 		fprintf( $output, chr( 0xEF ) . chr( 0xBB ) . chr( 0xBF ) );

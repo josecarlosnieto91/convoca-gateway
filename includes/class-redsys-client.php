@@ -18,8 +18,8 @@ class Redsys_Client {
 
 
 	/** Redsys endpoint URLs. */
-	private const URL_TEST = 'https://sis-t.redsys.es:25443/sis/realizarPago'; .
-	private const URL_PROD = 'https://sis.redsys.es/sis/realizarPago'; .
+	private const URL_TEST = 'https://sis-t.redsys.es:25443/sis/realizarPago';
+	private const URL_PROD = 'https://sis.redsys.es/sis/realizarPago';
 
 	/** Signature version. */
 	private const SIG_VERSION = 'HMAC_SHA256_V1';
