@@ -143,25 +143,25 @@ register_activation_hook(
 
 /* ── Public API Functions ─────────────────────── */
 
-if ( ! function_exists( 'bdv_gateway_create_payment' ) ) {
+if ( ! function_exists( 'conv_gateway_create_payment' ) ) {
 	/**
 	 * Global wrapper to create a payment.
 	 *
 	 * @param array $args Payment arguments (amount_cents, origin, etc.).
 	 * @return array|\WP_Error Payment creation result with URL.
 	 */
-	function bdv_gateway_create_payment( array $args ): array|\WP_Error {
+	function conv_gateway_create_payment( array $args ): array|\WP_Error {
 		return \Convoca\Gateway\Payment_Handler::create_payment( $args );
 	}
 }
 
-if ( ! function_exists( 'bdv_get_gateway_settings' ) ) {
+if ( ! function_exists( 'conv_get_gateway_settings' ) ) {
 	/**
 	 * Retrieve Gateway settings.
 	 *
 	 * @return array
 	 */
-	function bdv_get_gateway_settings(): array {
+	function conv_get_gateway_settings(): array {
 		return get_option( 'bdg_settings', array() );
 	}
 }

@@ -49,10 +49,10 @@ class CPT_Pago {
 
 	/** Status badge classes. */
 	public const BADGE = array(
-		'pending'  => 'biodevas-badge biodevas-badge--warning',
-		'paid'     => 'biodevas-badge biodevas-badge--success',
-		'failed'   => 'biodevas-badge biodevas-badge--danger',
-		'refunded' => 'biodevas-badge biodevas-badge--info',
+		'pending'  => 'convoca-badge convoca-badge--warning',
+		'paid'     => 'convoca-badge convoca-badge--success',
+		'failed'   => 'convoca-badge convoca-badge--danger',
+		'refunded' => 'convoca-badge convoca-badge--info',
 	);
 
 	public function __construct() {
@@ -217,7 +217,7 @@ class CPT_Pago {
 	 */
 	public static function badge( string $status ): string {
 		$label = self::STATUS[ $status ] ?? $status;
-		$class = self::BADGE[ $status ] ?? 'biodevas-badge';
+		$class = self::BADGE[ $status ] ?? 'convoca-badge';
 		return sprintf( '<span class="%s">%s</span>', esc_attr( $class ), esc_html( $label ) );
 	}
 

@@ -535,6 +535,6 @@ class Admin_Payments extends \WP_List_Table {
 		);
 
 		$meta = CPT_Pago::get_meta( $id );
-		\Convoca\Core\Utils::do_action( 'convoca_gateway_payment_completed', 'biodevas_payment_completed', $id, $meta['origin'], (int) $meta['origin_id'], $meta );
+		\Convoca\Core\Utils::do_action( 'convoca_gateway_payment_completed', 'convoca_payment_completed', $id, $meta['origin'], (int) $meta['origin_id'], $meta );
 	}
 }

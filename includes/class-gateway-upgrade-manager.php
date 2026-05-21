@@ -5,7 +5,7 @@
  * Handles database structure upgrades for the gateway plugin.
  *
  * To add a new upgrade:
- * 1. Increment BDG_DB_VERSION in biodevas-gateway.php
+ * 1. Increment BDG_DB_VERSION in convoca-gateway.php
  * 2. Add a callback: '1.0.1' => [$this, 'upgrade_to_1_0_1']
  * 3. Implement the private method with idempotent logic.
  *

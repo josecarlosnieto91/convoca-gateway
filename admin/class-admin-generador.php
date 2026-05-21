@@ -45,16 +45,16 @@ class Admin_Generador {
 		}
 
 		wp_enqueue_style(
-			'biodevas-common-admin',
-			\BDV_COMMON_URL . 'assets/css/biodevas-common.css',
+			'convoca-common-admin',
+			\CONV_COMMON_URL . 'assets/css/convoca-common.css',
 			array(),
-			\BDV_COMMON_VERSION
+			\CONV_COMMON_VERSION
 		);
 
 		wp_enqueue_script(
 			'bdg-generador',
 			\BDG_URL . 'assets/js/generador.js',
-			array( 'biodevas-common-admin-js' ),
+			array( 'convoca-common-admin-js' ),
 			\BDG_VERSION,
 			true
 		);
@@ -68,9 +68,9 @@ class Admin_Generador {
 			$result = $this->process_generation( $_POST );
 
 			if ( is_wp_error( $result ) ) {
-				$message = '<div class="biodevas-alert biodevas-alert--danger" style="display:block;margin-bottom:20px;"><p>' . esc_html( $result->get_error_message() ) . '</p></div>';
+				$message = '<div class="convoca-alert convoca-alert--danger" style="display:block;margin-bottom:20px;"><p>' . esc_html( $result->get_error_message() ) . '</p></div>';
 			} else {
-				$message = '<div class="biodevas-alert biodevas-alert--success" style="display:block;margin-bottom:20px;"><p>Enlace generado correctamente. Copia el enlace y envíaselo al cliente.</p></div>';
+				$message = '<div class="convoca-alert convoca-alert--success" style="display:block;margin-bottom:20px;"><p>Enlace generado correctamente. Copia el enlace y envíaselo al cliente.</p></div>';
 			}
 		}
 

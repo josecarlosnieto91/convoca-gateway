@@ -2,11 +2,11 @@
     var el = element.createElement;
 
     function registerGatewayBlock( name, title, icon, desc, color ) {
-        blocks.registerBlockType( 'biodevas-gateway/' + name, {
+        blocks.registerBlockType( 'convoca-gateway/' + name, {
             apiVersion: 3,
             title: title,
             icon: icon,
-            category: 'biodevas-gateway',
+            category: 'convoca-gateway',
             edit: function() {
                 return el( 'div', {
                     style: {

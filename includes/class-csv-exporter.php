@@ -36,7 +36,7 @@ class CSV_Exporter {
 		$query    = new \WP_Query( $args );
 		$payments = $query->posts;
 
-		$filename = 'pagos-biodevas-' . current_time( 'Y-m-d-His' ) . '.csv';
+		$filename = 'pagos-convoca-' . current_time( 'Y-m-d-His' ) . '.csv';
 
 		if ( ob_get_length() ) {
 			ob_end_clean();
@@ -112,7 +112,7 @@ class CSV_Exporter {
 			case 'enroll':
 				return (string) get_post_meta( $origin_id, '_bde_email', true );
 			case 'members':
-				return (string) get_post_meta( $origin_id, '_bdv_email', true );
+				return (string) get_post_meta( $origin_id, '_conv_email', true );
 			default:
 				return '—';
 		}

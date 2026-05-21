@@ -125,7 +125,7 @@ class Admin_Links extends \WP_List_Table {
 	}
 
 	public function column_origin( $item ): string {
-		return '<span class="biodevas-badge biodevas-badge--info">' . __( 'Enlace de pago', 'convoca-gateway' ) . '</span>';
+		return '<span class="convoca-badge convoca-badge--info">' . __( 'Enlace de pago', 'convoca-gateway' ) . '</span>';
 	}
 
 	public function column_amount( $item ): string {
@@ -162,14 +162,14 @@ class Admin_Links extends \WP_List_Table {
 		$used    = ( $meta['status'] === 'paid' );
 
 		if ( $used ) {
-			return '<span class="biodevas-badge biodevas-badge--info">' . __( 'Usado', 'convoca-gateway' ) . '</span>';
+			return '<span class="convoca-badge convoca-badge--info">' . __( 'Usado', 'convoca-gateway' ) . '</span>';
 		}
 
 		if ( $expired ) {
-			return '<span class="biodevas-badge biodevas-badge--danger">' . __( 'Caducado', 'convoca-gateway' ) . '</span>';
+			return '<span class="convoca-badge convoca-badge--danger">' . __( 'Caducado', 'convoca-gateway' ) . '</span>';
 		}
 
-		return '<span class="biodevas-badge biodevas-badge--success">' . __( 'Activo', 'convoca-gateway' ) . '</span>';
+		return '<span class="convoca-badge convoca-badge--success">' . __( 'Activo', 'convoca-gateway' ) . '</span>';
 	}
 
 	public function column_created( $item ): string {

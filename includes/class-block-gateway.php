@@ -30,7 +30,7 @@ class Block_Gateway {
 
 		// 1. Página de Pago
 		register_block_type(
-			'biodevas-gateway/pagina-pago',
+			'convoca-gateway/pagina-pago',
 			array(
 				'apiVersion'      => 3,
 				'title'           => __( 'Página de Pago', 'convoca-gateway' ),
@@ -45,7 +45,7 @@ class Block_Gateway {
 
 		// 2. Pago Correcto
 		register_block_type(
-			'biodevas-gateway/pago-ok',
+			'convoca-gateway/pago-ok',
 			array(
 				'apiVersion'      => 3,
 				'title'           => __( 'Pago Correcto', 'convoca-gateway' ),
@@ -60,7 +60,7 @@ class Block_Gateway {
 
 		// 3. Pago Fallido
 		register_block_type(
-			'biodevas-gateway/pago-ko',
+			'convoca-gateway/pago-ko',
 			array(
 				'apiVersion'      => 3,
 				'title'           => __( 'Pago Fallido', 'convoca-gateway' ),

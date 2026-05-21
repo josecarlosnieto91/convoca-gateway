@@ -23,7 +23,7 @@ class Rest_API {
 	 */
 	public function register_routes(): void {
 		register_rest_route(
-			'biodevas/v1',
+			'convoca/v1',
 			'/gateway/redsys-notify',
 			array(
 				'methods'             => 'POST',

@@ -156,14 +156,14 @@ class Diagnostic {
 				if ( $has_ok_shortcode ) {
 					$results['ok_page'] = self::result( 'ok_page', 'Página de pago OK', 'Configurada y con shortcode', self::SEVERITY_OK );
 				} else {
-					$results['ok_page'] = self::result( 'ok_page', 'Página de pago OK', 'Existe pero sin shortcode [biodevas_pago_ok]', self::SEVERITY_WARNING );
+					$results['ok_page'] = self::result( 'ok_page', 'Página de pago OK', 'Existe pero sin shortcode [convoca_pago_ok]', self::SEVERITY_WARNING );
 				}
 			} else {
 				$results['ok_page'] = self::result( 'ok_page', 'Página de pago OK', 'No existe o no publicada', self::SEVERITY_ERROR, 'La página configurada no existe o no está publicada', array( __CLASS__, 'fix_create_pages' ) );
 				$has_error          = true;
 			}
 		} else {
-			$results['ok_page'] = self::result( 'ok_page', 'Página de pago OK', 'No configurada', self::SEVERITY_ERROR, 'Crea una página con el shortcode [biodevas_pago_ok]', array( __CLASS__, 'fix_create_pages' ) );
+			$results['ok_page'] = self::result( 'ok_page', 'Página de pago OK', 'No configurada', self::SEVERITY_ERROR, 'Crea una página con el shortcode [convoca_pago_ok]', array( __CLASS__, 'fix_create_pages' ) );
 			$has_error          = true;
 		}
 
@@ -175,14 +175,14 @@ class Diagnostic {
 				if ( $has_ko_shortcode ) {
 					$results['ko_page'] = self::result( 'ko_page', 'Página de pago error', 'Configurada y con shortcode', self::SEVERITY_OK );
 				} else {
-					$results['ko_page'] = self::result( 'ko_page', 'Página de pago error', 'Existe pero sin shortcode [biodevas_pago_ko]', self::SEVERITY_WARNING );
+					$results['ko_page'] = self::result( 'ko_page', 'Página de pago error', 'Existe pero sin shortcode [convoca_pago_ko]', self::SEVERITY_WARNING );
 				}
 			} else {
 				$results['ko_page'] = self::result( 'ko_page', 'Página de pago error', 'No existe o no publicada', self::SEVERITY_ERROR, 'La página configurada no existe o no está publicada', array( __CLASS__, 'fix_create_pages' ) );
 				$has_error          = true;
 			}
 		} else {
-			$results['ko_page'] = self::result( 'ko_page', 'Página de pago error', 'No configurada', self::SEVERITY_ERROR, 'Crea una página con el shortcode [biodevas_pago_ko]', array( __CLASS__, 'fix_create_pages' ) );
+			$results['ko_page'] = self::result( 'ko_page', 'Página de pago error', 'No configurada', self::SEVERITY_ERROR, 'Crea una página con el shortcode [convoca_pago_ko]', array( __CLASS__, 'fix_create_pages' ) );
 			$has_error          = true;
 		}
 
@@ -256,13 +256,13 @@ class Diagnostic {
 	public static function check_database(): array {
 		global $wpdb;
 
-		$table_exists = $wpdb->get_var( "SHOW TABLES LIKE '{$wpdb->prefix}biodevas_logs'" );
+		$table_exists = $wpdb->get_var( "SHOW TABLES LIKE '{$wpdb->prefix}convoca_logs'" );
 
 		if ( $table_exists ) {
 			return self::result( 'database', 'Base de datos', 'Tabla de logs existente', self::SEVERITY_OK );
 		}
 
-		return self::result( 'database', 'Base de datos', 'Tabla de logs no encontrada', self::SEVERITY_WARNING, 'Los logs se almacenan en la tabla biodevas_logs. Activa Biodevas Common para crearla.' );
+		return self::result( 'database', 'Base de datos', 'Tabla de logs no encontrada', self::SEVERITY_WARNING, 'Los logs se almacenan en la tabla convoca_logs. Activa Biodevas Common para crearla.' );
 	}
 
 	/**
@@ -331,7 +331,7 @@ class Diagnostic {
 				$new_ok_page_id = wp_insert_post(
 					array(
 						'post_title'   => 'Pago Completado',
-						'post_content' => '<!-- wp:shortcode -->[biodevas_pago_ok]<!-- /wp:shortcode -->',
+						'post_content' => '<!-- wp:shortcode -->[convoca_pago_ok]<!-- /wp:shortcode -->',
 						'post_status'  => 'publish',
 						'post_type'    => 'page',
 						'post_name'    => 'pago-completado',
@@ -355,7 +355,7 @@ class Diagnostic {
 				$new_ko_page_id = wp_insert_post(
 					array(
 						'post_title'   => 'Pago Error',
-						'post_content' => '<!-- wp:shortcode -->[biodevas_pago_ko]<!-- /wp:shortcode -->',
+						'post_content' => '<!-- wp:shortcode -->[convoca_pago_ko]<!-- /wp:shortcode -->',
 						'post_status'  => 'publish',
 						'post_type'    => 'page',
 						'post_name'    => 'pago-error',

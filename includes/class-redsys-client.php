@@ -309,7 +309,7 @@ class Redsys_Client {
                 <input type="hidden" name="Ds_SignatureVersion" value="%s">
                 <input type="hidden" name="Ds_MerchantParameters" value="%s">
                 <input type="hidden" name="Ds_Signature" value="%s">
-                <noscript><button type="submit" class="biodevas-btn biodevas-btn-primary">Continuar al pago</button></noscript>
+                <noscript><button type="submit" class="convoca-btn convoca-btn-primary">Continuar al pago</button></noscript>
             </form>',
 			esc_url( $endpoint ),
 			esc_attr( self::SIG_VERSION ),
@@ -327,7 +327,7 @@ class Redsys_Client {
 	public static function render_redsys_redirect( array $params ): string {
 		// Validate configuration before building form.
 		if ( empty( self::merchant_code() ) || empty( self::secret_key() ) ) {
-			return '<div class="biodevas-alert biodevas-alert--danger">
+			return '<div class="convoca-alert convoca-alert--danger">
                 <strong>Error de configuración:</strong> Faltan las claves de Redsys.<br>
                 Por favor, configura el plugin Biodevas Gateway en el administrador.
             </div>';

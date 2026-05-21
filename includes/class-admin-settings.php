@@ -33,7 +33,7 @@ class Admin_Settings {
 			return;
 		}
 		?>
-		<div class="biodevas-alert biodevas-alert--danger" style="display:block;margin-bottom:20px;">
+		<div class="convoca-alert convoca-alert--danger" style="display:block;margin-bottom:20px;">
 			<p>
 				<strong>Biodevas Gateway:</strong> La clave secreta de Redsys no se pudo descifrar correctamente.
 				Esto puede deberse a un cambio en las claves de seguridad de WordPress.
@@ -239,9 +239,9 @@ class Admin_Settings {
 		);
 
 		$page_fields = array(
-			'payment_page_id' => 'Página de pago ([biodevas_pago])',
-			'ok_page_id'      => 'Página de éxito ([biodevas_pago_ok])',
-			'ko_page_id'      => 'Página de error ([biodevas_pago_ko])',
+			'payment_page_id' => 'Página de pago ([convoca_pago])',
+			'ok_page_id'      => 'Página de éxito ([convoca_pago_ok])',
+			'ko_page_id'      => 'Página de error ([convoca_pago_ko])',
 		);
 
 		foreach ( $page_fields as $key => $label ) {
@@ -457,13 +457,13 @@ class Admin_Settings {
 				<?php $this->render_status_tab(); ?>
 			<?php elseif ( $active_tab === 'general' ) : ?>
 				<?php if ( $env === 'test' ) : ?>
-					<div class="biodevas-alert biodevas-alert--info" style="display:block;margin-bottom:20px;">
+					<div class="convoca-alert convoca-alert--info" style="display:block;margin-bottom:20px;">
 						<p>🧪 <strong>Modo TEST activo.</strong> Los pagos se procesan en el sandbox de Redsys.
 							Tarjeta de prueba: <code>4548 8120 4940 0004</code> — CVV: <code>123</code> — Caducidad: <code>12/34</code>
 						</p>
 					</div>
 				<?php else : ?>
-					<div class="biodevas-alert biodevas-alert--warning" style="display:block;margin-bottom:20px;">
+					<div class="convoca-alert convoca-alert--warning" style="display:block;margin-bottom:20px;">
 						<p>⚡ <strong>Modo PRODUCCIÓN activo.</strong> Los pagos son reales y van a Caja Rural de Asturias.</p>
 					</div>
 				<?php endif; ?>

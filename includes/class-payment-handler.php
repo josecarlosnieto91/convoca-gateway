@@ -127,7 +127,7 @@ class Payment_Handler {
 
 	/**
 	 * Get the URL of the payment page.
-	 * Looks for a page with [biodevas_pago] shortcode, or falls back to a default.
+	 * Looks for a page with [convoca_pago] shortcode, or falls back to a default.
 	 */
 	public static function get_payment_page_url(): string {
 		$settings = get_option( 'bdg_settings', array() );
@@ -220,24 +220,24 @@ class Payment_Handler {
 	private function render_link_payment_page( int $pago_id, string $key, int $expires_ts ): string {
 		$post = get_post( $pago_id );
 		if ( ! $post || $post->post_type !== 'pago' ) {
-			return '<div class="biodevas-alert biodevas-alert--danger">Pago no encontrado.</div>';
+			return '<div class="convoca-alert convoca-alert--danger">Pago no encontrado.</div>';
 		}
 
 		$stored_key = get_post_meta( $pago_id, '_bdg_link_key', true );
 		if ( ! $stored_key || ! hash_equals( $stored_key, $key ) ) {
 			\Convoca\Core\Logger::warning( "Intento de acceso con token inválido. Pago ID: $pago_id", 'Gateway/LinkPayment', $pago_id );
-			return '<div class="biodevas-alert biodevas-alert--danger">Enlace de pago inválido.</div>';
+			return '<div class="convoca-alert convoca-alert--danger">Enlace de pago inválido.</div>';
 		}
 
 		$stored_expires = get_post_meta( $pago_id, '_bdg_expires_at', true );
 		if ( $stored_expires && $stored_expires < time() ) {
-			return '<div class="biodevas-alert biodevas-alert--warning">El enlace de pago ha caducado. Por favor, contacta con el administrador para solicitar uno nuevo.</div>';
+			return '<div class="convoca-alert convoca-alert--warning">El enlace de pago ha caducado. Por favor, contacta con el administrador para solicitar uno nuevo.</div>';
 		}
 
 		$meta = CPT_Pago::get_meta( $pago_id );
 		if ( $meta['status'] === 'paid' ) {
 			$paid_at = ! empty( $meta['paid_at'] ) ? wp_date( 'd/m/Y H:i', strtotime( $meta['paid_at'] ) ) : '';
-			return '<div class="biodevas-alert biodevas-alert--success">✅ Este pago ya ha sido completado' . ( $paid_at ? ' el ' . $paid_at : '' ) . '.</div>';
+			return '<div class="convoca-alert convoca-alert--success">✅ Este pago ya ha sido completado' . ( $paid_at ? ' el ' . $paid_at : '' ) . '.</div>';
 		}
 
 		$product_desc     = get_post_meta( $pago_id, '_bdg_product_desc', true );
@@ -280,7 +280,7 @@ class Payment_Handler {
 
 		ob_start();
 		?>
-		<div class="bdg-payment-wrapper biodevas-form" role="region" aria-label="Formulario de pago">
+		<div class="bdg-payment-wrapper convoca-form" role="region" aria-label="Formulario de pago">
 			<div class="bdg-payment-summary">
 				<h3>Resumen del pago</h3>
 				<div class="bdg-amount"><?php echo esc_html( $amount_display ); ?></div>
@@ -474,8 +474,8 @@ class Payment_Handler {
 		$iban     = $settings['iban'] ?? '';
 
 		if ( empty( $iban ) ) {
-			return '<div class="biodevas-form biodevas-card" style="max-width:500px; margin: 2rem auto; text-align:center;">
-                <div class="biodevas-alert biodevas-alert--danger">
+			return '<div class="convoca-form convoca-card" style="max-width:500px; margin: 2rem auto; text-align:center;">
+                <div class="convoca-alert convoca-alert--danger">
                     <h4 style="margin-top:0">⚠️ Método no disponible</h4>
                     <p>Lo sentimos, el pago por transferencia no está configurado correctamente en este momento (falta el IBAN de destino).</p>
                     <div style="margin-top:1.5rem">
@@ -492,7 +492,7 @@ class Payment_Handler {
 
 		ob_start();
 		?>
-		<div class="bdg-payment-wrapper biodevas-form bdg-transfer-view" role="region" aria-label="Instrucciones de transferencia">
+		<div class="bdg-payment-wrapper convoca-form bdg-transfer-view" role="region" aria-label="Instrucciones de transferencia">
 			<div class="bdg-payment-summary">
 				<div class="bdg-success-icon">🍀</div>
 				<h3>Pago por Transferencia</h3>
@@ -525,7 +525,7 @@ class Payment_Handler {
 			</div>
 			<?php endif; ?>
 
-			<div class="biodevas-alert biodevas-alert--info">
+			<div class="convoca-alert convoca-alert--info">
 				<p>Tu inscripción quedará como <strong>pendiente</strong> hasta que verifiquemos el ingreso (suele tardar 24-48h hábiles).</p>
 			</div>
 
@@ -534,11 +534,11 @@ class Payment_Handler {
 				<p class="text-muted">Si adjuntas el justificante en PDF, podremos validar tu pago mucho más rápido.</p>
 
 				<?php if ( $this->upload_success ) : ?>
-					<div class="biodevas-alert biodevas-alert--success">
+					<div class="convoca-alert convoca-alert--success">
 						✅ Justificante enviado correctamente. Revisaremos tu pago pronto.
 					</div>
 				<?php elseif ( $this->upload_error ) : ?>
-					<div class="biodevas-alert biodevas-alert--danger">
+					<div class="convoca-alert convoca-alert--danger">
 						❌ <?php echo esc_html( $this->upload_error ); ?>
 					</div>
 				<?php endif; ?>
@@ -729,14 +729,14 @@ class Payment_Handler {
 	private function render_manual_form( string $error = '' ): string {
 		ob_start();
 		?>
-		<div class="bdg-payment-wrapper biodevas-form biodevas-card card-glass">
+		<div class="bdg-payment-wrapper convoca-form convoca-card card-glass">
 			<div class="bdg-payment-summary">
 				<h3 class="text-gradient"><?php _e( 'Emitir Pago Nuevo', 'convoca-gateway' ); ?></h3>
 				<p><?php _e( 'Introduce los datos para realizar un pago seguro.', 'convoca-gateway' ); ?></p>
 			</div>
 
 			<?php if ( $error ) : ?>
-				<div class="biodevas-alert biodevas-alert--danger"><?php echo esc_html( $error ); ?></div>
+				<div class="convoca-alert convoca-alert--danger"><?php echo esc_html( $error ); ?></div>
 			<?php endif; ?>
 
 			<form method="post" action="" class="bdg-manual-form">
@@ -807,7 +807,7 @@ class Payment_Handler {
 		$url   = self::get_payment_link( $pago_id, $token );
 
 		return '<script>window.location.href="' . esc_url_raw( $url ) . '";</script>' .
-				'<div class="biodevas-alert biodevas-alert--info">Generando orden de pago... Si no eres redirigido, <a href="' . esc_url( $url ) . '">haz clic aquí</a>.</div>';
+				'<div class="convoca-alert convoca-alert--info">Generando orden de pago... Si no eres redirigido, <a href="' . esc_url( $url ) . '">haz clic aquí</a>.</div>';
 	}
 
 	/**
@@ -818,16 +818,16 @@ class Payment_Handler {
 		$legacy_hash     = wp_hash( $pago_id . '|' . $ts . '_bdg_payment' );
 
 		if ( ! hash_equals( $persistent_hash, $key ) && ! hash_equals( $legacy_hash, $key ) ) {
-			return '<div class="biodevas-alert biodevas-alert--danger">Enlace de pago inválido o corrupto.</div>';
+			return '<div class="convoca-alert convoca-alert--danger">Enlace de pago inválido o corrupto.</div>';
 		}
 
 		if ( $ts < ( time() - DAY_IN_SECONDS ) ) {
-			return '<div class="biodevas-alert biodevas-alert--warning">El enlace de pago ha caducado. Por favor, solicita uno nuevo.</div>';
+			return '<div class="convoca-alert convoca-alert--warning">El enlace de pago ha caducado. Por favor, solicita uno nuevo.</div>';
 		}
 
 		$meta = CPT_Pago::get_meta( $pago_id );
 		if ( $meta['status'] === 'paid' ) {
-			return '<div class="biodevas-alert biodevas-alert--success">✅ Este pago ya ha sido completado.</div>';
+			return '<div class="convoca-alert convoca-alert--success">✅ Este pago ya ha sido completado.</div>';
 		}
 
 		$selected_method = sanitize_text_field( $_GET['bdg_method'] ?? '' );
@@ -862,7 +862,7 @@ class Payment_Handler {
 
 		ob_start();
 		?>
-		<div class="bdg-payment-wrapper biodevas-form" role="region" aria-label="Selección de método de pago">
+		<div class="bdg-payment-wrapper convoca-form" role="region" aria-label="Selección de método de pago">
 			<div class="bdg-payment-summary">
 				<h3>Resumen del pago</h3>
 				<div class="bdg-amount">
@@ -984,14 +984,14 @@ class Payment_Handler {
 	private function render_redsys_redirect( int $pago_id, array $meta, string $method ): string {
 		// Check if already paid to prevent double payment attempts.
 		if ( ( $meta['status'] ?? '' ) === 'paid' ) {
-			return '<div class="biodevas-alert biodevas-alert--success">✅ Este pago ya ha sido completado correctamente. No es necesario realizarlo de nuevo.</div>';
+			return '<div class="convoca-alert convoca-alert--success">✅ Este pago ya ha sido completado correctamente. No es necesario realizarlo de nuevo.</div>';
 		}
 
 		$amount_cents = (int) ( $meta['amount_cents'] ?? 0 );
 
 		if ( $amount_cents <= 0 ) {
 			\Convoca\Core\Logger::error( "Intento de pago con importe zero. Pago ID: $pago_id", 'Gateway/Redsys', $pago_id );
-			return '<div class="biodevas-alert biodevas-alert--danger">Error: El importe del pago no es válido (0.00€).</div>';
+			return '<div class="convoca-alert convoca-alert--danger">Error: El importe del pago no es válido (0.00€).</div>';
 		}
 
 		$pay_method = ( $method === 'bizum' ) ? Redsys_Client::METHOD_BIZUM : Redsys_Client::METHOD_CARD;
@@ -1003,11 +1003,11 @@ class Payment_Handler {
 		$url_ok = $ok_page ? add_query_arg( 'bdg_pago', $pago_id, get_permalink( $ok_page ) ) : home_url( '/pago-completado/?bdg_pago=' . $pago_id );
 		$url_ko = $ko_page ? add_query_arg( 'bdg_pago', $pago_id, get_permalink( $ko_page ) ) : home_url( '/pago-error/?bdg_pago=' . $pago_id );
 
-		$notify_url = get_rest_url( null, 'biodevas-gateway/v1/notify' );
+		$notify_url = get_rest_url( null, 'convoca-gateway/v1/notify' );
 
 		// Validate configuration to prevent Redsys error.
 		if ( empty( Redsys_Client::merchant_code() ) || empty( Redsys_Client::secret_key() ) ) {
-			return '<div class="biodevas-alert biodevas-alert--danger">
+			return '<div class="convoca-alert convoca-alert--danger">
                 <h4>➠️ Error de configuración de pagos</h4>
                 <p>No se han configurado las claves de Redsys (FUC o Clave Secreta).<br>
                 Por favor, contacta con el administrador del sitio para revisar los ajustes de <em>Biodevas Gateway</em>.</p>
@@ -1033,7 +1033,7 @@ class Payment_Handler {
 		);
 
 		return '<div class="bdg-redirect-wrapper">
-            <p class="biodevas-text-center" style="padding:2rem">⏳ Redirigiendo a la pasarela de pago seguro...</p>'
+            <p class="convoca-text-center" style="padding:2rem">⏳ Redirigiendo a la pasarela de pago seguro...</p>'
 			. $form .
 			'</div>';
 	}
@@ -1151,9 +1151,9 @@ class Payment_Handler {
 
 				// Get fresh meta for the hooks.
 				$meta = CPT_Pago::get_meta( $pago_id );
-				\Convoca\Core\Utils::do_action( 'convoca_gateway_payment_completed', 'biodevas_payment_completed', $pago_id, $meta['origin'], (int) $meta['origin_id'], $meta );
+				\Convoca\Core\Utils::do_action( 'convoca_gateway_payment_completed', 'convoca_payment_completed', $pago_id, $meta['origin'], (int) $meta['origin_id'], $meta );
 			} else {
-				\Convoca\Core\Utils::do_action( 'convoca_gateway_payment_failed', 'biodevas_payment_failed', $pago_id, $response_code );
+				\Convoca\Core\Utils::do_action( 'convoca_gateway_payment_failed', 'convoca_payment_failed', $pago_id, $response_code );
 			}
 
 			if ( $savepoint_depth === 0 ) {
@@ -1179,12 +1179,12 @@ class Payment_Handler {
 		$pago_id = (int) ( $_GET['bdg_pago'] ?? 0 );
 
 		if ( ! $pago_id ) {
-			return '<div class="biodevas-alert biodevas-alert--danger">ID de pago no especificado.</div>';
+			return '<div class="convoca-alert convoca-alert--danger">ID de pago no especificado.</div>';
 		}
 
 		$post = get_post( $pago_id );
 		if ( ! $post || $post->post_type !== 'pago' ) {
-			return '<div class="biodevas-alert biodevas-alert--danger">Pago no encontrado.</div>';
+			return '<div class="convoca-alert convoca-alert--danger">Pago no encontrado.</div>';
 		}
 
 		$meta = CPT_Pago::get_meta( $pago_id );
@@ -1195,7 +1195,7 @@ class Payment_Handler {
 			$expires = get_post_meta( $pago_id, '_bdg_expires_at', true );
 			$url     = self::get_payment_link( $pago_id, $token, $expires );
 
-			return '<div class="biodevas-alert biodevas-alert--warning">
+			return '<div class="convoca-alert convoca-alert--warning">
                 <h4>⚠️ Pago aún no confirmado</h4>
                 <p>El sistema no ha recibido la confirmación del pago todavía. Si acabas de realizarlo, espera unos minutos y recarga la página.</p>
                 <div style="margin-top:1.5rem">
@@ -1206,7 +1206,7 @@ class Payment_Handler {
 
 		ob_start();
 		?>
-		<div class="bdg-result biodevas-form" role="status" aria-live="polite">
+		<div class="bdg-result convoca-form" role="status" aria-live="polite">
 			<div class="bdg-result-icon">&#x1F389;</div>
 			<h3>&iexcl;Pago completado!</h3>
 			<p>Tu pago de <strong>
@@ -1219,7 +1219,7 @@ class Payment_Handler {
 				</p>
 			<?php endif; ?>
 			<p>Recibir&aacute;s un email de confirmaci&oacute;n en breve.</p>
-			<p><a href="<?php echo esc_url( home_url( '/' ) ); ?>" class="biodevas-btn biodevas-btn-primary">&larr; Volver al inicio</a></p>
+			<p><a href="<?php echo esc_url( home_url( '/' ) ); ?>" class="convoca-btn convoca-btn-primary">&larr; Volver al inicio</a></p>
 		</div>
 		<style>
 			.bdg-result {
@@ -1242,21 +1242,21 @@ class Payment_Handler {
 
 		ob_start();
 		?>
-		<div class="bdg-result biodevas-form" role="alert">
+		<div class="bdg-result convoca-form" role="alert">
 			<div class="bdg-result-icon">&#x1F61E;</div>
 			<h3>Pago no completado</h3>
 			<p>El pago no se ha podido procesar. Puede deberse a una cancelación o un problema con tu banco.</p>
 			<p>Si el problema persiste, contacta con nosotros en
-				<a href="mailto:coordinacion@biodevas.org">coordinacion@biodevas.org</a>.
+				<a href="mailto:coordinacion@getconvoca.app">coordinacion@getconvoca.app</a>.
 			</p>
 			<?php if ( $pago_id ) : ?>
 				<?php
 				$meta      = CPT_Pago::get_meta( $pago_id );
 				$retry_url = self::get_payment_link( $pago_id );
 				?>
-				<p><a href="<?php echo esc_url( $retry_url ); ?>" class="biodevas-btn biodevas-btn-primary">🔄 Reintentar pago</a></p>
+				<p><a href="<?php echo esc_url( $retry_url ); ?>" class="convoca-btn convoca-btn-primary">🔄 Reintentar pago</a></p>
 			<?php endif; ?>
-			<p><a href="<?php echo esc_url( home_url( '/' ) ); ?>" class="biodevas-btn biodevas-btn-outline">&larr; Volver al inicio</a></p>
+			<p><a href="<?php echo esc_url( home_url( '/' ) ); ?>" class="convoca-btn convoca-btn-outline">&larr; Volver al inicio</a></p>
 		</div>
 		<style>
 			.bdg-result {

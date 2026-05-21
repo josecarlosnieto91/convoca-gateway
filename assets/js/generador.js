@@ -16,4 +16,4 @@
         });
     };
 
-})(window.biodevasAdmin);
+})(window.convocaAdmin);
