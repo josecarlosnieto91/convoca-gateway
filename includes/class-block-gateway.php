@@ -19,7 +19,7 @@ class Block_Gateway {
 	}
 
 	public function register_blocks(): void {
-		// Register editor script first
+		// Register editor script first.
 		wp_register_script(
 			'bdg-blocks-editor',
 			BDG_URL . 'assets/js/blocks-editor.js',

@@ -100,8 +100,8 @@ class Admin_Links extends \WP_List_Table {
 		$meta = CPT_Pago::get_meta( $item->ID );
 		$url  = admin_url( 'admin.php?page=bdg-payments-detail&id=' . $item->ID );
 
-		// Build the actual link for quick copy
-		// expires_at puede ser string vacío cuando el meta no existe (PHP 8.1+ TypeError si pasamos string a ?int)
+		// Build the actual link for quick copy.
+		// expires_at puede ser string vacío cuando el meta no existe (PHP 8.1+ TypeError si pasamos string a ?int).
 		$expires_ts = ! empty( $meta['expires_at'] ) ? (int) $meta['expires_at'] : null;
 		$link_url   = Payment_Handler::get_payment_link( $item->ID, $meta['link_key'], $expires_ts );
 
@@ -197,7 +197,7 @@ class Admin_Links extends \WP_List_Table {
 				e.preventDefault();
 				const link = e.target.dataset.link;
 				
-				// Fallback for non-https/older browsers
+				// Fallback for non-https/older browsers.
 				if (navigator.clipboard && window.isSecureContext) {
 					navigator.clipboard.writeText(link).then(() => {
 						showSuccess(e.target);

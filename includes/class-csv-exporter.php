@@ -28,7 +28,7 @@ class CSV_Exporter {
 			);
 		}
 
-		// Limit export to prevent memory exhaustion
+		// Limit export to prevent memory exhaustion.
 		$args['posts_per_page'] = 5000;
 		$args['paged']          = 1;
 		$args['no_found_rows']  = true;
@@ -47,12 +47,12 @@ class CSV_Exporter {
 		header( 'Pragma: no-cache' );
 		header( 'Expires: 0' );
 
-		$output = fopen( 'php://output', 'w' );
+		$output = fopen( 'php://output', 'w' ); .
 
-		// Add BOM for Excel UTF-8 compatibility
+		// Add BOM for Excel UTF-8 compatibility.
 		fprintf( $output, chr( 0xEF ) . chr( 0xBB ) . chr( 0xBF ) );
 
-		// Headers
+		// Headers.
 		fputcsv(
 			$output,
 			array(
@@ -86,7 +86,7 @@ class CSV_Exporter {
 				$meta['paid_at'] ?: '—',
 			);
 
-			// Protect against CSV Injection
+			// Protect against CSV Injection.
 			foreach ( $row as &$field ) {
 				if ( is_string( $field ) && ! empty( $field ) && in_array( $field[0], array( '=', '+', '-', '@' ), true ) ) {
 					$field = "'" . $field;

@@ -18,8 +18,8 @@ class Redsys_Client {
 
 
 	/** Redsys endpoint URLs. */
-	private const URL_TEST = 'https://sis-t.redsys.es:25443/sis/realizarPago';
-	private const URL_PROD = 'https://sis.redsys.es/sis/realizarPago';
+	private const URL_TEST = 'https://sis-t.redsys.es:25443/sis/realizarPago'; .
+	private const URL_PROD = 'https://sis.redsys.es/sis/realizarPago'; .
 
 	/** Signature version. */
 	private const SIG_VERSION = 'HMAC_SHA256_V1';
@@ -199,7 +199,7 @@ class Redsys_Client {
 	 * 3. HMAC-SHA256 of merchant params using the result as key.
 	 * 4. Base64 encode the final HMAC.
 	 *
-	 * @see https://pagosonline.redsys.es/conexion-redireccion.html
+	 * @see https://pagosonline.redsys.es/conexion-redireccion.html.
 	 */
 	public static function sign( string $merchant_params_b64, string $order_id ): string {
 		$secret = self::secret_key();
@@ -278,7 +278,7 @@ class Redsys_Client {
 
 		if ( $decrypted === false ) {
 			\Convoca\Core\Logger::error( 'Error crítico: No se pudo descifrar la clave secreta de Redsys (openssl_decrypt falló).', 'Gateway/Redsys' );
-			// Mark settings as needing re-entry
+			// Mark settings as needing re-entry.
 			update_option( 'bdg_secret_needs_reentry', current_time( 'mysql' ), 'no' );
 			return false;
 		}
@@ -287,7 +287,7 @@ class Redsys_Client {
 			\Convoca\Core\Logger::warning( 'Aviso: La clave secreta de Redsys se descifró pero está vacía.', 'Gateway/Redsys' );
 		}
 
-		// Clear the re-entry flag on successful decryption
+		// Clear the re-entry flag on successful decryption.
 		delete_option( 'bdg_secret_needs_reentry' );
 
 		return (string) $decrypted;
@@ -325,7 +325,7 @@ class Redsys_Client {
 	 * @return string HTML form or error message.
 	 */
 	public static function render_redsys_redirect( array $params ): string {
-		// Validate configuration before building form
+		// Validate configuration before building form.
 		if ( empty( self::merchant_code() ) || empty( self::secret_key() ) ) {
 			return '<div class="biodevas-alert biodevas-alert--danger">
                 <strong>Error de configuración:</strong> Faltan las claves de Redsys.<br>
@@ -356,10 +356,10 @@ class Redsys_Client {
 
 		$decoded_secret = base64_decode( $secret );
 
-		// Derivar clave con HMAC-SHA256 en lugar de 3DES
+		// Derivar clave con HMAC-SHA256 en lugar de 3DES.
 		$derived_key = hash_hmac( 'sha256', $order_id, $decoded_secret, true );
 
-		// HMAC-SHA256 de los parámetros
+		// HMAC-SHA256 de los parámetros.
 		$hmac = hash_hmac( 'sha256', $merchant_params_b64, $derived_key, true );
 
 		return base64_encode( $hmac );
@@ -392,7 +392,7 @@ class Redsys_Client {
 			return false;
 		}
 
-		// Elegir método de firma según la versión
+		// Elegir método de firma según la versión.
 		if ( $signature_version === 'HMAC_SHA256_V1' ) {
 			$expected = self::sign( $mp_b64, $order_id );
 		} elseif ( $signature_version === 'HMAC_SHA256_V2' ) {

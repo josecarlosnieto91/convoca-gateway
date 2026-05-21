@@ -16,27 +16,27 @@ class CPT_Pago {
 
 	/** Meta keys for payment records. */
 	public const META_KEYS = array(
-		'order_id',           // Redsys order ID (12 chars)
-		'amount_cents',       // Amount in cents (integer)
-		'currency',           // ISO 4217 numeric (978 = EUR)
-		'method',             // tarjeta | bizum
-		'status',             // pending | paid | failed | refunded
-		'origin',             // enroll | members
-		'origin_id',          // Post ID of inscription/miembro
-		'redsys_response',    // Full Redsys response code
-		'redsys_auth_code',   // Authorisation code from Redsys
-		'product_desc',       // Description shown on bank statement
-		'created_at',         // Timestamp of creation
-		'paid_at',            // Timestamp of successful payment
-		// Link payment fields
-		'link_key',           // Token for payment link validation
-		'expires_at',         // Link expiration timestamp
-		'recipient_email',    // Email for payment link
-		'params',             // Custom parameters (serialized)
-		'link_generated_by',  // Admin user ID who generated the link
-		// Recurring payment fields
-		'redsys_merchant_id', // Tokenized card identifier for recurring payments
-		'proof_file',         // ID or URL of uploaded payment receipt
+		'order_id',           // Redsys order ID (12 chars).
+		'amount_cents',       // Amount in cents (integer).
+		'currency',           // ISO 4217 numeric (978 = EUR).
+		'method',             // tarjeta | bizum.
+		'status',             // pending | paid | failed | refunded.
+		'origin',             // enroll | members.
+		'origin_id',          // Post ID of inscription/miembro.
+		'redsys_response',    // Full Redsys response code.
+		'redsys_auth_code',   // Authorisation code from Redsys.
+		'product_desc',       // Description shown on bank statement.
+		'created_at',         // Timestamp of creation.
+		'paid_at',            // Timestamp of successful payment.
+		// Link payment fields.
+		'link_key',           // Token for payment link validation.
+		'expires_at',         // Link expiration timestamp.
+		'recipient_email',    // Email for payment link.
+		'params',             // Custom parameters (serialized).
+		'link_generated_by',  // Admin user ID who generated the link.
+		// Recurring payment fields.
+		'redsys_merchant_id', // Tokenized card identifier for recurring payments.
+		'proof_file',         // ID or URL of uploaded payment receipt.
 	);
 
 	/** Status labels. */

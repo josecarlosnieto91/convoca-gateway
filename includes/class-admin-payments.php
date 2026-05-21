@@ -55,7 +55,7 @@ class Admin_Payments extends \WP_List_Table {
 
 
 	public function add_menu(): void {
-		// Main Gateway Menu
+		// Main Gateway Menu.
 		add_menu_page(
 			__( 'Biodevas Pagos', 'convoca-gateway' ),
 			__( 'Pagos', 'convoca-gateway' ),
@@ -66,7 +66,7 @@ class Admin_Payments extends \WP_List_Table {
 			26
 		);
 
-		// Submenu: Payments
+		// Submenu: Payments.
 		add_submenu_page(
 			'bdg-payments',
 			__( 'Todos los Pagos', 'convoca-gateway' ),
@@ -108,7 +108,7 @@ class Admin_Payments extends \WP_List_Table {
 
 		echo '<div class="alignleft actions">';
 
-		// Status Filter
+		// Status Filter.
 		echo '<select name="status_filter">';
 		echo '<option value="">— ' . __( 'Todos los estados', 'convoca-gateway' ) . ' —</option>';
 		foreach ( CPT_Pago::STATUS as $key => $label ) {
@@ -117,7 +117,7 @@ class Admin_Payments extends \WP_List_Table {
 		}
 		echo '</select>';
 
-		// Method Filter
+		// Method Filter.
 		echo '<select name="method_filter">';
 		echo '<option value="">— ' . __( 'Todos los métodos', 'convoca-gateway' ) . ' —</option>';
 		foreach ( array(
@@ -130,7 +130,7 @@ class Admin_Payments extends \WP_List_Table {
 		}
 		echo '</select>';
 
-		// Origin Filter
+		// Origin Filter.
 		echo '<select name="origin_filter">';
 		echo '<option value="">— ' . __( 'Todos los orígenes', 'convoca-gateway' ) . ' —</option>';
 		foreach ( array(
@@ -144,7 +144,7 @@ class Admin_Payments extends \WP_List_Table {
 
 		submit_button( __( 'Filtrar', 'convoca-gateway' ), '', 'filter_action', false );
 
-		// Export CSV button
+		// Export CSV button.
 		echo ' <a href="' . esc_url( wp_nonce_url( add_query_arg( 'action', 'export_csv' ), 'bdg_export_csv' ) ) . '" class="button button-secondary">' . __( 'Exportar CSV', 'convoca-gateway' ) . '</a>';
 
 		echo '</div>';
@@ -168,7 +168,7 @@ class Admin_Payments extends \WP_List_Table {
 			'order'          => $order,
 		);
 
-		// Sortable columns
+		// Sortable columns.
 		if ( 'amount' === $orderby ) {
 			$args['orderby']  = 'meta_value_num';
 			$args['meta_key'] = '_bdg_amount_cents';
@@ -176,7 +176,7 @@ class Admin_Payments extends \WP_List_Table {
 			$args['orderby'] = 'date';
 		}
 
-		// Search by order_id
+		// Search by order_id.
 		if ( ! empty( $search ) ) {
 			$args['meta_query'][] = array(
 				'key'     => '_bdg_order_id',
@@ -185,7 +185,7 @@ class Admin_Payments extends \WP_List_Table {
 			);
 		}
 
-		// Filters
+		// Filters.
 		foreach ( array( 'status', 'method', 'origin' ) as $key ) {
 			if ( ! empty( $get_data[ $key . '_filter' ] ) ) {
 				$args['meta_query'][] = array(
@@ -306,24 +306,24 @@ class Admin_Payments extends \WP_List_Table {
 			)
 		) ?: array();
 
-		// Handle re-send email
+		// Handle re-send email.
 		if ( isset( $_POST['bdg_resend_email'] ) && check_admin_referer( 'bdg_resend_' . $id ) ) {
 			do_action( 'convoca_gateway_resend_email', $id );
 			echo '<div class="updated"><p>' . __( 'Email reenviado a la cola.', 'convoca-gateway' ) . '</p></div>';
 		}
 
-		// Handle refund
+		// Handle refund.
 		if ( isset( $_POST['bdg_refund_payment'] ) && check_admin_referer( 'bdg_refund_' . $id ) ) {
 			$this->handle_refund( $id );
 			echo '<div class="updated"><p>' . __( 'Pago marcado como reembolsado.', 'convoca-gateway' ) . '</p></div>';
-			$meta = CPT_Pago::get_meta( $id ); // Refresh meta
+			$meta = CPT_Pago::get_meta( $id ); // Refresh meta.
 		}
 
-		// Handle manual mark as paid
+		// Handle manual mark as paid.
 		if ( isset( $_POST['bdg_mark_paid'] ) && check_admin_referer( 'bdg_mark_paid_' . $id ) ) {
 			$this->handle_manual_paid( $id );
 			echo '<div class="updated"><p>' . __( 'Pago marcado como PAGADO manualmente.', 'convoca-gateway' ) . '</p></div>';
-			$meta = CPT_Pago::get_meta( $id ); // Refresh meta
+			$meta = CPT_Pago::get_meta( $id ); // Refresh meta.
 		}
 
 		?>
@@ -482,7 +482,7 @@ class Admin_Payments extends \WP_List_Table {
 			'order'       => $order,
 		);
 
-		// Search by order_id
+		// Search by order_id.
 		if ( ! empty( $search ) ) {
 			$args['meta_query'][] = array(
 				'key'     => '_bdg_order_id',
@@ -491,7 +491,7 @@ class Admin_Payments extends \WP_List_Table {
 			);
 		}
 
-		// Filters from GET
+		// Filters from GET.
 		foreach ( array( 'status', 'method', 'origin' ) as $key ) {
 			if ( ! empty( $get_data[ $key . '_filter' ] ) ) {
 				$args['meta_query'][] = array(

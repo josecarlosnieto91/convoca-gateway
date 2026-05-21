@@ -128,7 +128,7 @@ class Admin_Dashboard {
 		$posts       = $wpdb->posts;
 		$postmeta    = $wpdb->postmeta;
 
-		// Single aggregation query: all paid payments this month
+		// Single aggregation query: all paid payments this month.
 		$paid_posts = $wpdb->get_col(
 			$wpdb->prepare(
 				"SELECT p.ID FROM $posts p
@@ -159,7 +159,7 @@ class Admin_Dashboard {
 			return $data;
 		}
 
-		// Bulk load meta for all paid posts this month (2 extra queries instead of N×3)
+		// Bulk load meta for all paid posts this month (2 extra queries instead of N×3).
 		update_meta_cache( 'post', $paid_posts );
 
 		$total_month   = 0;
@@ -190,7 +190,7 @@ class Admin_Dashboard {
 			'bizum_pct'   => $total_methods > 0 ? round( ( $methods_count['bizum'] / $total_methods ) * 100 ) : 0,
 		);
 
-		// Last 7 days via a single GROUP BY query
+		// Last 7 days via a single GROUP BY query.
 		$week_ago = $today_start - 6 * DAY_IN_SECONDS;
 		$day_rows = $wpdb->get_results(
 			$wpdb->prepare(

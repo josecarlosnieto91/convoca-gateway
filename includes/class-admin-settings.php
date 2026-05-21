@@ -53,9 +53,9 @@ class Admin_Settings {
 			array( $this, 'render_page' )
 		);
 
-		// Add hidden detail page for tab selection (it's called from Admin_Payments)
+		// Add hidden detail page for tab selection (it's called from Admin_Payments).
 		add_submenu_page(
-			null, // Hidden
+			null, // Hidden.
 			__( 'Detalle de Pago', 'convoca-gateway' ),
 			__( 'Detalle', 'convoca-gateway' ),
 			'bdg_view_payments',
@@ -346,35 +346,35 @@ class Admin_Settings {
 	 * Sanitize settings before saving.
 	 */
 	public function sanitize( array $input ): array {
-		// Invalidate diagnostic cache to reflect changes immediately
+		// Invalidate diagnostic cache to reflect changes immediately.
 		Diagnostic::run_all( true );
 
 		$old_settings = get_option( self::OPTION, array() );
 		$new_secret   = $input['secret_key'] ?? '';
 		$errors       = array();
 
-		// Validate merchant_code: must be exactly 9 digits (FUC)
+		// Validate merchant_code: must be exactly 9 digits (FUC).
 		$merchant_code = sanitize_text_field( $input['merchant_code'] ?? '' );
 		if ( ! empty( $merchant_code ) && ! preg_match( '/^\d{9}$/', $merchant_code ) ) {
 			$errors[] = __( 'El código de comercio debe tener exactamente 9 dígitos.', 'convoca-gateway' );
 		}
 
-		// Validate terminal: must be numeric, max 3 digits
+		// Validate terminal: must be numeric, max 3 digits.
 		$terminal = sanitize_text_field( $input['terminal'] ?? '001' );
 		if ( ! empty( $terminal ) && ! preg_match( '/^\d{1,3}$/', $terminal ) ) {
 			$errors[] = __( 'El número de terminal debe tener entre 1 y 3 dígitos.', 'convoca-gateway' );
 		}
 
-		// Validate environment
+		// Validate environment.
 		$environment = in_array( $input['environment'] ?? '', array( 'test', 'production' ), true ) ? $input['environment'] : 'test';
 
-		// Validate IBAN format if provided
+		// Validate IBAN format if provided.
 		$iban = sanitize_text_field( $input['iban'] ?? '' );
 		if ( ! empty( $iban ) && ! preg_match( '/^[A-Z]{2}\d{2}[\dA-Z]{10,30}$/', strtoupper( str_replace( ' ', '', $iban ) ) ) ) {
 			$errors[] = __( 'El IBAN no tiene un formato válido.', 'convoca-gateway' );
 		}
 
-		// Show errors if any
+		// Show errors if any.
 		if ( ! empty( $errors ) ) {
 			add_settings_error( 'bdg_settings', 'bdg_validation', implode( '<br>', $errors ), 'error' );
 		}
@@ -415,7 +415,7 @@ class Admin_Settings {
 			return;
 		}
 
-		// Security Guard: Check if critical dependencies are missing
+		// Security Guard: Check if critical dependencies are missing.
 		if ( ! class_exists( '\\Convoca\\Core\\Utils' ) ) {
 			echo '<div class="notice notice-warning"><p>⚠️ ' . esc_html__( 'Biodevas Common no está activo. Algunas funciones de la pasarela podrían no estar disponibles.', 'convoca-gateway' ) . '</p></div>';
 		}
@@ -493,7 +493,7 @@ class Admin_Settings {
 
 		<script>
 		document.addEventListener('DOMContentLoaded', function() {
-			// Preview Emails
+			// Preview Emails.
 			document.querySelectorAll('.js-bdg-preview-email').forEach(function(btn) {
 				btn.addEventListener('click', function() {
 					const type = this.dataset.type;
@@ -508,7 +508,7 @@ class Admin_Settings {
 				});
 			});
 
-			// Run Diagnostic
+			// Run Diagnostic.
 			const btnDiagnostic = document.getElementById('bdg-run-diagnostic');
 			if (btnDiagnostic) {
 				btnDiagnostic.addEventListener('click', function() {
@@ -541,7 +541,7 @@ class Admin_Settings {
 				});
 			}
 
-			// Diagnostic Fixes
+			// Diagnostic Fixes.
 			document.querySelectorAll('.bdg-fix-button').forEach(function(btn) {
 				btn.addEventListener('click', function() {
 					const fix = this.dataset.fix;

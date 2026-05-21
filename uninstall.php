@@ -9,16 +9,16 @@ if ( ! defined( 'WP_UNINSTALL_PLUGIN' ) ) {
 	exit;
 }
 
-// Clear scheduled hooks
+// Clear scheduled hooks.
 wp_clear_scheduled_hook( 'bdg_cleanup_pending' );
 wp_clear_scheduled_hook( 'bdg_retry_notifications' );
 
-// Delete options
+// Delete options.
 delete_option( 'bdg_redsys_config' );
 delete_option( 'bdg_db_version' );
 delete_option( 'bdg_notification_retry_limit' );
 
-// Delete posts of CPT 'pago'
+// Delete posts of CPT 'pago'.
 $payments = get_posts(
 	array(
 		'post_type'   => 'pago',

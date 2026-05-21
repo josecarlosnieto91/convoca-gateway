@@ -44,7 +44,7 @@ class Diagnostic {
 			self::check_database(),
 		);
 
-		// Save to cache
+		// Save to cache.
 		update_option(
 			self::CACHE_KEY,
 			array(
@@ -111,7 +111,7 @@ class Diagnostic {
 			return self::result( 'merchant_code', 'Código de comercio (FUC)', 'No configurado', self::SEVERITY_ERROR, 'Configura el FUC en la pestaña General' );
 		}
 
-		// Basic validation: 9 digits
+		// Basic validation: 9 digits.
 		if ( ! preg_match( '/^\d{9}$/', $merchant_code ) ) {
 			return self::result( 'merchant_code', 'Código de comercio (FUC)', "FUC inválido: $merchant_code", self::SEVERITY_WARNING, 'El FUC debe tener 9 dígitos' );
 		}
@@ -148,7 +148,7 @@ class Diagnostic {
 		$results   = array();
 		$has_error = false;
 
-		// Check OK page
+		// Check OK page.
 		if ( $ok_page_id > 0 ) {
 			$ok_page = get_post( $ok_page_id );
 			if ( $ok_page && $ok_page->post_status === 'publish' ) {
@@ -167,7 +167,7 @@ class Diagnostic {
 			$has_error          = true;
 		}
 
-		// Check KO page
+		// Check KO page.
 		if ( $ko_page_id > 0 ) {
 			$ko_page = get_post( $ko_page_id );
 			if ( $ko_page && $ko_page->post_status === 'publish' ) {
@@ -321,9 +321,9 @@ class Diagnostic {
 		$ok_page_id = (int) ( $settings['ok_page_id'] ?? 0 );
 		$ko_page_id = (int) ( $settings['ko_page_id'] ?? 0 );
 
-		// Check if OK page exists and is published
+		// Check if OK page exists and is published.
 		if ( $ok_page_id <= 0 || ! get_post( $ok_page_id ) || get_post( $ok_page_id )->post_status !== 'publish' ) {
-			// Check if page with this slug already exists
+			// Check if page with this slug already exists.
 			$existing = get_page_by_path( 'pago-completado' );
 			if ( $existing && $existing->post_status === 'publish' ) {
 				$settings['ok_page_id'] = $existing->ID;
@@ -345,9 +345,9 @@ class Diagnostic {
 			}
 		}
 
-		// Check if KO page exists and is published
+		// Check if KO page exists and is published.
 		if ( $ko_page_id <= 0 || ! get_post( $ko_page_id ) || get_post( $ko_page_id )->post_status !== 'publish' ) {
-			// Check if page with this slug already exists
+			// Check if page with this slug already exists.
 			$existing = get_page_by_path( 'pago-error' );
 			if ( $existing && $existing->post_status === 'publish' ) {
 				$settings['ko_page_id'] = $existing->ID;
@@ -384,7 +384,7 @@ class Diagnostic {
 		);
 	}
 
-	// Helper methods
+	// Helper methods.
 
 	private static function result( string $slug, string $title, string $message, string $severity, string $fix = null, $fix_callback = null ): array {
 		return array(

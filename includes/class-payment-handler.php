@@ -139,7 +139,7 @@ class Payment_Handler {
 			$url = home_url( '/pago/' );
 		}
 
-		// Force HTTPS if available
+		// Force HTTPS if available.
 		if ( is_ssl() ) {
 			$url = set_url_scheme( $url, 'https' );
 		}
@@ -209,7 +209,7 @@ class Payment_Handler {
 		}
 
 		// 2. Otherwise, treat as a new link payment (link generator).
-		// The expiration is optional in the URL (it's 0 for 'never'),
+		// The expiration is optional in the URL (it's 0 for 'never'),.
 		// we'll use the param if present or 0 otherwise.
 		return $this->render_link_payment_page( $pago_id, $key, (int) ( $expires_param ?? 0 ) );
 	}
@@ -640,7 +640,7 @@ class Payment_Handler {
 			return new \WP_Error( 'no_file', 'No se ha seleccionado ningún archivo.' );
 		}
 
-		// Validate size (5MB limit)
+		// Validate size (5MB limit).
 		$max_size = 5 * 1024 * 1024;
 		if ( $_FILES['bdg_proof_file']['size'] > $max_size ) {
 			return new \WP_Error( 'file_too_large', 'El archivo es demasiado grande. El límite es de 5MB.' );
@@ -650,7 +650,7 @@ class Payment_Handler {
 			require_once ABSPATH . 'wp-admin/includes/file.php';
 		}
 
-		// Use the smaller of our limit and the server's max upload size
+		// Use the smaller of our limit and the server's max upload size.
 		$max_size = min( 5 * 1024 * 1024, wp_max_upload_size() );
 		if ( $_FILES['bdg_proof_file']['size'] > $max_size ) {
 			$max_mb = $max_size / 1024 / 1024;
@@ -660,7 +660,7 @@ class Payment_Handler {
 		$uploaded_file    = $_FILES['bdg_proof_file'];
 		$upload_overrides = array( 'test_form' => false );
 
-		// Validate file type using WordPress's built-in function (handles mime_content_type fallback)
+		// Validate file type using WordPress's built-in function (handles mime_content_type fallback).
 		$filetype = wp_check_filetype_and_ext( $uploaded_file['tmp_name'], $uploaded_file['name'] );
 		if ( ! $filetype['type'] || ! $filetype['ext'] ) {
 			return new \WP_Error( 'invalid_type', 'El tipo de archivo no está permitido. Solo se aceptan PDF, JPG y PNG.' );
@@ -671,10 +671,10 @@ class Payment_Handler {
 			return new \WP_Error( 'invalid_mime', 'El contenido del archivo no coincide con una extensión permitida.' );
 		}
 
-		// Regenerate filename with UUID to prevent path traversal via original name
+		// Regenerate filename with UUID to prevent path traversal via original name.
 		$uploaded_file['name'] = wp_generate_uuid4() . '.' . $filetype['ext'];
 
-		// Validate real MIME type (Task 41)
+		// Validate real MIME type (Task 41).
 		if ( function_exists( 'mime_content_type' ) ) {
 			$real_mime     = mime_content_type( $uploaded_file['tmp_name'] );
 			$allowed_mimes = array( 'application/pdf', 'image/jpeg', 'image/png' );
@@ -683,7 +683,7 @@ class Payment_Handler {
 			}
 		}
 
-		// Delete previous file if exists
+		// Delete previous file if exists.
 		$old_url = get_post_meta( $pago_id, '_bdg_proof_file', true );
 		if ( $old_url ) {
 			$upload_dir = wp_upload_dir();
@@ -698,14 +698,14 @@ class Payment_Handler {
 		if ( $movefile && ! isset( $movefile['error'] ) ) {
 			update_post_meta( $pago_id, '_bdg_proof_file', $movefile['url'] );
 
-			// Protect the upload directory against script execution
+			// Protect the upload directory against script execution.
 			$upload_dir    = wp_upload_dir();
 			$htaccess_path = $upload_dir['basedir'] . '/.htaccess';
 			if ( ! file_exists( $htaccess_path ) ) {
 				file_put_contents( $htaccess_path, "Options -ExecCGI\nphp_flag engine off\n<Files *.php>\n    deny from all\n</Files>\n" );
 			}
 
-			// Add a note to the payment
+			// Add a note to the payment.
 			$notes  = get_post_meta( $pago_id, '_bdg_notes', true );
 			$notes .= "\n\n[USER] Justificante de pago adjuntado el " . wp_date( 'd/m/Y H:i' ) . ': ' . $movefile['url'];
 			update_post_meta( $pago_id, '_bdg_notes', $notes );
@@ -982,7 +982,7 @@ class Payment_Handler {
 	 * Render the Redsys auto-submit redirect.
 	 */
 	private function render_redsys_redirect( int $pago_id, array $meta, string $method ): string {
-		// Check if already paid to prevent double payment attempts
+		// Check if already paid to prevent double payment attempts.
 		if ( ( $meta['status'] ?? '' ) === 'paid' ) {
 			return '<div class="biodevas-alert biodevas-alert--success">✅ Este pago ya ha sido completado correctamente. No es necesario realizarlo de nuevo.</div>';
 		}
@@ -1042,20 +1042,20 @@ class Payment_Handler {
 	 * Check if the notification comes from a known Redsys IP.
 	 */
 	private function is_redsys_ip(): bool {
-		// Allow localhost/local network if in dev or if WP_DEBUG is enabled
+		// Allow localhost/local network if in dev or if WP_DEBUG is enabled.
 		$ip = $_SERVER['REMOTE_ADDR'] ?? '';
 
 		if ( empty( $ip ) ) {
 			return false;
 		}
 
-		// Bypass for local IPs during development/testing
+		// Bypass for local IPs during development/testing.
 		if ( in_array( $ip, array( '127.0.0.1', '::1', 'localhost' ), true ) || defined( 'WP_DEBUG' ) && WP_DEBUG ) {
 			return true;
 		}
 
 		// Common Redsys IP ranges (Europe).
-		// Official docs mention specific IPs, but they often use 195.76.9.0/24
+		// Official docs mention specific IPs, but they often use 195.76.9.0/24.
 		if ( str_starts_with( $ip, '195.76.9.' ) ) {
 			return true;
 		}
@@ -1067,7 +1067,7 @@ class Payment_Handler {
 			'195.76.9.222',
 		);
 
-		// Allow extending the IP list via filter (e.g., if Redsys changes their ranges)
+		// Allow extending the IP list via filter (e.g., if Redsys changes their ranges).
 		$allowed_ips = apply_filters( 'convoca_gateway_redsys_allowed_ips', $allowed_ips );
 
 		return in_array( $ip, $allowed_ips, true );
@@ -1097,7 +1097,7 @@ class Payment_Handler {
 
 		global $wpdb;
 
-		// Use savepoints for pseudo-nested transactions instead of static blocking
+		// Use savepoints for pseudo-nested transactions instead of static blocking.
 		static $savepoint_depth = 0;
 		$savepoint_name         = 'bdg_sp_' . $savepoint_depth;
 
@@ -1149,7 +1149,7 @@ class Payment_Handler {
 			if ( $is_approved ) {
 				update_post_meta( $pago_id, '_bdg_paid_at', current_time( 'mysql' ) );
 
-				// Get fresh meta for the hooks
+				// Get fresh meta for the hooks.
 				$meta = CPT_Pago::get_meta( $pago_id );
 				\Convoca\Core\Utils::do_action( 'convoca_gateway_payment_completed', 'biodevas_payment_completed', $pago_id, $meta['origin'], (int) $meta['origin_id'], $meta );
 			} else {
