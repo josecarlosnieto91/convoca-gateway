@@ -1,2 +1,73 @@
 parameters:
-	ignoreErrors: []
+	ignoreErrors:
+		-
+			message: '#^Call to static method do_action\(\) on an unknown class Convoca\\Core\\Utils\.$#'
+			identifier: class.notFound
+			count: 1
+			path: includes/class-admin-payments.php
+
+		-
+			message: '#^Call to static method get_logs\(\) on an unknown class Convoca\\Core\\Logger\.$#'
+			identifier: class.notFound
+			count: 1
+			path: includes/class-admin-payments.php
+
+		-
+			message: '#^Call to static method log\(\) on an unknown class Convoca\\Core\\Logger\.$#'
+			identifier: class.notFound
+			count: 2
+			path: includes/class-admin-payments.php
+
+		-
+			message: '#^Call to static method info\(\) on an unknown class Convoca\\Core\\Logger\.$#'
+			identifier: class.notFound
+			count: 1
+			path: includes/class-cpt-pago.php
+
+		-
+			message: '#^Deprecated in PHP 8\.4\: Parameter \#5 \$fix \(string\) is implicitly nullable via default value null\.$#'
+			identifier: parameter.implicitlyNullable
+			count: 1
+			path: includes/class-diagnostic.php
+
+		-
+			message: '#^Call to an undefined method Convoca\\Gateway\\Gateway_Upgrade_Manager\:\:init\(\)\.$#'
+			identifier: method.notFound
+			count: 1
+			path: includes/class-gateway-upgrade-manager.php
+
+		-
+			message: '#^Call to static method do_action\(\) on an unknown class Convoca\\Core\\Utils\.$#'
+			identifier: class.notFound
+			count: 2
+			path: includes/class-payment-handler.php
+
+		-
+			message: '#^Call to static method error\(\) on an unknown class Convoca\\Core\\Logger\.$#'
+			identifier: class.notFound
+			count: 3
+			path: includes/class-payment-handler.php
+
+		-
+			message: '#^Call to static method info\(\) on an unknown class Convoca\\Core\\Logger\.$#'
+			identifier: class.notFound
+			count: 2
+			path: includes/class-payment-handler.php
+
+		-
+			message: '#^Call to static method warning\(\) on an unknown class Convoca\\Core\\Logger\.$#'
+			identifier: class.notFound
+			count: 1
+			path: includes/class-payment-handler.php
+
+		-
+			message: '#^Call to static method error\(\) on an unknown class Convoca\\Core\\Logger\.$#'
+			identifier: class.notFound
+			count: 5
+			path: includes/class-redsys-client.php
+
+		-
+			message: '#^Call to static method warning\(\) on an unknown class Convoca\\Core\\Logger\.$#'
+			identifier: class.notFound
+			count: 1
+			path: includes/class-redsys-client.php
