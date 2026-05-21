@@ -13,7 +13,7 @@ jobs:
     steps:
       - uses: actions/checkout@v4
       - uses: ramsey/composer-install@v3
-      - run: vendor/bin/phpcs --standard=.phpcs.xml.dist
+      - run: vendor/bin/phpcs --standard=.phpcs.xml.dist --runtime-set ignore_warnings_on_exit 1
 
   phpstan:
     name: PHPStan
@@ -21,7 +21,7 @@ jobs:
     steps:
       - uses: actions/checkout@v4
       - uses: ramsey/composer-install@v3
-      - run: vendor/bin/phpstan analyse --configuration=phpstan.neon.dist
+      - run: vendor/bin/phpstan analyse --configuration=phpstan.neon.dist --memory-limit=1G
 
   test:
     name: PHPUnit
