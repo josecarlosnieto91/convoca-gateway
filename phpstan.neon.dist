@@ -8,3 +8,5 @@ parameters:
 		- tests (?)
 	scanFiles:
 		- vendor/php-stubs/wordpress-stubs/wordpress-stubs.php
+includes:
+	- phpstan-baseline.neon
