@@ -19,6 +19,7 @@
     <properties>
       <property name="text_domain" type="array">
         <element value="convoca"/>
+        <element value="convoca-gateway"/>
       </property>
     </properties>
   </rule>
