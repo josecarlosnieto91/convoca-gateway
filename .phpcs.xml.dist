@@ -1,7 +1,5 @@
 <?xml version="1.0"?>
 <ruleset name="Convoca">
-  <config name="ignore_warnings_on_exit" value="1"/>
-  <config name="ignore_warnings_on_exit" value="1"/>
   <description>WordPress Coding Standards for Convoca plugins</description>
   
   <file>.</file>
