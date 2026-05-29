@@ -64,11 +64,11 @@ class Admin_Links extends \WP_List_Table {
 			'posts_per_page' => $per_page,
 			'paged'          => $current_page,
 			'orderby'        => 'meta_value',
-			'meta_key'       => '_bdg_created_at',
+			'meta_key'       => '_conv_created_at',
 			'order'          => $order,
 			'meta_query'     => array(
 				array(
-					'key'   => '_bdg_origin',
+					'key'   => '_conv_origin',
 					'value' => 'link_payment',
 				),
 			),

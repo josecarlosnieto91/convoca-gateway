@@ -150,7 +150,7 @@ class CPT_Pago {
 		);
 
 		foreach ( $meta as $key => $val ) {
-			update_post_meta( $post_id, '_bdg_' . $key, $val );
+			update_post_meta( $post_id, '_conv_' . $key, $val );
 		}
 
 		return $post_id;
@@ -162,7 +162,7 @@ class CPT_Pago {
 	public static function get_meta( int $post_id ): array {
 		$data = array();
 		foreach ( self::META_KEYS as $key ) {
-			$data[ $key ] = get_post_meta( $post_id, '_bdg_' . $key, true );
+			$data[ $key ] = get_post_meta( $post_id, '_conv_' . $key, true );
 		}
 		return $data;
 	}
@@ -178,7 +178,7 @@ class CPT_Pago {
 				'post_status'    => 'publish',
 				'meta_query'     => array(
 					array(
-						'key'   => '_bdg_order_id',
+						'key'   => '_conv_order_id',
 						'value' => $order_id,
 					),
 				),
@@ -202,7 +202,7 @@ class CPT_Pago {
 			$wpdb->prepare(
 				"SELECT p.ID FROM {$wpdb->posts} p
              JOIN {$wpdb->postmeta} pm ON p.ID = pm.post_id
-             WHERE pm.meta_key = '_bdg_order_id' AND pm.meta_value = %s 
+             WHERE pm.meta_key = '_conv_order_id' AND pm.meta_value = %s 
              AND p.post_type = 'pago'
              LIMIT 1 FOR UPDATE",
 				$order_id
@@ -284,7 +284,7 @@ class CPT_Pago {
 		);
 
 		foreach ( $meta as $key => $val ) {
-			update_post_meta( $post_id, '_bdg_' . $key, $val );
+			update_post_meta( $post_id, '_conv_' . $key, $val );
 		}
 
 		$expires_at = $data['expires_at'] ?? '';
@@ -297,18 +297,18 @@ class CPT_Pago {
 		}
 
 		// Use a persistent salt for payment links to prevent them from becoming invalid if WP_SALT changes.
-		$persistent_salt = get_option( 'bdg_persistent_salt' );
+		$persistent_salt = get_option( 'conv_gateway_persistent_salt' );
 		if ( ! $persistent_salt ) {
 			$persistent_salt = wp_generate_password( 64, true, true );
-			update_option( 'bdg_persistent_salt', $persistent_salt );
+			update_option( 'conv_gateway_persistent_salt', $persistent_salt );
 		}
 
 		$token = hash_hmac( 'sha256', $post_id . '|' . $expires_ts, $persistent_salt );
 
-		update_post_meta( $post_id, '_bdg_link_key', $token );
-		update_post_meta( $post_id, '_bdg_expires_at', $expires_ts );
-		update_post_meta( $post_id, '_bdg_recipient_email', sanitize_email( $data['email'] ?? '' ) );
-		update_post_meta( $post_id, '_bdg_link_generated_by', get_current_user_id() );
+		update_post_meta( $post_id, '_conv_link_key', $token );
+		update_post_meta( $post_id, '_conv_expires_at', $expires_ts );
+		update_post_meta( $post_id, '_conv_recipient_email', sanitize_email( $data['email'] ?? '' ) );
+		update_post_meta( $post_id, '_conv_link_generated_by', get_current_user_id() );
 
 		$params = array();
 		if ( ! empty( $data['params'] ) ) {
@@ -320,7 +320,7 @@ class CPT_Pago {
 				}
 			}
 		}
-		update_post_meta( $post_id, '_bdg_params', $params );
+		update_post_meta( $post_id, '_conv_params', $params );
 
 		$admin_user = wp_get_current_user();
 		$admin_name = $admin_user->display_name ?? $admin_user->user_login ?? 'Admin';
@@ -332,7 +332,7 @@ class CPT_Pago {
 			$data['method'] ?? 'any',
 			$expires_ts ? wp_date( 'd/m/Y H:i', $expires_ts ) : __( 'Nunca', 'convoca-gateway' )
 		);
-		update_post_meta( $post_id, '_bdg_notes', $notas );
+		update_post_meta( $post_id, '_conv_notes', $notas );
 
 		\Convoca\Core\Logger::info(
 			"Enlace de pago generado: ID $post_id, Importe: {$data['amount']}€, Concepto: {$data['concepto']}",
@@ -352,7 +352,7 @@ class CPT_Pago {
 	 * @return string Full payment URL.
 	 */
 	public static function build_payment_link( int $pago_id, string $token, ?int $expires_ts = null ): string {
-		$payment_page_id = get_option( 'bdg_payment_page_id', 0 );
+		$payment_page_id = get_option( 'conv_gateway_payment_page_id', 0 );
 		if ( $payment_page_id ) {
 			$base_url = get_permalink( $payment_page_id );
 		}
@@ -363,8 +363,8 @@ class CPT_Pago {
 
 		return add_query_arg(
 			array(
-				'bdg_pago' => $pago_id,
-				'bdg_key'  => $token,
+				'conv_gateway_pago' => $pago_id,
+				'conv_gateway_key'  => $token,
 			),
 			$base_url
 		);

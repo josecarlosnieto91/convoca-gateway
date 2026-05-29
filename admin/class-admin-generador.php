@@ -24,7 +24,7 @@ class Admin_Generador {
 			'bdg-payments',
 			__( 'Generador de Enlaces de Pago', 'convoca-gateway' ),
 			__( 'Generar Enlace', 'convoca-gateway' ),
-			'bdg_manage_payments',
+			'conv_gateway_manage_payments',
 			'bdg-generador',
 			array( $this, 'render_page' )
 		);
@@ -33,7 +33,7 @@ class Admin_Generador {
 			'bdg-payments',
 			__( 'Enlaces de Pago', 'convoca-gateway' ),
 			__( 'Enlaces de Pago', 'convoca-gateway' ),
-			'bdg_manage_payments',
+			'conv_gateway_manage_payments',
 			'bdg-links',
 			array( new Admin_Links(), 'render_page' )
 		);
@@ -53,9 +53,9 @@ class Admin_Generador {
 
 		wp_enqueue_script(
 			'bdg-generador',
-			\BDG_URL . 'assets/js/generador.js',
+			\CONV_GATEWAY_URL . 'assets/js/generador.js',
 			array( 'convoca-common-admin-js' ),
-			\BDG_VERSION,
+			\CONV_GATEWAY_VERSION,
 			true
 		);
 	}
@@ -64,7 +64,7 @@ class Admin_Generador {
 		$message        = '';
 		$generated_link = '';
 
-		if ( isset( $_POST['bdg_generate_link'] ) && check_admin_referer( 'bdg_generate_link_nonce', 'bdg_generate_link_nonce' ) ) {
+		if ( isset( $_POST['conv_gateway_generate_link'] ) && check_admin_referer( 'conv_gateway_generate_link_nonce', 'conv_gateway_generate_link_nonce' ) ) {
 			$result = $this->process_generation( $_POST );
 
 			if ( is_wp_error( $result ) ) {
@@ -83,15 +83,15 @@ class Admin_Generador {
 
 			<div class="bdg-generador-card">
 				<form method="post" action="">
-					<?php wp_nonce_field( 'bdg_generate_link_nonce', 'bdg_generate_link_nonce' ); ?>
+					<?php wp_nonce_field( 'conv_gateway_generate_link_nonce', 'conv_gateway_generate_link_nonce' ); ?>
 
 					<table class="form-table">
 						<tr>
 							<th scope="row">
-								<label for="bdg_amount"><?php esc_html_e( 'Cantidad (€)', 'convoca-gateway' ); ?> *</label>
+								<label for="conv_gateway_amount"><?php esc_html_e( 'Cantidad (€)', 'convoca-gateway' ); ?> *</label>
 							</th>
 							<td>
-								<input type="number" name="bdg_amount" id="bdg_amount" 
+								<input type="number" name="conv_gateway_amount" id="conv_gateway_amount" 
 										class="regular-text" step="0.01" min="0.50" required
 										placeholder="Ej: 50.00">
 								<p class="description">Importe en euros (mínimo 0.50€)</p>
@@ -100,10 +100,10 @@ class Admin_Generador {
 
 						<tr>
 							<th scope="row">
-								<label for="bdg_concepto"><?php esc_html_e( 'Concepto', 'convoca-gateway' ); ?> *</label>
+								<label for="conv_gateway_concepto"><?php esc_html_e( 'Concepto', 'convoca-gateway' ); ?> *</label>
 							</th>
 							<td>
-								<input type="text" name="bdg_concepto" id="bdg_concepto" 
+								<input type="text" name="conv_gateway_concepto" id="conv_gateway_concepto" 
 										class="regular-text" maxlength="125" required
 										placeholder="Ej: Cuota mensual de socio">
 								<p class="description">Descripción del pago (máx. 125 caracteres)</p>
@@ -112,10 +112,10 @@ class Admin_Generador {
 
 						<tr>
 							<th scope="row">
-								<label for="bdg_method"><?php esc_html_e( 'Método de pago', 'convoca-gateway' ); ?></label>
+								<label for="conv_gateway_method"><?php esc_html_e( 'Método de pago', 'convoca-gateway' ); ?></label>
 							</th>
 							<td>
-								<select name="bdg_method" id="bdg_method">
+								<select name="conv_gateway_method" id="conv_gateway_method">
 									<option value="any"><?php esc_html_e( 'Cualquiera (usuario elige)', 'convoca-gateway' ); ?></option>
 									<option value="tarjeta"><?php esc_html_e( 'Tarjeta', 'convoca-gateway' ); ?></option>
 									<option value="bizum"><?php esc_html_e( 'Bizum', 'convoca-gateway' ); ?></option>
@@ -128,10 +128,10 @@ class Admin_Generador {
 
 						<tr>
 							<th scope="row">
-								<label for="bdg_email"><?php esc_html_e( 'Email del destinatario', 'convoca-gateway' ); ?></label>
+								<label for="conv_gateway_email"><?php esc_html_e( 'Email del destinatario', 'convoca-gateway' ); ?></label>
 							</th>
 							<td>
-								<input type="email" name="bdg_email" id="bdg_email" 
+								<input type="email" name="conv_gateway_email" id="conv_gateway_email" 
 										class="regular-text" 
 										placeholder="Ej: cliente@email.com">
 								<p class="description">Pre-rellena el email en el formulario de pago</p>
@@ -140,10 +140,10 @@ class Admin_Generador {
 
 						<tr>
 							<th scope="row">
-								<label for="bdg_params"><?php esc_html_e( 'Parámetros personalizados', 'convoca-gateway' ); ?></label>
+								<label for="conv_gateway_params"><?php esc_html_e( 'Parámetros personalizados', 'convoca-gateway' ); ?></label>
 							</th>
 							<td>
-								<textarea name="bdg_params" id="bdg_params" rows="4" class="large-text"
+								<textarea name="conv_gateway_params" id="conv_gateway_params" rows="4" class="large-text"
 											placeholder="referencia=12345&#10;factura=ABC-001&#10;concepto_extra=Pago mensual"></textarea>
 								<p class="description">Clave=Valor por línea. Se mostrarán en el formulario como datos adicionales.</p>
 							</td>
@@ -151,14 +151,14 @@ class Admin_Generador {
 
 						<tr>
 							<th scope="row">
-								<label for="bdg_expires"><?php esc_html_e( 'Fecha de caducidad', 'convoca-gateway' ); ?></label>
+								<label for="conv_gateway_expires"><?php esc_html_e( 'Fecha de caducidad', 'convoca-gateway' ); ?></label>
 							</th>
 							<td>
-								<input type="date" name="bdg_expires" id="bdg_expires" class="regular-text"
+								<input type="date" name="conv_gateway_expires" id="conv_gateway_expires" class="regular-text"
 										min="<?php echo esc_attr( wp_date( 'Y-m-d', strtotime( '+1 day' ) ) ); ?>">
 								<p class="description">Dejar vacío para usar la validez por defecto (7 días)</p>
 								<label style="display: block; margin-top: 10px;">
-									<input type="checkbox" name="bdg_never_expires" id="bdg_never_expires" value="1">
+									<input type="checkbox" name="conv_gateway_never_expires" id="conv_gateway_never_expires" value="1">
 									<?php esc_html_e( 'El enlace no caduca nunca', 'convoca-gateway' ); ?>
 								</label>
 							</td>
@@ -166,7 +166,7 @@ class Admin_Generador {
 					</table>
 
 					<p class="submit">
-						<button type="submit" name="bdg_generate_link" class="button button-primary">
+						<button type="submit" name="conv_gateway_generate_link" class="button button-primary">
 							<?php esc_html_e( 'Generar enlace', 'convoca-gateway' ); ?>
 						</button>
 					</p>
@@ -177,8 +177,8 @@ class Admin_Generador {
 				<h2><?php esc_html_e( 'Enlace generado', 'convoca-gateway' ); ?></h2>
 				<p><?php esc_html_e( 'Copia este enlace y envíaselo al cliente:', 'convoca-gateway' ); ?></p>
 				<div class="bdg-link-output">
-					<input type="text" value="<?php echo esc_attr( $generated_link ); ?>" readonly class="large-text" id="bdg_generated_link">
-					<button type="button" class="button" onclick="bdg_copy_link()">
+					<input type="text" value="<?php echo esc_attr( $generated_link ); ?>" readonly class="large-text" id="conv_gateway_generated_link">
+					<button type="button" class="button" onclick="conv_gateway_copy_link()">
 						<?php esc_html_e( 'Copiar al portapapeles', 'convoca-gateway' ); ?>
 					</button>
 				</div>
@@ -194,8 +194,8 @@ class Admin_Generador {
 				}
 				</style>
 				<script>
-				function bdg_copy_link() {
-					const input = document.getElementById('bdg_generated_link');
+				function conv_gateway_copy_link() {
+					const input = document.getElementById('conv_gateway_generated_link');
 					const btn = event.currentTarget;
 					const link = input.value;
 
@@ -242,12 +242,12 @@ class Admin_Generador {
 	}
 
 	private function process_generation( array $post ): array|\WP_Error {
-		$amount = (float) ( $post['bdg_amount'] ?? 0 );
+		$amount = (float) ( $post['conv_gateway_amount'] ?? 0 );
 		if ( $amount < 0.50 ) {
 			return new \WP_Error( 'invalid_amount', 'El importe mínimo es 0.50€' );
 		}
 
-		$concepto = sanitize_text_field( $post['bdg_concepto'] ?? '' );
+		$concepto = sanitize_text_field( $post['conv_gateway_concepto'] ?? '' );
 		if ( empty( $concepto ) ) {
 			return new \WP_Error( 'missing_concept', 'El concepto es obligatorio' );
 		}
@@ -256,16 +256,16 @@ class Admin_Generador {
 			return new \WP_Error( 'long_concept', 'El concepto no puede exceder 125 caracteres' );
 		}
 
-		$method        = sanitize_text_field( $post['bdg_method'] ?? 'any' );
+		$method        = sanitize_text_field( $post['conv_gateway_method'] ?? 'any' );
 		$valid_methods = array( 'any', 'tarjeta', 'bizum', 'transferencia' );
 		if ( ! in_array( $method, $valid_methods, true ) ) {
 			return new \WP_Error( 'invalid_method', 'Método de pago no válido' );
 		}
 
-		$email         = sanitize_email( $post['bdg_email'] ?? '' );
-		$params        = sanitize_textarea_field( $post['bdg_params'] ?? '' );
-		$expires       = sanitize_text_field( $post['bdg_expires'] ?? '' );
-		$never_expires = ! empty( $post['bdg_never_expires'] );
+		$email         = sanitize_email( $post['conv_gateway_email'] ?? '' );
+		$params        = sanitize_textarea_field( $post['conv_gateway_params'] ?? '' );
+		$expires       = sanitize_text_field( $post['conv_gateway_expires'] ?? '' );
+		$never_expires = ! empty( $post['conv_gateway_never_expires'] );
 
 		$pago_id = CPT_Pago::create_link_payment(
 			array(
@@ -282,8 +282,8 @@ class Admin_Generador {
 			return $pago_id;
 		}
 
-		$token      = get_post_meta( $pago_id, '_bdg_link_key', true );
-		$expires_ts = get_post_meta( $pago_id, '_bdg_expires_at', true );
+		$token      = get_post_meta( $pago_id, '_conv_link_key', true );
+		$expires_ts = get_post_meta( $pago_id, '_conv_expires_at', true );
 
 		$url = Payment_Handler::get_payment_link( $pago_id, $token, $expires_ts );
 
@@ -294,7 +294,7 @@ class Admin_Generador {
 	}
 
 	private function get_offline_methods(): array {
-		$settings         = get_option( 'bdg_settings', array() );
+		$settings         = get_option( 'conv_gateway_settings', array() );
 		$transfer_enabled = ! empty( $settings['iban'] );
 		return $transfer_enabled ? array( 'transferencia' ) : array();
 	}

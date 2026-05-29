@@ -5,7 +5,7 @@
  * Handles database structure upgrades for the gateway plugin.
  *
  * To add a new upgrade:
- * 1. Increment BDG_DB_VERSION in convoca-gateway.php
+ * 1. Increment CONV_GATEWAY_DB_VERSION in convoca-gateway.php
  * 2. Add a callback: '1.0.1' => [$this, 'upgrade_to_1_0_1']
  * 3. Implement the private method with idempotent logic.
  *
@@ -27,11 +27,11 @@ class Gateway_Upgrade_Manager extends Upgrade_Manager {
 	}
 
 	protected function get_db_version(): string {
-		return defined( 'BDG_DB_VERSION' ) ? BDG_DB_VERSION : '0.0.0';
+		return defined( 'CONV_GATEWAY_DB_VERSION' ) ? CONV_GATEWAY_DB_VERSION : '0.0.0';
 	}
 
 	protected function get_option_name(): string {
-		return 'bdg_db_version';
+		return 'conv_gateway_db_version';
 	}
 
 	protected function get_transient_prefix(): string {

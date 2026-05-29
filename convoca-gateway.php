@@ -33,20 +33,20 @@ if ( ! class_exists( '\\Convoca\\Core\\Utils' ) ) {
 }
 
 /* ── Constants ────────────────────────────────── */
-if ( ! defined( 'BDG_VERSION' ) ) {
-	define( 'BDG_VERSION', '2.6.1' );
+if ( ! defined( 'CONV_GATEWAY_VERSION' ) ) {
+	define( 'CONV_GATEWAY_VERSION', '2.6.1' );
 }
-if ( ! defined( 'BDG_DB_VERSION' ) ) {
-	define( 'BDG_DB_VERSION', '1.0.2' );
+if ( ! defined( 'CONV_GATEWAY_DB_VERSION' ) ) {
+	define( 'CONV_GATEWAY_DB_VERSION', '1.0.2' );
 }
-if ( ! defined( 'BDG_DIR' ) ) {
-	define( 'BDG_DIR', plugin_dir_path( __FILE__ ) );
+if ( ! defined( 'CONV_GATEWAY_DIR' ) ) {
+	define( 'CONV_GATEWAY_DIR', plugin_dir_path( __FILE__ ) );
 }
-if ( ! defined( 'BDG_URL' ) ) {
-	define( 'BDG_URL', plugin_dir_url( __FILE__ ) );
+if ( ! defined( 'CONV_GATEWAY_URL' ) ) {
+	define( 'CONV_GATEWAY_URL', plugin_dir_url( __FILE__ ) );
 }
-if ( ! defined( 'BDG_BASENAME' ) ) {
-	define( 'BDG_BASENAME', plugin_basename( __FILE__ ) );
+if ( ! defined( 'CONV_GATEWAY_BASENAME' ) ) {
+	define( 'CONV_GATEWAY_BASENAME', plugin_basename( __FILE__ ) );
 }
 
 /* ── Autoload ─────────────────────────────────── */
@@ -60,7 +60,7 @@ spl_autoload_register(
 		$relative = strtolower( str_replace( '_', '-', $relative ) );
 
 		foreach ( array( 'includes/', 'admin/' ) as $dir ) {
-			$file = BDG_DIR . $dir . 'class-' . $relative . '.php';
+			$file = CONV_GATEWAY_DIR . $dir . 'class-' . $relative . '.php';
 			if ( file_exists( $file ) ) {
 				require_once $file;
 				return;
@@ -137,7 +137,7 @@ register_activation_hook(
 	function () {
 		CPT_Pago::register();
 		flush_rewrite_rules();
-		add_option( 'bdg_db_version', BDG_DB_VERSION, '', false );
+		add_option( 'conv_gateway_db_version', CONV_GATEWAY_DB_VERSION, '', false );
 	}
 );
 
@@ -162,6 +162,6 @@ if ( ! function_exists( 'conv_get_gateway_settings' ) ) {
 	 * @return array
 	 */
 	function conv_get_gateway_settings(): array {
-		return get_option( 'bdg_settings', array() );
+		return get_option( 'conv_gateway_settings', array() );
 	}
 }

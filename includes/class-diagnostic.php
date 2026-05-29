@@ -16,7 +16,7 @@ class Diagnostic {
 	const SEVERITY_OK      = 'ok';
 	const SEVERITY_WARNING = 'warning';
 	const SEVERITY_ERROR   = 'error';
-	const CACHE_KEY        = 'bdg_diagnostic_cache';
+	const CACHE_KEY        = 'conv_gateway_diagnostic_cache';
 	const CACHE_TTL        = 3600; // 1 hour
 
 	/**
@@ -64,7 +64,7 @@ class Diagnostic {
 	 * @return array
 	 */
 	public static function check_environment(): array {
-		$settings    = get_option( 'bdg_settings', array() );
+		$settings    = get_option( 'conv_gateway_settings', array() );
 		$environment = $settings['environment'] ?? 'test';
 		$secret_key  = $settings['secret_key'] ?? '';
 
@@ -104,7 +104,7 @@ class Diagnostic {
 	 * @return array
 	 */
 	public static function check_merchant_code(): array {
-		$settings      = get_option( 'bdg_settings', array() );
+		$settings      = get_option( 'conv_gateway_settings', array() );
 		$merchant_code = $settings['merchant_code'] ?? '';
 
 		if ( empty( $merchant_code ) ) {
@@ -125,7 +125,7 @@ class Diagnostic {
 	 * @return array
 	 */
 	public static function check_terminal(): array {
-		$settings = get_option( 'bdg_settings', array() );
+		$settings = get_option( 'conv_gateway_settings', array() );
 		$terminal = $settings['terminal'] ?? '';
 
 		if ( empty( $terminal ) ) {
@@ -141,7 +141,7 @@ class Diagnostic {
 	 * @return array
 	 */
 	public static function check_return_pages(): array {
-		$settings   = get_option( 'bdg_settings', array() );
+		$settings   = get_option( 'conv_gateway_settings', array() );
 		$ok_page_id = (int) ( $settings['ok_page_id'] ?? 0 );
 		$ko_page_id = (int) ( $settings['ko_page_id'] ?? 0 );
 
@@ -204,7 +204,7 @@ class Diagnostic {
 	 * @return array
 	 */
 	public static function check_offline_methods(): array {
-		$settings = get_option( 'bdg_settings', array() );
+		$settings = get_option( 'conv_gateway_settings', array() );
 		$iban     = $settings['iban'] ?? '';
 
 		if ( ! empty( $iban ) ) {
@@ -304,9 +304,9 @@ class Diagnostic {
 	 * Fix: Set default terminal to 001.
 	 */
 	public static function fix_default_terminal(): array {
-		$settings             = get_option( 'bdg_settings', array() );
+		$settings             = get_option( 'conv_gateway_settings', array() );
 		$settings['terminal'] = '001';
-		update_option( 'bdg_settings', $settings );
+		update_option( 'conv_gateway_settings', $settings );
 
 		return array(
 			'success' => true,
@@ -315,7 +315,7 @@ class Diagnostic {
 	}
 
 	public static function fix_create_pages(): array {
-		$settings = get_option( 'bdg_settings', array() );
+		$settings = get_option( 'conv_gateway_settings', array() );
 		$created  = array();
 
 		$ok_page_id = (int) ( $settings['ok_page_id'] ?? 0 );
@@ -369,7 +369,7 @@ class Diagnostic {
 			}
 		}
 
-		update_option( 'bdg_settings', $settings );
+		update_option( 'conv_gateway_settings', $settings );
 
 		if ( empty( $created ) ) {
 			return array(

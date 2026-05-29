@@ -15,13 +15,13 @@ class Admin_Settings {
 
 
 	/** Option key. */
-	private const OPTION = 'bdg_settings';
+	private const OPTION = 'conv_gateway_settings';
 
 	public function __construct() {
 		add_action( 'admin_menu', array( $this, 'add_menu' ) );
 		add_action( 'admin_init', array( $this, 'register_settings' ) );
-		add_action( 'wp_ajax_bdg_diagnostic_run', array( $this, 'ajax_diagnostic_run' ) );
-		add_action( 'wp_ajax_bdg_diagnostic_fix', array( $this, 'ajax_diagnostic_fix' ) );
+		add_action( 'wp_ajax_conv_diagnostic_run', array( $this, 'ajax_diagnostic_run' ) );
+		add_action( 'wp_ajax_conv_diagnostic_fix', array( $this, 'ajax_diagnostic_fix' ) );
 		add_action( 'admin_notices', array( $this, 'secret_key_warning' ) );
 	}
 
@@ -29,7 +29,7 @@ class Admin_Settings {
 	 * Show admin notice if secret key decryption failed.
 	 */
 	public function secret_key_warning(): void {
-		if ( ! get_option( 'bdg_secret_needs_reentry' ) ) {
+		if ( ! get_option( 'conv_gateway_secret_needs_reentry' ) ) {
 			return;
 		}
 		?>
@@ -58,7 +58,7 @@ class Admin_Settings {
 			null, // Hidden.
 			__( 'Detalle de Pago', 'convoca-gateway' ),
 			__( 'Detalle', 'convoca-gateway' ),
-			'bdg_view_payments',
+			'conv_gateway_view_payments',
 			'bdg-payments-detail',
 			array( new Admin_Payments(), 'render_page' )
 		);
@@ -66,7 +66,7 @@ class Admin_Settings {
 
 	public function register_settings(): void {
 		register_setting(
-			'bdg_settings_group',
+			'conv_gateway_settings_group',
 			self::OPTION,
 			array(
 				'sanitize_callback' => array( $this, 'sanitize' ),
@@ -74,7 +74,7 @@ class Admin_Settings {
 		);
 
 		add_settings_section(
-			'bdg_redsys',
+			'conv_gateway_redsys',
 			__( 'Configuración Redsys (Caja Rural de Asturias)', 'convoca-gateway' ),
 			fn() => print '<p>Introduce los datos proporcionados por tu banco para el TPV Virtual.</p>',
 			'bdg-settings'
@@ -114,17 +114,17 @@ class Admin_Settings {
 
 		foreach ( $fields as $key => $field ) {
 			add_settings_field(
-				'bdg_' . $key,
+				'conv_gateway_' . $key,
 				$field['label'],
 				fn() => $this->render_form_field( $key, $field ),
 				'bdg-settings',
-				'bdg_redsys'
+				'conv_gateway_redsys'
 			);
 		}
 
 		// Transfer section.
 		add_settings_section(
-			'bdg_transfer',
+			'conv_gateway_transfer',
 			__( 'Configuración Transferencia Bancaria', 'convoca-gateway' ),
 			fn() => print '<p>Datos para mostrar a los usuarios que elijan pagar por transferencia.</p>',
 			'bdg-settings'
@@ -150,17 +150,17 @@ class Admin_Settings {
 
 		foreach ( $transfer_fields as $key => $field ) {
 			add_settings_field(
-				'bdg_' . $key,
+				'conv_gateway_' . $key,
 				$field['label'],
 				fn() => $this->render_form_field( $key, $field ),
 				'bdg-settings',
-				'bdg_transfer'
+				'conv_gateway_transfer'
 			);
 		}
 
 		// Emails section (Standard).
 		add_settings_section(
-			'bdg_emails',
+			'conv_gateway_emails',
 			__( 'Notificaciones por Email', 'convoca-gateway' ),
 			fn() => print '<p>' . __( 'Configura los correos automáticos tras un pago con éxito.', 'convoca-gateway' ) . '</p>',
 			'bdg-settings'
@@ -181,11 +181,11 @@ class Admin_Settings {
 
 		foreach ( $email_fields as $key => $field ) {
 			add_settings_field(
-				'bdg_' . $key,
+				'conv_gateway_' . $key,
 				$field['label'],
 				fn() => $this->render_form_field( $key, $field ),
 				'bdg-settings',
-				'bdg_emails'
+				'conv_gateway_emails'
 			);
 		}
 
@@ -214,7 +214,7 @@ class Admin_Settings {
 		);
 
 		add_settings_section(
-			'bdg_email_templates',
+			'conv_gateway_email_templates',
 			__( 'Personalización de Plantillas', 'convoca-gateway' ),
 			fn() => print '<p>' . __( 'Usa variables: {importe}, {metodo}, {fecha}, {producto}, {enlace_inscripcion}', 'convoca-gateway' ) . '</p>',
 			'bdg-settings-emails'
@@ -222,17 +222,17 @@ class Admin_Settings {
 
 		foreach ( $email_templates as $key => $field ) {
 			add_settings_field(
-				'bdg_' . $key,
+				'conv_gateway_' . $key,
 				$field['label'],
 				fn() => $this->render_form_field( $key, $field ),
 				'bdg-settings-emails',
-				'bdg_email_templates'
+				'conv_gateway_email_templates'
 			);
 		}
 
 		// Pages section.
 		add_settings_section(
-			'bdg_pages',
+			'conv_gateway_pages',
 			__( 'Páginas de pago', 'convoca-gateway' ),
 			fn() => print '<p>Crea páginas con los shortcodes indicados y selecciónalas aquí.</p>',
 			'bdg-settings'
@@ -246,11 +246,11 @@ class Admin_Settings {
 
 		foreach ( $page_fields as $key => $label ) {
 			add_settings_field(
-				'bdg_' . $key,
+				'conv_gateway_' . $key,
 				$label,
 				fn() => $this->render_page_dropdown( $key ),
 				'bdg-settings',
-				'bdg_pages'
+				'conv_gateway_pages'
 			);
 		}
 	}
@@ -261,13 +261,13 @@ class Admin_Settings {
 	private function render_form_field( string $key, array $field ): void {
 		// Check if constant is defined in wp-config.php.
 		$is_constant = false;
-		if ( $key === 'secret_key' && defined( 'BDG_SECRET_KEY' ) ) {
+		if ( $key === 'secret_key' && defined( 'CONV_GATEWAY_SECRET_KEY' ) ) {
 			$is_constant = true;
 		}
-		if ( $key === 'merchant_code' && defined( 'BDG_MERCHANT_CODE' ) ) {
+		if ( $key === 'merchant_code' && defined( 'CONV_GATEWAY_MERCHANT_CODE' ) ) {
 			$is_constant = true;
 		}
-		if ( $key === 'bizum_merchant_code' && defined( 'BDG_BIZUM_MERCHANT_CODE' ) ) {
+		if ( $key === 'bizum_merchant_code' && defined( 'CONV_GATEWAY_BIZUM_MERCHANT_CODE' ) ) {
 			$is_constant = true;
 		}
 
@@ -376,7 +376,7 @@ class Admin_Settings {
 
 		// Show errors if any.
 		if ( ! empty( $errors ) ) {
-			add_settings_error( 'bdg_settings', 'bdg_validation', implode( '<br>', $errors ), 'error' );
+			add_settings_error( 'conv_gateway_settings', 'conv_gateway_validation', implode( '<br>', $errors ), 'error' );
 		}
 
 		// Handle secret key: only update if new value provided.
@@ -384,7 +384,7 @@ class Admin_Settings {
 			$secret_to_save = $old_settings['secret_key'] ?? '';
 		} else {
 			if ( strlen( $new_secret ) < 16 ) {
-				add_settings_error( 'bdg_settings', 'bdg_secret_short', __( 'La clave secreta debe tener al menos 16 caracteres.', 'convoca-gateway' ), 'error' );
+				add_settings_error( 'conv_gateway_settings', 'conv_gateway_secret_short', __( 'La clave secreta debe tener al menos 16 caracteres.', 'convoca-gateway' ), 'error' );
 			}
 			$secret_to_save = Redsys_Client::encrypt_key( $new_secret );
 		}
@@ -472,7 +472,7 @@ class Admin_Settings {
 			<?php if ( $active_tab !== 'status' ) : ?>
 			<form method="post" action="options.php">
 				<?php
-				settings_fields( 'bdg_settings_group' );
+				settings_fields( 'conv_gateway_settings_group' );
 
 				if ( $active_tab === 'emails' ) {
 					do_settings_sections( 'bdg-settings-emails' );
@@ -497,8 +497,8 @@ class Admin_Settings {
 			document.querySelectorAll('.js-bdg-preview-email').forEach(function(btn) {
 				btn.addEventListener('click', function() {
 					const type = this.dataset.type;
-					const subjectInput = type === 'success' ? document.querySelector('input[name="bdg_settings[email_success_subject]"]') : document.querySelector('input[name="bdg_settings[email_failed_subject]"]');
-					const bodyInput = type === 'success' ? document.querySelector('textarea[name="bdg_settings[email_success_body]"]') : document.querySelector('textarea[name="bdg_settings[email_failed_body]"]');
+					const subjectInput = type === 'success' ? document.querySelector('input[name="conv_gateway_settings[email_success_subject]"]') : document.querySelector('input[name="conv_gateway_settings[email_failed_subject]"]');
+					const bodyInput = type === 'success' ? document.querySelector('textarea[name="conv_gateway_settings[email_success_body]"]') : document.querySelector('textarea[name="conv_gateway_settings[email_failed_body]"]');
 					
 					const previewWindow = window.open('', '_blank', 'width=600,height=400');
 					if (previewWindow) {
@@ -517,8 +517,8 @@ class Admin_Settings {
 					btn.textContent = 'Ejecutando...';
 					
 					const fd = new FormData();
-					fd.append('action', 'bdg_diagnostic_run');
-					fd.append('nonce', '<?php echo wp_create_nonce( 'bdg_diagnostic_nonce' ); ?>');
+					fd.append('action', 'conv_gateway_diagnostic_run');
+					fd.append('nonce', '<?php echo wp_create_nonce( 'conv_gateway_diagnostic_nonce' ); ?>');
 					
 					fetch(ajaxurl, {
 						method: 'POST',
@@ -549,8 +549,8 @@ class Admin_Settings {
 					this.textContent = 'Aplicando...';
 					
 					const fd = new FormData();
-					fd.append('action', 'bdg_diagnostic_fix');
-					fd.append('nonce', '<?php echo wp_create_nonce( 'bdg_diagnostic_nonce' ); ?>');
+					fd.append('action', 'conv_gateway_diagnostic_fix');
+					fd.append('nonce', '<?php echo wp_create_nonce( 'conv_gateway_diagnostic_nonce' ); ?>');
 					fd.append('fix', fix);
 					
 					fetch(ajaxurl, {
@@ -690,7 +690,7 @@ class Admin_Settings {
 	}
 
 	public function ajax_diagnostic_run(): void {
-		check_ajax_referer( 'bdg_diagnostic_nonce', 'nonce' );
+		check_ajax_referer( 'conv_gateway_diagnostic_nonce', 'nonce' );
 
 		if ( ! current_user_can( 'manage_options' ) ) {
 			wp_send_json_error( array( 'message' => 'Sin permisos' ) );
@@ -701,7 +701,7 @@ class Admin_Settings {
 	}
 
 	public function ajax_diagnostic_fix(): void {
-		check_ajax_referer( 'bdg_diagnostic_nonce', 'nonce' );
+		check_ajax_referer( 'conv_gateway_diagnostic_nonce', 'nonce' );
 
 		if ( ! current_user_can( 'manage_options' ) ) {
 			wp_send_json_error( array( 'message' => 'Sin permisos' ) );

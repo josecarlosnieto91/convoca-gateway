@@ -44,7 +44,7 @@ class Redsys_Client {
 	 */
 	public static function settings(): array {
 		if ( self::$settings === null ) {
-			self::$settings = get_option( 'bdg_settings', array() );
+			self::$settings = get_option( 'conv_gateway_settings', array() );
 		}
 		return self::$settings;
 	}
@@ -59,12 +59,12 @@ class Redsys_Client {
 
 	/**
 	 * Get the merchant secret key.
-	 * Checks for BDG_SECRET_KEY constant first (recommended).
+	 * Checks for CONV_GATEWAY_SECRET_KEY constant first (recommended).
 	 * Decrypts DB value if needed.
 	 */
 	public static function secret_key(): string {
-		if ( defined( 'BDG_SECRET_KEY' ) ) {
-			return (string) BDG_SECRET_KEY;
+		if ( defined( 'CONV_GATEWAY_SECRET_KEY' ) ) {
+			return (string) CONV_GATEWAY_SECRET_KEY;
 		}
 
 		$s   = self::settings();
@@ -92,8 +92,8 @@ class Redsys_Client {
 	 * Mark that secret key decryption has failed so the admin is alerted.
 	 */
 	private static function mark_decryption_failed(): void {
-		if ( ! get_option( 'bdg_secret_needs_reentry' ) ) {
-			update_option( 'bdg_secret_needs_reentry', 1 );
+		if ( ! get_option( 'conv_gateway_secret_needs_reentry' ) ) {
+			update_option( 'conv_gateway_secret_needs_reentry', 1 );
 			\Convoca\Core\Logger::error(
 				'La clave secreta de Redsys no se pudo descifrar. Los pagos no funcionarán hasta que se vuelva a introducir.',
 				'Gateway/Security'
@@ -105,8 +105,8 @@ class Redsys_Client {
 	 * Get the merchant code.
 	 */
 	public static function merchant_code(): string {
-		if ( defined( 'BDG_MERCHANT_CODE' ) ) {
-			return BDG_MERCHANT_CODE;
+		if ( defined( 'CONV_GATEWAY_MERCHANT_CODE' ) ) {
+			return CONV_GATEWAY_MERCHANT_CODE;
 		}
 
 		$s = self::settings();
@@ -117,8 +117,8 @@ class Redsys_Client {
 	 * Get the Bizum merchant code.
 	 */
 	public static function bizum_merchant_code(): string {
-		if ( defined( 'BDG_BIZUM_MERCHANT_CODE' ) ) {
-			return BDG_BIZUM_MERCHANT_CODE;
+		if ( defined( 'CONV_GATEWAY_BIZUM_MERCHANT_CODE' ) ) {
+			return CONV_GATEWAY_BIZUM_MERCHANT_CODE;
 		}
 
 		$s = self::settings();
@@ -279,7 +279,7 @@ class Redsys_Client {
 		if ( $decrypted === false ) {
 			\Convoca\Core\Logger::error( 'Error crítico: No se pudo descifrar la clave secreta de Redsys (openssl_decrypt falló).', 'Gateway/Redsys' );
 			// Mark settings as needing re-entry.
-			update_option( 'bdg_secret_needs_reentry', current_time( 'mysql' ), 'no' );
+			update_option( 'conv_gateway_secret_needs_reentry', current_time( 'mysql' ), 'no' );
 			return false;
 		}
 
@@ -288,7 +288,7 @@ class Redsys_Client {
 		}
 
 		// Clear the re-entry flag on successful decryption.
-		delete_option( 'bdg_secret_needs_reentry' );
+		delete_option( 'conv_gateway_secret_needs_reentry' );
 
 		return (string) $decrypted;
 	}

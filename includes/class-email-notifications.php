@@ -36,14 +36,14 @@ class Email_Notifications {
 	 * Generic sender logic.
 	 */
 	private function maybe_send( int $payment_id, string $type ): void {
-		$settings = get_option( 'bdg_settings', array() );
+		$settings = get_option( 'conv_gateway_settings', array() );
 		$enabled  = ( $settings['email_confirmation'] ?? '0' ) === '1';
 
 		if ( ! $enabled ) {
 			return;
 		}
 
-		$email = get_post_meta( $payment_id, '_bdg_payer_email', true );
+		$email = get_post_meta( $payment_id, '_conv_payer_email', true );
 		if ( empty( $email ) ) {
 			return;
 		}
@@ -92,10 +92,10 @@ class Email_Notifications {
 	 * Build variables for replacement.
 	 */
 	private function get_template_vars( int $payment_id ): array {
-		$amount_cents = (int) get_post_meta( $payment_id, '_bdg_amount_cents', true );
-		$method       = get_post_meta( $payment_id, '_bdg_method', true );
-		$origin       = get_post_meta( $payment_id, '_bdg_origin', true );
-		$enroll_url   = get_post_meta( $payment_id, '_bdg_enroll_url', true );
+		$amount_cents = (int) get_post_meta( $payment_id, '_conv_amount_cents', true );
+		$method       = get_post_meta( $payment_id, '_conv_method', true );
+		$origin       = get_post_meta( $payment_id, '_conv_origin', true );
+		$enroll_url   = get_post_meta( $payment_id, '_conv_enroll_url', true );
 
 		// Build payment link.
 		$payment_url = Payment_Handler::get_payment_link( $payment_id );

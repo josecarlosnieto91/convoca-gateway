@@ -22,9 +22,9 @@ class Block_Gateway {
 		// Register editor script first.
 		wp_register_script(
 			'bdg-blocks-editor',
-			BDG_URL . 'assets/js/blocks-editor.js',
+			CONV_GATEWAY_URL . 'assets/js/blocks-editor.js',
 			array( 'wp-blocks', 'wp-element', 'wp-server-side-render' ),
-			BDG_VERSION,
+			CONV_GATEWAY_VERSION,
 			true
 		);
 

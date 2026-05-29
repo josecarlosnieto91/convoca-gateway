@@ -21,12 +21,12 @@ class Dashboard_Widget {
 	 * Register the dashboard widget.
 	 */
 	public function register_widget(): void {
-		if ( ! current_user_can( 'bdg_view_payments' ) ) {
+		if ( ! current_user_can( 'conv_gateway_view_payments' ) ) {
 			return;
 		}
 
 		wp_add_dashboard_widget(
-			'bdg_payment_summary',
+			'conv_gateway_payment_summary',
 			__( 'Resumen de Pagos Biodevas', 'convoca-gateway' ),
 			array( $this, 'render_widget' )
 		);
@@ -141,7 +141,7 @@ class Dashboard_Widget {
 	private function get_dashboard_data(): array {
 		global $wpdb;
 
-		$data = get_transient( 'bdg_dashboard_stats' );
+		$data = get_transient( 'conv_gateway_dashboard_stats' );
 		if ( false !== $data ) {
 			return $data;
 		}
@@ -156,7 +156,7 @@ class Dashboard_Widget {
 		$paid_posts = $wpdb->get_col(
 			$wpdb->prepare(
 				"SELECT p.ID FROM $posts p
-             INNER JOIN $postmeta m ON m.post_id = p.ID AND m.meta_key = '_bdg_status' AND m.meta_value = 'paid'
+             INNER JOIN $postmeta m ON m.post_id = p.ID AND m.meta_key = '_conv_status' AND m.meta_value = 'paid'
              WHERE p.post_type = 'pago'
                AND p.post_status = 'publish'
                AND p.post_date >= %s",
@@ -175,7 +175,7 @@ class Dashboard_Widget {
 				),
 				'last_7_days' => array(),
 			);
-			set_transient( 'bdg_dashboard_stats', $data, 300 );
+			set_transient( 'conv_gateway_dashboard_stats', $data, 300 );
 			return $data;
 		}
 
@@ -189,13 +189,13 @@ class Dashboard_Widget {
 		);
 
 		foreach ( $paid_posts as $pid ) {
-			$total_month += (int) get_post_meta( $pid, '_bdg_amount_cents', true );
-			$method       = get_post_meta( $pid, '_bdg_method', true );
+			$total_month += (int) get_post_meta( $pid, '_conv_amount_cents', true );
+			$method       = get_post_meta( $pid, '_conv_method', true );
 			if ( isset( $methods_count[ $method ] ) ) {
 				++$methods_count[ $method ];
 			}
 
-			$paid_at = get_post_meta( $pid, '_bdg_paid_at', true );
+			$paid_at = get_post_meta( $pid, '_conv_paid_at', true );
 			if ( $paid_at && strtotime( $paid_at ) >= $today_start ) {
 				++$count_today;
 			}
@@ -215,8 +215,8 @@ class Dashboard_Widget {
                     COUNT(*) AS cnt,
                     COALESCE(SUM(CAST(ma.meta_value AS UNSIGNED)), 0) AS total
              FROM $posts p
-             INNER JOIN $postmeta ms ON ms.post_id = p.ID AND ms.meta_key = '_bdg_status' AND ms.meta_value = 'paid'
-             INNER JOIN $postmeta ma ON ma.post_id = p.ID AND ma.meta_key = '_bdg_amount_cents'
+             INNER JOIN $postmeta ms ON ms.post_id = p.ID AND ms.meta_key = '_conv_status' AND ms.meta_value = 'paid'
+             INNER JOIN $postmeta ma ON ma.post_id = p.ID AND ma.meta_key = '_conv_amount_cents'
              WHERE p.post_type = 'pago'
                AND p.post_status = 'publish'
                AND p.post_date >= %s
@@ -256,7 +256,7 @@ class Dashboard_Widget {
 			'last_7_days' => $last_7_days,
 		);
 
-		set_transient( 'bdg_dashboard_stats', $data, HOUR_IN_SECONDS );
+		set_transient( 'conv_gateway_dashboard_stats', $data, HOUR_IN_SECONDS );
 
 		return $data;
 	}
