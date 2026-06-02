@@ -19,6 +19,22 @@ if ( ! defined( 'ABSPATH' ) ) {
 	exit;
 }
 
+/* ── Composer autoload ─────────────────────────────── */
+$composer_autoload = __DIR__ . '/vendor/autoload.php';
+if ( file_exists( $composer_autoload ) ) {
+	require_once $composer_autoload;
+}
+
+/* ── Convoca Core fallback ────────────────────────── */
+if ( ! class_exists( '\\Convoca\\Core\\Utils' ) ) {
+	$core_path = WP_PLUGIN_DIR . '/convoca-core/includes';
+	if ( is_dir( $core_path ) ) {
+		foreach ( glob( $core_path . '/class-*.php' ) as $file ) {
+			require_once $file;
+		}
+	}
+}
+
 /* ── Startup guard: convoca-common must be active ── */
 if ( ! class_exists( '\\Convoca\\Core\\Utils' ) ) {
 	add_action(
