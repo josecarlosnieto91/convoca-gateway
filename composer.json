@@ -27,5 +27,10 @@
             "@phpstan",
             "@phpunit"
         ]
+    },
+    "autoload": {
+        "psr-4": {
+            "Convoca\\Gateway\\": "includes/"
+        }
     }
 }
