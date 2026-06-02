@@ -24,7 +24,7 @@ Guía para la configuración de la pasarela de pagos Redsys y Bizum.
 
 Para una seguridad máxima, **no guardes la Clave Secreta en la base de datos**. Añade esta línea a tu archivo `wp-config.php`:
 ```php
-define('BDG_SECRET_KEY', 'TU_CLAVE_RED_SYS_EN_BASE64');
+define('CONV_GATEWAY_SECRET_KEY', 'TU_CLAVE_RED_SYS_EN_BASE64');
 ```
 
 ---
@@ -39,6 +39,6 @@ define('BDG_SECRET_KEY', 'TU_CLAVE_RED_SYS_EN_BASE64');
 - [ ] **Retorno al Sitio:** Verifica que tras pagar, el usuario vuelve a la página configurada con `[biodevas_pago_ok]`.
 - [ ] **Bizum:** (Si está contratado) Prueba la opción de Bizum en el selector de métodos.
 - [ ] **Origen del Pago:** Verifica que el pago queda vinculado correctamente a la inscripción o socio correspondiente (columna "Origen" en el listado de pagos).
-- [ ] **Logs de Error:** En caso de fallo, revisa los logs en `bdv_logs` (vía Biodevas Common) para ver el código de respuesta específico de Redsys.
+- [ ] **Logs de Error:** En caso de fallo, revisa los logs en `conv_logs` (vía Biodevas Common) para ver el código de respuesta específico de Redsys.
 
 ¡Pasarela lista para recaudar aportaciones!

@@ -249,7 +249,7 @@ class Redsys_Client {
 	 * IMPORTANT: If AUTH_SALT is changed in wp-config.php, previously encrypted
 	 * keys will become undecryptable. Admins must re-enter the Redsys secret key
 	 * after changing WordPress salts. The system will show an admin notice
-	 * (bdg_secret_needs_reentry) and block payments until re-entered.
+	 * (conv_secret_needs_reentry) and block payments until re-entered.
 	 */
 	public static function encrypt_key( string $value ): string {
 		if ( empty( $value ) ) {
@@ -305,7 +305,7 @@ class Redsys_Client {
 		$endpoint  = self::endpoint();
 
 		return sprintf(
-			'<form id="bdg-redsys-form" method="POST" action="%s">
+			'<form id="conv-redsys-form" method="POST" action="%s">
                 <input type="hidden" name="Ds_SignatureVersion" value="%s">
                 <input type="hidden" name="Ds_MerchantParameters" value="%s">
                 <input type="hidden" name="Ds_Signature" value="%s">

@@ -7,6 +7,8 @@ parameters:
 		- node_modules (?)
 		- tests (?)
 	scanFiles:
+		- /home/josecnr91/convoca-core-rename/includes/class-upgrade-manager.php
+		- /home/josecnr91/convoca-core-rename/includes/class-common-upgrade-manager.php
 		- vendor/php-stubs/wordpress-stubs/wordpress-stubs.php
 includes:
 	- phpstan-baseline.neon

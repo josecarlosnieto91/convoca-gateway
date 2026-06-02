@@ -44,7 +44,7 @@ class Payment_Handler {
 
 	public function register_assets(): void {
 		wp_register_script(
-			'bdg-redsys',
+			'conv-redsys',
 			CONV_GATEWAY_URL . 'assets/js/redsys.js',
 			array(),
 			CONV_GATEWAY_VERSION,
@@ -203,7 +203,7 @@ class Payment_Handler {
 		$expires_param = $_GET['conv_gateway_expires'] ?? null;
 		$legacy_ts     = (int) ( $_GET['conv_gateway_t'] ?? 0 );
 
-		// 1. Check if it is a legacy link (uses bdg_t).
+		// 1. Check if it is a legacy link (uses conv_t).
 		if ( $legacy_ts > 0 ) {
 			return $this->render_legacy_payment_page( $pago_id, $legacy_ts, $key );
 		}
@@ -280,72 +280,72 @@ class Payment_Handler {
 
 		ob_start();
 		?>
-		<div class="bdg-payment-wrapper convoca-form" role="region" aria-label="Formulario de pago">
-			<div class="bdg-payment-summary">
+		<div class="conv-payment-wrapper convoca-form" role="region" aria-label="Formulario de pago">
+			<div class="conv-payment-summary">
 				<h3>Resumen del pago</h3>
-				<div class="bdg-amount"><?php echo esc_html( $amount_display ); ?></div>
+				<div class="conv-amount"><?php echo esc_html( $amount_display ); ?></div>
 				<?php if ( $product_desc ) : ?>
-					<p class="bdg-desc"><?php echo esc_html( $product_desc ); ?></p>
+					<p class="conv-desc"><?php echo esc_html( $product_desc ); ?></p>
 				<?php endif; ?>
 			</div>
 
 			<?php if ( ! empty( $params ) ) : ?>
-			<div class="bdg-params">
+			<div class="conv-params">
 				<h4>Datos adicionales</h4>
-				<ul class="bdg-params-list">
+				<ul class="conv-params-list">
 					<?php foreach ( $params as $k => $v ) : ?>
-					<li><span class="bdg-param-key"><?php echo esc_html( $k ); ?>:</span> <span class="bdg-param-value"><?php echo esc_html( $v ); ?></span></li>
+					<li><span class="conv-param-key"><?php echo esc_html( $k ); ?>:</span> <span class="conv-param-value"><?php echo esc_html( $v ); ?></span></li>
 					<?php endforeach; ?>
 				</ul>
 			</div>
 			<?php endif; ?>
 
-			<form method="post" action="" class="bdg-link-form">
-				<div class="bdg-email-field">
+			<form method="post" action="" class="conv-link-form">
+				<div class="conv-email-field">
 					<label for="conv_gateway_email"><?php esc_html_e( 'Email de notificación', 'convoca-gateway' ); ?></label>
 					<input type="email" name="conv_gateway_email" id="conv_gateway_email" value="<?php echo esc_attr( $recipient_email ); ?>" class="regular-text">
 				</div>
 
 				<h4>Selecciona un método de pago</h4>
-				<div class="bdg-methods">
-					<a href="<?php echo esc_url( $card_url ); ?>" class="bdg-method bdg-method-card <?php echo ( $suggested === 'tarjeta' ) ? 'bdg-method--suggested' : ''; ?>">
-						<span class="bdg-method-icon">💳</span>
-						<span class="bdg-method-label">Tarjeta</span>
-						<span class="bdg-method-desc">Visa, Mastercard, etc.</span>
+				<div class="conv-methods">
+					<a href="<?php echo esc_url( $card_url ); ?>" class="conv-method conv-method-card <?php echo ( $suggested === 'tarjeta' ) ? 'conv-method--suggested' : ''; ?>">
+						<span class="conv-method-icon">💳</span>
+						<span class="conv-method-label">Tarjeta</span>
+						<span class="conv-method-desc">Visa, Mastercard, etc.</span>
 						<?php
 						if ( $suggested === 'tarjeta' ) :
 							?>
-							<span class="bdg-method-badge">Recomendado</span><?php endif; ?>
+							<span class="conv-method-badge">Recomendado</span><?php endif; ?>
 					</a>
 
 					<?php if ( $bizum_enabled ) : ?>
-					<a href="<?php echo esc_url( $bizum_url ); ?>" class="bdg-method bdg-method-bizum <?php echo ( $suggested === 'bizum' ) ? 'bdg-method--suggested' : ''; ?>">
-						<span class="bdg-method-icon">📱</span>
-						<span class="bdg-method-label">Bizum</span>
-						<span class="bdg-method-desc">Pago instantáneo con tu móvil</span>
+					<a href="<?php echo esc_url( $bizum_url ); ?>" class="conv-method conv-method-bizum <?php echo ( $suggested === 'bizum' ) ? 'conv-method--suggested' : ''; ?>">
+						<span class="conv-method-icon">📱</span>
+						<span class="conv-method-label">Bizum</span>
+						<span class="conv-method-desc">Pago instantáneo con tu móvil</span>
 						<?php
 						if ( $suggested === 'bizum' ) :
 							?>
-							<span class="bdg-method-badge">Recomendado</span><?php endif; ?>
+							<span class="conv-method-badge">Recomendado</span><?php endif; ?>
 					</a>
 					<?php endif; ?>
 
 					<?php if ( $transfer_enabled ) : ?>
-					<a href="<?php echo esc_url( $transfer_url ); ?>" class="bdg-method bdg-method-transfer <?php echo ( $suggested === 'transferencia' ) ? 'bdg-method--suggested' : ''; ?>">
-						<span class="bdg-method-icon">🍀</span>
-						<span class="bdg-method-label">Transferencia</span>
-						<span class="bdg-method-desc">Ingresa desde tu banco</span>
+					<a href="<?php echo esc_url( $transfer_url ); ?>" class="conv-method conv-method-transfer <?php echo ( $suggested === 'transferencia' ) ? 'conv-method--suggested' : ''; ?>">
+						<span class="conv-method-icon">🍀</span>
+						<span class="conv-method-label">Transferencia</span>
+						<span class="conv-method-desc">Ingresa desde tu banco</span>
 						<?php
 						if ( $suggested === 'transferencia' ) :
 							?>
-							<span class="bdg-method-badge">Sugerido</span><?php endif; ?>
+							<span class="conv-method-badge">Sugerido</span><?php endif; ?>
 					</a>
 					<?php endif; ?>
 				</div>
 			</form>
 		</div>
 		<style>
-			.bdg-payment-wrapper {
+			.conv-payment-wrapper {
 				max-width: 600px;
 				margin: 2rem auto;
 				background: #fff;
@@ -354,57 +354,57 @@ class Payment_Handler {
 				padding: 2.5rem 2rem;
 				border: 1px solid #f0f0f0;
 			}
-			.bdg-payment-summary {
+			.conv-payment-summary {
 				text-align: center;
 				margin-bottom: 2rem;
 				padding-bottom: 1.5rem;
 				border-bottom: 1px solid #f0f0f0;
 			}
-			.bdg-amount {
+			.conv-amount {
 				font-size: 2.5rem;
 				font-weight: 800;
 				color: var(--wp--preset--color--naranja, #ff8700);
 				margin: 0.5rem 0;
 			}
-			.bdg-desc {
+			.conv-desc {
 				color: #666;
 				font-size: 1.1rem;
 			}
-			.bdg-params { 
+			.conv-params { 
 				margin: 1.5rem 0; 
 				padding: 1.25rem; 
 				background: #f8f9fa; 
 				border-radius: 12px; 
 				border: 1px solid #eee;
 			}
-			.bdg-params h4 { margin-top: 0; font-size: 1rem; color: #333; }
-			.bdg-params-list { margin: 0; padding-left: 1.25rem; list-style-type: square; color: #555; }
-			.bdg-param-key { font-weight: 700; color: #333; }
+			.conv-params h4 { margin-top: 0; font-size: 1rem; color: #333; }
+			.conv-params-list { margin: 0; padding-left: 1.25rem; list-style-type: square; color: #555; }
+			.conv-param-key { font-weight: 700; color: #333; }
 			
-			.bdg-email-field {
+			.conv-email-field {
 				margin-bottom: 2rem;
 			}
-			.bdg-email-field label {
+			.conv-email-field label {
 				display: block;
 				font-weight: 700;
 				margin-bottom: 0.5rem;
 				color: #333;
 				text-align: left;
 			}
-			.bdg-email-field input {
+			.conv-email-field input {
 				width: 100%;
 				padding: 12px 16px;
 				border: 2px solid #e0e0e0;
 				border-radius: 8px;
 				font-size: 1rem;
 			}
-			.bdg-methods {
+			.conv-methods {
 				display: grid;
 				grid-template-columns: repeat(auto-fit, minmax(180px, 1fr));
 				gap: 1.25rem;
 				margin-top: 1rem;
 			}
-			.bdg-method {
+			.conv-method {
 				display: flex;
 				flex-direction: column;
 				align-items: center;
@@ -417,33 +417,33 @@ class Payment_Handler {
 				position: relative;
 				background: #fafafa;
 			}
-			.bdg-method:hover {
+			.conv-method:hover {
 				border-color: var(--wp--preset--color--naranja, #ff8700);
 				background: #fff;
 				transform: translateY(-4px);
 				box-shadow: 0 8px 20px rgba(255, 135, 0, 0.12);
 			}
-			.bdg-method--suggested {
+			.conv-method--suggested {
 				border-color: var(--wp--preset--color--naranja, #ff8700);
 				background: rgba(255, 135, 0, 0.03);
 			}
-			.bdg-method-icon {
+			.conv-method-icon {
 				font-size: 2.5rem;
 				margin-bottom: 0.75rem;
 				filter: drop-shadow(0 2px 4px rgba(0,0,0,0.1));
 			}
-			.bdg-method-label {
+			.conv-method-label {
 				font-weight: 700;
 				font-size: 1.1rem;
 				margin-bottom: 0.25rem;
 			}
-			.bdg-method-desc {
+			.conv-method-desc {
 				font-size: 0.85rem;
 				color: #777;
 				text-align: center;
 				line-height: 1.4;
 			}
-			.bdg-method-badge {
+			.conv-method-badge {
 				position: absolute;
 				top: -12px;
 				background: var(--wp--preset--color--naranja, #ff8700);
@@ -457,7 +457,7 @@ class Payment_Handler {
 				box-shadow: 0 2px 8px rgba(255, 135, 0, 0.3);
 			}
 			@media (max-width: 480px) {
-				.bdg-methods {
+				.conv-methods {
 					grid-template-columns: 1fr;
 				}
 			}
@@ -492,34 +492,34 @@ class Payment_Handler {
 
 		ob_start();
 		?>
-		<div class="bdg-payment-wrapper convoca-form bdg-transfer-view" role="region" aria-label="Instrucciones de transferencia">
-			<div class="bdg-payment-summary">
-				<div class="bdg-success-icon">🍀</div>
+		<div class="conv-payment-wrapper convoca-form conv-transfer-view" role="region" aria-label="Instrucciones de transferencia">
+			<div class="conv-payment-summary">
+				<div class="conv-success-icon">🍀</div>
 				<h3>Pago por Transferencia</h3>
 				<p>Por favor, realiza el ingreso con los siguientes datos:</p>
 			</div>
 
-			<div class="bdg-transfer-details">
-				<div class="bdg-detail-row">
-					<span class="bdg-detail-label">Importe:</span>
-					<span class="bdg-detail-value bdg-highlight"><?php echo esc_html( $amount_display ); ?></span>
+			<div class="conv-transfer-details">
+				<div class="conv-detail-row">
+					<span class="conv-detail-label">Importe:</span>
+					<span class="conv-detail-value conv-highlight"><?php echo esc_html( $amount_display ); ?></span>
 				</div>
-				<div class="bdg-detail-row">
-					<span class="bdg-detail-label">IBAN:</span>
-					<span class="bdg-detail-value bdg-copyable" id="bdg-iban"><?php echo esc_html( $iban ); ?></span>
+				<div class="conv-detail-row">
+					<span class="conv-detail-label">IBAN:</span>
+					<span class="conv-detail-value conv-copyable" id="conv-iban"><?php echo esc_html( $iban ); ?></span>
 				</div>
-				<div class="bdg-detail-row">
-					<span class="bdg-detail-label">Beneficiario:</span>
-					<span class="bdg-detail-value"><?php echo esc_html( $beneficiary ); ?></span>
+				<div class="conv-detail-row">
+					<span class="conv-detail-label">Beneficiario:</span>
+					<span class="conv-detail-value"><?php echo esc_html( $beneficiary ); ?></span>
 				</div>
-				<div class="bdg-detail-row">
-					<span class="bdg-detail-label">Concepto (MUY IMPORTANTE):</span>
-					<span class="bdg-detail-value bdg-highlight bdg-copyable" id="bdg-concept"><?php echo esc_html( $order_id ); ?></span>
+				<div class="conv-detail-row">
+					<span class="conv-detail-label">Concepto (MUY IMPORTANTE):</span>
+					<span class="conv-detail-value conv-highlight conv-copyable" id="conv-concept"><?php echo esc_html( $order_id ); ?></span>
 				</div>
 			</div>
 
 			<?php if ( $instructions ) : ?>
-			<div class="bdg-transfer-instructions">
+			<div class="conv-transfer-instructions">
 				<h4>Instrucciones adicionales</h4>
 				<p><?php echo nl2br( esc_html( $instructions ) ); ?></p>
 			</div>
@@ -529,7 +529,7 @@ class Payment_Handler {
 				<p>Tu inscripción quedará como <strong>pendiente</strong> hasta que verifiquemos el ingreso (suele tardar 24-48h hábiles).</p>
 			</div>
 
-			<div class="bdg-proof-upload">
+			<div class="conv-proof-upload">
 				<h4>Adjuntar justificante de pago</h4>
 				<p class="text-muted">Si adjuntas el justificante en PDF, podremos validar tu pago mucho más rápido.</p>
 
@@ -547,7 +547,7 @@ class Payment_Handler {
 				$proof_file = get_post_meta( $pago_id, '_conv_proof_file', true );
 				if ( ! $this->upload_success && ! $proof_file ) :
 					?>
-				<form method="post" enctype="multipart/form-data" class="bdg-upload-form">
+				<form method="post" enctype="multipart/form-data" class="conv-upload-form">
 					<?php wp_nonce_field( 'conv_gateway_proof_upload_action', 'conv_gateway_proof_nonce' ); ?>
 					<input type="hidden" name="conv_gateway_upload_proof" value="1">
 					<div class="form-group">
@@ -556,14 +556,14 @@ class Payment_Handler {
 					</div>
 				</form>
 				<?php elseif ( $proof_file ) : ?>
-					<div class="bdg-proof-exists">
+					<div class="conv-proof-exists">
 						📄 Ya has enviado un justificante. Si necesitas cambiarlo, contacta con nosotros.
 					</div>
 				<?php endif; ?>
 			</div>
 
-			<div class="bdg-actions">
-				<a href="<?php echo esc_url( remove_query_arg( 'conv_gateway_method' ) ); ?>" class="bdg-back-link">
+			<div class="conv-actions">
+				<a href="<?php echo esc_url( remove_query_arg( 'conv_gateway_method' ) ); ?>" class="conv-back-link">
 					&larr; Volver a elegir método
 				</a>
 				<button type="button" class="wp-block-button__link" onclick="window.print()">
@@ -572,38 +572,38 @@ class Payment_Handler {
 			</div>
 		</div>
 		<style>
-			.bdg-transfer-view .bdg-success-icon { font-size: 3rem; margin-bottom: 1rem; }
-			.bdg-transfer-details { 
+			.conv-transfer-view .conv-success-icon { font-size: 3rem; margin-bottom: 1rem; }
+			.conv-transfer-details { 
 				background: #fcfcfc; 
 				border: 1px solid #eee; 
 				border-radius: 12px; 
 				padding: 1.5rem; 
 				margin: 1.5rem 0;
 			}
-			.bdg-detail-row { 
+			.conv-detail-row { 
 				display: flex; 
 				justify-content: space-between; 
 				padding: 0.75rem 0; 
 				border-bottom: 1px solid #f0f0f0; 
 			}
-			.bdg-detail-row:last-child { border-bottom: none; }
-			.bdg-detail-label { font-weight: 700; color: #666; font-size: 0.9rem; }
-			.bdg-detail-value { font-family: monospace; font-size: 1.1rem; color: #333; }
-			.bdg-highlight { color: var(--wp--preset--color--naranja, #ff8700); font-weight: 800; }
-			.bdg-copyable { cursor: pointer; position: relative; }
-			.bdg-copyable:hover { text-decoration: underline; }
-			.bdg-transfer-instructions { 
+			.conv-detail-row:last-child { border-bottom: none; }
+			.conv-detail-label { font-weight: 700; color: #666; font-size: 0.9rem; }
+			.conv-detail-value { font-family: monospace; font-size: 1.1rem; color: #333; }
+			.conv-highlight { color: var(--wp--preset--color--naranja, #ff8700); font-weight: 800; }
+			.conv-copyable { cursor: pointer; position: relative; }
+			.conv-copyable:hover { text-decoration: underline; }
+			.conv-transfer-instructions { 
 				text-align: left; 
 				margin: 1.5rem 0; 
 				padding: 1rem; 
 				background: #fff8f0; 
 				border-radius: 8px; 
 			}
-			.bdg-transfer-instructions h4 { margin-top: 0; color: #a65d00; }
-			.bdg-actions { display: flex; justify-content: space-between; align-items: center; margin-top: 2rem; }
-			.bdg-back-link { font-size: 0.9rem; color: #888; text-decoration: none; }
-			.bdg-back-link:hover { color: #333; }
-			.bdg-proof-upload { 
+			.conv-transfer-instructions h4 { margin-top: 0; color: #a65d00; }
+			.conv-actions { display: flex; justify-content: space-between; align-items: center; margin-top: 2rem; }
+			.conv-back-link { font-size: 0.9rem; color: #888; text-decoration: none; }
+			.conv-back-link:hover { color: #333; }
+			.conv-proof-upload { 
 				margin-top: 2rem; 
 				padding: 1.5rem; 
 				background: #f8f9fa; 
@@ -611,13 +611,13 @@ class Payment_Handler {
 				border: 1px dashed #ced4da; 
 				text-align: left;
 			}
-			.bdg-proof-upload h4 { margin-top: 0; }
-			.bdg-upload-form .form-group { display: flex; gap: 1rem; align-items: center; margin-top: 1rem; }
-			.bdg-upload-form input[type="file"] { flex-grow: 1; font-size: 0.9rem; }
-			.bdg-proof-exists { color: #28a745; font-weight: 600; padding: 0.5rem 0; }
+			.conv-proof-upload h4 { margin-top: 0; }
+			.conv-upload-form .form-group { display: flex; gap: 1rem; align-items: center; margin-top: 1rem; }
+			.conv-upload-form input[type="file"] { flex-grow: 1; font-size: 0.9rem; }
+			.conv-proof-exists { color: #28a745; font-weight: 600; padding: 0.5rem 0; }
 		</style>
 		<script>
-			document.querySelectorAll('.bdg-copyable').forEach(el => {
+			document.querySelectorAll('.conv-copyable').forEach(el => {
 				el.addEventListener('click', () => {
 					const text = el.innerText;
 					navigator.clipboard.writeText(text).then(() => {
@@ -729,8 +729,8 @@ class Payment_Handler {
 	private function render_manual_form( string $error = '' ): string {
 		ob_start();
 		?>
-		<div class="bdg-payment-wrapper convoca-form convoca-card card-glass">
-			<div class="bdg-payment-summary">
+		<div class="conv-payment-wrapper convoca-form convoca-card card-glass">
+			<div class="conv-payment-summary">
 				<h3 class="text-gradient"><?php _e( 'Emitir Pago Nuevo', 'convoca-gateway' ); ?></h3>
 				<p><?php _e( 'Introduce los datos para realizar un pago seguro.', 'convoca-gateway' ); ?></p>
 			</div>
@@ -739,7 +739,7 @@ class Payment_Handler {
 				<div class="convoca-alert convoca-alert--danger"><?php echo esc_html( $error ); ?></div>
 			<?php endif; ?>
 
-			<form method="post" action="" class="bdg-manual-form">
+			<form method="post" action="" class="conv-manual-form">
 				<?php wp_nonce_field( 'conv_gateway_manual_payment_action', 'conv_gateway_manual_nonce' ); ?>
 				<input type="hidden" name="conv_gateway_manual_payment" value="1">
 
@@ -765,7 +765,7 @@ class Payment_Handler {
 				</div>
 			</form>
 
-			<p class="bdg-security-note">
+			<p class="conv-security-note">
 				🔒 <?php _e( 'Pago seguro gestionado por Redsys. Biodevas no almacena tus datos bancarios.', 'convoca-gateway' ); ?>
 			</p>
 		</div>
@@ -862,80 +862,80 @@ class Payment_Handler {
 
 		ob_start();
 		?>
-		<div class="bdg-payment-wrapper convoca-form" role="region" aria-label="Selección de método de pago">
-			<div class="bdg-payment-summary">
+		<div class="conv-payment-wrapper convoca-form" role="region" aria-label="Selección de método de pago">
+			<div class="conv-payment-summary">
 				<h3>Resumen del pago</h3>
-				<div class="bdg-amount">
+				<div class="conv-amount">
 					<?php echo esc_html( $amount_display ); ?>
 				</div>
 				<?php if ( $meta['product_desc'] ) : ?>
-					<p class="bdg-desc">
+					<p class="conv-desc">
 						<?php echo esc_html( $meta['product_desc'] ); ?>
 					</p>
 				<?php endif; ?>
 			</div>
 
 			<h4>Selecciona un método de pago</h4>
-			<div class="bdg-methods">
-				<a href="<?php echo esc_url( $card_url ); ?>" class="bdg-method-card">
-					<span class="bdg-method-icon">💳</span>
-					<span class="bdg-method-label">Tarjeta</span>
-					<span class="bdg-method-desc">Visa, Mastercard, etc.</span>
+			<div class="conv-methods">
+				<a href="<?php echo esc_url( $card_url ); ?>" class="conv-method-card">
+					<span class="conv-method-icon">💳</span>
+					<span class="conv-method-label">Tarjeta</span>
+					<span class="conv-method-desc">Visa, Mastercard, etc.</span>
 				</a>
 				<?php if ( $bizum_enabled ) : ?>
-					<a href="<?php echo esc_url( $bizum_url ); ?>" class="bdg-method-card">
-						<span class="bdg-method-icon">📱</span>
-						<span class="bdg-method-label">Bizum</span>
-						<span class="bdg-method-desc">Pago instantáneo con tu móvil</span>
+					<a href="<?php echo esc_url( $bizum_url ); ?>" class="conv-method-card">
+						<span class="conv-method-icon">📱</span>
+						<span class="conv-method-label">Bizum</span>
+						<span class="conv-method-desc">Pago instantáneo con tu móvil</span>
 					</a>
 				<?php endif; ?>
 				<?php if ( $transfer_enabled ) : ?>
-					<a href="<?php echo esc_url( $transfer_url ); ?>" class="bdg-method-card">
-						<span class="bdg-method-icon">🍀</span>
-						<span class="bdg-method-label">Transferencia</span>
-						<span class="bdg-method-desc">Ingresa desde tu banco</span>
+					<a href="<?php echo esc_url( $transfer_url ); ?>" class="conv-method-card">
+						<span class="conv-method-icon">🍀</span>
+						<span class="conv-method-label">Transferencia</span>
+						<span class="conv-method-desc">Ingresa desde tu banco</span>
 					</a>
 				<?php endif; ?>
 			</div>
 
-			<p class="bdg-security-note">
+			<p class="conv-security-note">
 				🔒 Pago seguro gestionado por Redsys (Caja Rural de Asturias).
 				Tus datos bancarios nunca pasan por nuestro servidor.
 			</p>
 		</div>
 		<style>
-			.bdg-payment-wrapper {
+			.conv-payment-wrapper {
 				max-width: 480px;
 				margin: 2rem auto;
 				text-align: center;
 			}
 
-			.bdg-payment-summary {
+			.conv-payment-summary {
 				background: var(--wp--preset--color--gris-suave, #f5f5f5);
 				border-radius: 12px;
 				padding: 1.5rem;
 				margin-bottom: 1.5rem;
 			}
 
-			.bdg-amount {
+			.conv-amount {
 				font-size: 2rem;
 				font-weight: 700;
 				color: var(--wp--preset--color--naranja, #E86833);
 			}
 
-			.bdg-desc {
+			.conv-desc {
 				color: #666;
 				margin-top: .5rem;
 			}
 
-			.bdg-methods {
+			.conv-methods {
 				display: grid;
 				grid-template-columns: 1fr 1fr;
 				gap: 1rem;
 				margin: 1rem 0 1.5rem;
 			}
 
-			.bdg-method-card {
+			.conv-method-card {
 				display: flex;
 				flex-direction: column;
 				align-items: center;
@@ -947,28 +947,28 @@ class Payment_Handler {
 				transition: border-color .2s, box-shadow .2s;
 			}
 
-			.bdg-method-card:hover {
+			.conv-method-card:hover {
 				border-color: var(--wp--preset--color--naranja, #E86833);
 				box-shadow: 0 4px 12px rgba(232, 104, 51, .15);
 			}
 
-			.bdg-method-icon {
+			.conv-method-icon {
 				font-size: 2.5rem;
 				margin-bottom: .5rem;
 			}
 
-			.bdg-method-label {
+			.conv-method-label {
 				font-weight: 700;
 				font-size: 1.1rem;
 			}
 
-			.bdg-method-desc {
+			.conv-method-desc {
 				font-size: .85rem;
 				color: #888;
 				margin-top: .25rem;
 			}
 
-			.bdg-security-note {
+			.conv-security-note {
 				font-size: .8rem;
 				color: #999;
 				margin-top: 1rem;
@@ -1014,7 +1014,7 @@ class Payment_Handler {
             </div>';
 		}
 
-		wp_enqueue_script( 'bdg-redsys' );
+		wp_enqueue_script( 'conv-redsys' );
 
 		$tokenize = get_post_meta( $pago_id, '_conv_tokenize', true ) === '1';
 
@@ -1032,7 +1032,7 @@ class Payment_Handler {
 			)
 		);
 
-		return '<div class="bdg-redirect-wrapper">
+		return '<div class="conv-redirect-wrapper">
             <p class="convoca-text-center" style="padding:2rem">⏳ Redirigiendo a la pasarela de pago seguro...</p>'
 			. $form .
 			'</div>';
@@ -1206,15 +1206,15 @@ class Payment_Handler {
 
 		ob_start();
 		?>
-		<div class="bdg-result convoca-form" role="status" aria-live="polite">
-			<div class="bdg-result-icon">&#x1F389;</div>
+		<div class="conv-result convoca-form" role="status" aria-live="polite">
+			<div class="conv-result-icon">&#x1F389;</div>
 			<h3>&iexcl;Pago completado!</h3>
 			<p>Tu pago de <strong>
 					<?php echo esc_html( CPT_Pago::format_amount( (int) ( $meta['amount_cents'] ?? 0 ) ) ); ?>
 				</strong>
 				ha sido procesado correctamente.</p>
 			<?php if ( ! empty( $meta['product_desc'] ) ) : ?>
-				<p class="bdg-desc">
+				<p class="conv-desc">
 					<?php echo esc_html( $meta['product_desc'] ); ?>
 				</p>
 			<?php endif; ?>
@@ -1222,13 +1222,13 @@ class Payment_Handler {
 			<p><a href="<?php echo esc_url( home_url( '/' ) ); ?>" class="convoca-btn convoca-btn-primary">&larr; Volver al inicio</a></p>
 		</div>
 		<style>
-			.bdg-result {
+			.conv-result {
 				max-width: 480px;
 				margin: 2rem auto;
 				text-align: center;
 			}
 
-			.bdg-result-icon {
+			.conv-result-icon {
 				font-size: 4rem;
 				margin-bottom: 1rem;
 			}
@@ -1242,8 +1242,8 @@ class Payment_Handler {
 
 		ob_start();
 		?>
-		<div class="bdg-result convoca-form" role="alert">
-			<div class="bdg-result-icon">&#x1F61E;</div>
+		<div class="conv-result convoca-form" role="alert">
+			<div class="conv-result-icon">&#x1F61E;</div>
 			<h3>Pago no completado</h3>
 			<p>El pago no se ha podido procesar. Puede deberse a una cancelación o un problema con tu banco.</p>
 			<p>Si el problema persiste, contacta con nosotros en
@@ -1259,13 +1259,13 @@ class Payment_Handler {
 			<p><a href="<?php echo esc_url( home_url( '/' ) ); ?>" class="convoca-btn convoca-btn-outline">&larr; Volver al inicio</a></p>
 		</div>
 		<style>
-			.bdg-result {
+			.conv-result {
 				max-width: 480px;
 				margin: 2rem auto;
 				text-align: center;
 			}
 
-			.bdg-result-icon {
+			.conv-result-icon {
 				font-size: 4rem;
 				margin-bottom: 1rem;
 			}
