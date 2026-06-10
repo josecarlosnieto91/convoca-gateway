@@ -1,11 +1,142 @@
 <?xml version="1.0"?>
-<ruleset ref="../convoca-core/dev-tools/phpcs.xml.dist">
-  <description>Convoca (inherited from convoca-core)</description>
+<ruleset name="Convoca">
+  <description>WordPress Coding Standards for Convoca plugins</description>
+  
+  <file>.</file>
+  <exclude-pattern>*/vendor/*</exclude-pattern>
+  <exclude-pattern>*/node_modules/*</exclude-pattern>
+  <exclude-pattern>*/tests/*</exclude-pattern>
+  <exclude-pattern>dev-tools/*</exclude-pattern>
+
+  <arg name="extensions" value="php"/>
+  <arg value="sp"/>
+
+  <rule ref="WordPress">
+    <exclude name="WordPress.Files.FileName"/>
+    <exclude name="WordPress.NamingConventions"/>
+  </rule>
   <rule ref="WordPress.WP.I18n">
     <properties>
       <property name="text_domain" type="array">
+        <element value="convoca"/>
+        <element value="convoca-core"/>
+        <element value="convoca-enroll"/>
+        <element value="convoca-members"/>
         <element value="convoca-gateway"/>
+        <element value="convoca-shifts"/>
+        <element value="convoca-license-generator"/>
       </property>
     </properties>
+  </rule>
+  <rule ref="WordPress.PHP.YodaConditions">
+    <exclude name="WordPress.PHP.YodaConditions.NotYoda"/>
+  </rule>
+  <rule ref="Universal.Operators.DisallowShortTernary">
+    <exclude name="Universal.Operators.DisallowShortTernary.Found"/>
+  </rule>
+  <rule ref="Squiz.Commenting">
+    <exclude name="Squiz.Commenting.ClassComment"/>
+    <exclude name="Squiz.Commenting.FunctionComment"/>
+    <exclude name="Squiz.Commenting.FileComment"/>
+    <exclude name="Squiz.Commenting.VariableComment"/>
+  </rule>
+  <rule ref="Generic.Files.OneObjectStructurePerFile">
+    <exclude name="Generic.Files.OneObjectStructurePerFile.MultipleFound"/>
+  </rule>
+  <rule ref="Universal.Files.SeparateFunctionsFromOO">
+    <exclude name="Universal.Files.SeparateFunctionsFromOO.Mixed"/>
+  </rule>
+  <rule ref="WordPress.Security.EscapeOutput">
+    <exclude name="WordPress.Security.EscapeOutput.OutputNotEscaped"/>
+    <exclude name="WordPress.Security.EscapeOutput.UnsafePrintingFunction"/>
+    <exclude name="WordPress.Security.EscapeOutput.ExceptionNotEscaped"/>
+  </rule>
+  <rule ref="WordPress.Security.ValidatedSanitizedInput">
+    <exclude name="WordPress.Security.ValidatedSanitizedInput.MissingUnslash"/>
+    <exclude name="WordPress.Security.ValidatedSanitizedInput.InputNotSanitized"/>
+    <exclude name="WordPress.Security.ValidatedSanitizedInput.InputNotValidated"/>
+  </rule>
+  <rule ref="WordPress.DB.PreparedSQL">
+    <exclude name="WordPress.DB.PreparedSQL.InterpolatedNotPrepared"/>
+    <exclude name="WordPress.DB.PreparedSQL.NotPrepared"/>
+  </rule>
+  <rule ref="WordPress.WP.I18n">
+    <exclude name="WordPress.WP.I18n.MissingTranslatorsComment"/>
+    <exclude name="WordPress.WP.I18n.InterpolatedVariableText"/>
+    <exclude name="WordPress.WP.I18n.MissingArgDomain"/>
+  </rule>
+  <rule ref="Squiz.Commenting.LongConditionClosingComment">
+    <exclude name="Squiz.Commenting.LongConditionClosingComment.Missing"/>
+  </rule>
+  <rule ref="Squiz.Commenting.PostStatementComment">
+    <exclude name="Squiz.Commenting.PostStatementComment.Found"/>
+  </rule>
+  <rule ref="WordPress.Security.NonceVerification">
+    <exclude name="WordPress.Security.NonceVerification.Missing"/>
+    <exclude name="WordPress.Security.NonceVerification.Recommended"/>
+  </rule>
+  <rule ref="WordPress.WP.Capabilities">
+    <exclude name="WordPress.WP.Capabilities.Unknown"/>
+  </rule>
+  <rule ref="Generic.PHP.Syntax">
+    <exclude name="Generic.PHP.Syntax.PHPSyntax"/>
+  </rule>
+  <rule ref="Generic.Commenting.DocComment">
+    <exclude name="Generic.Commenting.DocComment.LongNotCapital"/>
+  </rule>
+  <rule ref="Generic.CodeAnalysis.EmptyStatement">
+    <exclude name="Generic.CodeAnalysis.EmptyStatement.DetectedIf"/>
+  </rule>
+  <rule ref="PSR12.Files.FileHeader">
+    <exclude name="PSR12.Files.FileHeader.IncorrectOrder"/>
+  </rule>
+  <rule ref="Generic.CodeAnalysis.RequireExplicitBooleanOperatorPrecedence">
+    <exclude name="Generic.CodeAnalysis.RequireExplicitBooleanOperatorPrecedence.MissingParentheses"/>
+  </rule>
+  <rule ref="WordPress.DateTime.RestrictedFunctions">
+    <exclude name="WordPress.DateTime.RestrictedFunctions.date_date"/>
+  </rule>
+  <rule ref="Squiz.Commenting">
+    <exclude name="Squiz.Commenting.InlineComment"/>
+    <exclude name="Squiz.Commenting.DocCommentAlignment"/>
+  </rule>
+  <rule ref="WordPress.WP.GlobalVariablesOverride">
+    <exclude name="WordPress.WP.GlobalVariablesOverride.OverrideProhibited"/>
+  </rule>
+  <rule ref="Generic.Formatting.DisallowMultipleStatements">
+    <exclude name="Generic.Formatting.DisallowMultipleStatements.SameLine"/>
+  </rule>
+  <rule ref="Squiz.ControlStructures.ControlSignature">
+    <exclude name="Squiz.ControlStructures.ControlSignature.SpaceAfterCloseBrace"/>
+  </rule>
+  <rule ref="Squiz.WhiteSpace.SuperfluousWhitespace">
+    <exclude name="Squiz.WhiteSpace.SuperfluousWhitespace.EndLine"/>
+  </rule>
+  <rule ref="NormalizedArrays.Arrays.CommaAfterLast">
+    <exclude name="NormalizedArrays.Arrays.CommaAfterLast.MissingMultiLine"/>
+  </rule>
+  <rule ref="Squiz.Commenting.FunctionCommentThrowTag">
+    <exclude name="Squiz.Commenting.FunctionCommentThrowTag.Missing"/>
+  </rule>
+  <rule ref="Squiz.PHP.DisallowMultipleAssignments">
+    <exclude name="Squiz.PHP.DisallowMultipleAssignments.Found"/>
+  </rule>
+  <rule ref="Squiz.PHP.DisallowSizeFunctionsInLoops">
+    <exclude name="Squiz.PHP.DisallowSizeFunctionsInLoops.Found"/>
+  </rule>
+  <rule ref="Squiz.Strings.ConcatenationSpacing">
+    <exclude name="Squiz.Strings.ConcatenationSpacing.PaddingFound"/>
+  </rule>
+  <rule ref="Universal.WhiteSpace.CommaSpacing">
+    <exclude name="Universal.WhiteSpace.CommaSpacing.NoSpaceAfter"/>
+  </rule>
+  <rule ref="WordPress.Arrays.ArrayDeclarationSpacing">
+    <exclude name="WordPress.Arrays.ArrayDeclarationSpacing.ArrayItemNoNewLine"/>
+  </rule>
+  <rule ref="WordPress.WP.DeprecatedParameters">
+    <exclude name="WordPress.WP.DeprecatedParameters.Add_optionParam3Found"/>
+  </rule>
+  <rule ref="WordPress.PHP.IniSet">
+    <exclude name="WordPress.PHP.IniSet.memory_limit_Disallowed"/>
   </rule>
 </ruleset>
