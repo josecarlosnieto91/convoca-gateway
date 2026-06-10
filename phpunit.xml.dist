@@ -16,7 +16,7 @@
   </testsuites>
   <coverage>
     <include>
-      <directory suffix=".php">./includes</directory>
+      <directory suffix="Test.php">./includes</directory>
     </include>
   </coverage>
 </phpunit>
