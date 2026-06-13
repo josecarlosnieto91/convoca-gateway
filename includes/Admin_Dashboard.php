@@ -27,7 +27,7 @@ class Admin_Dashboard {
 
 		wp_add_dashboard_widget(
 			'conv_gateway_payment_summary',
-			__( 'Resumen de Pagos Biodevas', 'convoca-gateway' ),
+			__( 'Resumen de Pagos Convoca', 'convoca-gateway' ),
 			array( $this, 'render_widget' )
 		);
 	}

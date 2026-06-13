@@ -274,7 +274,7 @@ class Admin_Payments extends \WP_List_Table {
 		$this->prepare_items();
 		?>
 		<div class="wrap">
-			<h1 class="wp-heading-inline"><?php _e( 'Pagos Biodevas', 'convoca-gateway' ); ?></h1>
+			<h1 class="wp-heading-inline"><?php _e( 'Pagos Convoca', 'convoca-gateway' ); ?></h1>
 			<a href="<?php echo wp_nonce_url( admin_url( 'admin.php?page=bdg-payments&action=export_csv' ), 'conv_gateway_export_csv' ); ?>" class="page-title-action"><?php _e( 'Exportar a CSV', 'convoca-gateway' ); ?></a>
 			<a href="<?php echo esc_url( wp_nonce_url( admin_url( 'admin-post.php?action=conv_gateway_export_payments_pdf' ), 'conv_gateway_export_payments_pdf' ) ); ?>" class="page-title-action"><?php _e( 'Exportar PDF', 'convoca-gateway' ); ?></a>
 			<hr class="wp-header-end">

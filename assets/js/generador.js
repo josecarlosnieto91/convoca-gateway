@@ -1,5 +1,5 @@
 /**
- * Biodevas Gateway — Generador JS
+ * Convoca Gateway — Generador JS
  */
 (function (bdvAdmin) {
     'use strict';

@@ -485,7 +485,7 @@ class Payment_Handler {
             </div>';
 		}
 
-		$beneficiary    = $settings['beneficiary'] ?? 'Asociación Biodevas';
+		$beneficiary    = $settings['beneficiary'] ?? 'Asociación Convoca';
 		$instructions   = $settings['instructions'] ?? '';
 		$amount_display = CPT_Pago::format_amount( (int) $meta['amount_cents'] );
 		$order_id       = $meta['order_id'];

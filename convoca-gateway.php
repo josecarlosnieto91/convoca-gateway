@@ -46,7 +46,7 @@ if ( ! class_exists( '\\Convoca\\Core\\Utils' ) ) {
 		'admin_notices',
 		function () {
 			echo '<div class="notice notice-error"><p>' .
-			'Biodevas Gateway requiere el plugin Biodevas Common Utilities activo.' .
+			'Convoca Gateway requiere el plugin Convoca Common Utilities activo.' .
 			'</p></div>';
 		}
 	);

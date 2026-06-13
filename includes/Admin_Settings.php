@@ -35,7 +35,7 @@ class Admin_Settings {
 		?>
 		<div class="convoca-alert convoca-alert--danger" style="display:block;margin-bottom:20px;">
 			<p>
-				<strong>Biodevas Gateway:</strong> La clave secreta de Redsys no se pudo descifrar correctamente.
+				<strong>Convoca Gateway:</strong> La clave secreta de Redsys no se pudo descifrar correctamente.
 				Esto puede deberse a un cambio en las claves de seguridad de WordPress.
 				Por favor, <a href="<?php echo esc_url( admin_url( 'admin.php?page=bdg-settings' ) ); ?>">vuelve a introducir la clave secreta</a>.
 			</p>
@@ -417,7 +417,7 @@ class Admin_Settings {
 
 		// Security Guard: Check if critical dependencies are missing.
 		if ( ! class_exists( '\\Convoca\\Core\\Utils' ) ) {
-			echo '<div class="notice notice-warning"><p>⚠️ ' . esc_html__( 'Biodevas Common no está activo. Algunas funciones de la pasarela podrían no estar disponibles.', 'convoca-gateway' ) . '</p></div>';
+			echo '<div class="notice notice-warning"><p>⚠️ ' . esc_html__( 'Convoca Common no está activo. Algunas funciones de la pasarela podrían no estar disponibles.', 'convoca-gateway' ) . '</p></div>';
 		}
 
 		$settings   = get_option( self::OPTION, array() );
@@ -426,7 +426,7 @@ class Admin_Settings {
 		?>
 		<div class="wrap bdg-settings-wrap">
 			<div class="bdg-admin-header" style="display: flex; align-items: center; gap: 20px; margin-bottom: 20px;">
-				<img src="<?php echo esc_url( CONVOCA_IMAGES_URL . 'logo.png' ); ?>" alt="Biodevas Gateway" style="width: 80px; height: 80px; border-radius: 12px; box-shadow: 0 4px 12px rgba(0,0,0,0.1);">
+				<img src="<?php echo esc_url( CONVOCA_IMAGES_URL . 'logo.png' ); ?>" alt="Convoca Gateway" style="width: 80px; height: 80px; border-radius: 12px; box-shadow: 0 4px 12px rgba(0,0,0,0.1);">
 				<div>
 					<h1 style="margin: 0; padding: 0;"><?php esc_html_e( 'Pasarela de pago — Redsys', 'convoca-gateway' ); ?></h1>
 					<p style="margin: 5px 0 0; color: #666; font-size: 1.1em;"><?php _e( 'Configuración y estado de transacciones', 'convoca-gateway' ); ?></p>

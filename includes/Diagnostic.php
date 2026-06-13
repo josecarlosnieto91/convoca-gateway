@@ -1,6 +1,6 @@
 <?php
 /**
- * Diagnostic checks for Biodevas Gateway configuration.
+ * Diagnostic checks for Convoca Gateway configuration.
  *
  * @package Convoca\Gateway
  */
