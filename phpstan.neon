@@ -1,0 +1,16 @@
+includes:
+	- phpstan-baseline.neon
+parameters:
+	level: 0
+	paths:
+		- ../convoca-core/includes/
+		- ../convoca-core/convoca-core.php
+		- .
+	excludePaths:
+		- vendor/
+	scanFiles:
+		- stubs/wp-stubs.php
+		- vendor/php-stubs/wordpress-stubs/wordpress-stubs.php
+	parallel:
+		maximumNumberOfProcesses: 1
+		processTimeout: 600.0

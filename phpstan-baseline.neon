@@ -1,67 +1,151 @@
 parameters:
 	ignoreErrors:
 		-
-			message: '#^Call to static method do_action\(\) on an unknown class Convoca\\Core\\Utils\.$#'
+			message: '#^Instantiated class Dompdf\\Options not found\.$#'
 			identifier: class.notFound
 			count: 1
-			path: includes/class-admin-payments.php
+			path: ../convoca-core/convoca-core.php
 
 		-
-			message: '#^Call to static method get_logs\(\) on an unknown class Convoca\\Core\\Logger\.$#'
-			identifier: class.notFound
+			message: '#^Access to an undefined property Convoca\\Core\\Admin_Logs_List\:\:\$_column_headers\.$#'
+			identifier: property.notFound
 			count: 1
-			path: includes/class-admin-payments.php
+			path: ../convoca-core/includes/Admin_Logs_List.php
 
 		-
-			message: '#^Call to static method log\(\) on an unknown class Convoca\\Core\\Logger\.$#'
-			identifier: class.notFound
+			message: '#^Access to an undefined property Convoca\\Core\\Admin_Logs_List\:\:\$items\.$#'
+			identifier: property.notFound
+			count: 1
+			path: ../convoca-core/includes/Admin_Logs_List.php
+
+		-
+			message: '#^Access to an undefined property Convoca\\Core\\Admin_Logs_List\:\:\$screen\.$#'
+			identifier: property.notFound
+			count: 1
+			path: ../convoca-core/includes/Admin_Logs_List.php
+
+		-
+			message: '#^Call to an undefined method Convoca\\Core\\Admin_Logs_List\:\:current_action\(\)\.$#'
+			identifier: method.notFound
 			count: 2
-			path: includes/class-admin-payments.php
+			path: ../convoca-core/includes/Admin_Logs_List.php
 
 		-
-			message: '#^Call to static method info\(\) on an unknown class Convoca\\Core\\Logger\.$#'
+			message: '#^Call to an undefined method Convoca\\Core\\Admin_Logs_List\:\:get_pagenum\(\)\.$#'
+			identifier: method.notFound
+			count: 1
+			path: ../convoca-core/includes/Admin_Logs_List.php
+
+		-
+			message: '#^Call to an undefined method Convoca\\Core\\Admin_Logs_List\:\:set_pagination_args\(\)\.$#'
+			identifier: method.notFound
+			count: 1
+			path: ../convoca-core/includes/Admin_Logs_List.php
+
+		-
+			message: '#^Call to an undefined static method WP_List_Table\:\:__construct\(\)\.$#'
+			identifier: staticMethod.notFound
+			count: 1
+			path: ../convoca-core/includes/Admin_Logs_List.php
+
+		-
+			message: '#^Call to an undefined static method WP_List_Table\:\:display\(\)\.$#'
+			identifier: staticMethod.notFound
+			count: 1
+			path: ../convoca-core/includes/Admin_Logs_List.php
+
+		-
+			message: '#^Instantiated class Dompdf\\Options not found\.$#'
 			identifier: class.notFound
 			count: 1
-			path: includes/class-cpt-pago.php
+			path: ../convoca-core/includes/CONV_Signature.php
+
+		-
+			message: '#^Access to an undefined property Convoca\\Gateway\\Admin_Links\:\:\$items\.$#'
+			identifier: property.notFound
+			count: 1
+			path: includes/Admin_Links.php
+
+		-
+			message: '#^Call to an undefined method Convoca\\Gateway\\Admin_Links\:\:display\(\)\.$#'
+			identifier: method.notFound
+			count: 1
+			path: includes/Admin_Links.php
+
+		-
+			message: '#^Call to an undefined method Convoca\\Gateway\\Admin_Links\:\:get_pagenum\(\)\.$#'
+			identifier: method.notFound
+			count: 1
+			path: includes/Admin_Links.php
+
+		-
+			message: '#^Call to an undefined method Convoca\\Gateway\\Admin_Links\:\:row_actions\(\)\.$#'
+			identifier: method.notFound
+			count: 1
+			path: includes/Admin_Links.php
+
+		-
+			message: '#^Call to an undefined method Convoca\\Gateway\\Admin_Links\:\:set_pagination_args\(\)\.$#'
+			identifier: method.notFound
+			count: 1
+			path: includes/Admin_Links.php
+
+		-
+			message: '#^Call to an undefined static method WP_List_Table\:\:__construct\(\)\.$#'
+			identifier: staticMethod.notFound
+			count: 1
+			path: includes/Admin_Links.php
+
+		-
+			message: '#^Access to an undefined property Convoca\\Gateway\\Admin_Payments\:\:\$_column_headers\.$#'
+			identifier: property.notFound
+			count: 1
+			path: includes/Admin_Payments.php
+
+		-
+			message: '#^Access to an undefined property Convoca\\Gateway\\Admin_Payments\:\:\$items\.$#'
+			identifier: property.notFound
+			count: 1
+			path: includes/Admin_Payments.php
+
+		-
+			message: '#^Call to an undefined method Convoca\\Gateway\\Admin_Payments\:\:display\(\)\.$#'
+			identifier: method.notFound
+			count: 1
+			path: includes/Admin_Payments.php
+
+		-
+			message: '#^Call to an undefined method Convoca\\Gateway\\Admin_Payments\:\:get_pagenum\(\)\.$#'
+			identifier: method.notFound
+			count: 1
+			path: includes/Admin_Payments.php
+
+		-
+			message: '#^Call to an undefined method Convoca\\Gateway\\Admin_Payments\:\:row_actions\(\)\.$#'
+			identifier: method.notFound
+			count: 1
+			path: includes/Admin_Payments.php
+
+		-
+			message: '#^Call to an undefined method Convoca\\Gateway\\Admin_Payments\:\:search_box\(\)\.$#'
+			identifier: method.notFound
+			count: 1
+			path: includes/Admin_Payments.php
+
+		-
+			message: '#^Call to an undefined method Convoca\\Gateway\\Admin_Payments\:\:set_pagination_args\(\)\.$#'
+			identifier: method.notFound
+			count: 1
+			path: includes/Admin_Payments.php
+
+		-
+			message: '#^Call to an undefined static method WP_List_Table\:\:__construct\(\)\.$#'
+			identifier: staticMethod.notFound
+			count: 1
+			path: includes/Admin_Payments.php
 
 		-
 			message: '#^Deprecated in PHP 8\.4\: Parameter \#5 \$fix \(string\) is implicitly nullable via default value null\.$#'
 			identifier: parameter.implicitlyNullable
 			count: 1
-			path: includes/class-diagnostic.php
-
-		-
-			message: '#^Call to static method do_action\(\) on an unknown class Convoca\\Core\\Utils\.$#'
-			identifier: class.notFound
-			count: 2
-			path: includes/class-payment-handler.php
-
-		-
-			message: '#^Call to static method error\(\) on an unknown class Convoca\\Core\\Logger\.$#'
-			identifier: class.notFound
-			count: 3
-			path: includes/class-payment-handler.php
-
-		-
-			message: '#^Call to static method info\(\) on an unknown class Convoca\\Core\\Logger\.$#'
-			identifier: class.notFound
-			count: 2
-			path: includes/class-payment-handler.php
-
-		-
-			message: '#^Call to static method warning\(\) on an unknown class Convoca\\Core\\Logger\.$#'
-			identifier: class.notFound
-			count: 1
-			path: includes/class-payment-handler.php
-
-		-
-			message: '#^Call to static method error\(\) on an unknown class Convoca\\Core\\Logger\.$#'
-			identifier: class.notFound
-			count: 5
-			path: includes/class-redsys-client.php
-
-		-
-			message: '#^Call to static method warning\(\) on an unknown class Convoca\\Core\\Logger\.$#'
-			identifier: class.notFound
-			count: 1
-			path: includes/class-redsys-client.php
+			path: includes/Diagnostic.php

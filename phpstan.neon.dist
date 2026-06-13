@@ -1,8 +1,0 @@
-parameters:
-	level: 0
-	paths:
-		- .
-	excludePaths:
-		- vendor/
-includes:
-	- ../convoca-core/dev-tools/phpstan.neon.dist
