@@ -6,5 +6,3 @@ parameters:
 		- vendor/
 includes:
 	- ../convoca-core/dev-tools/phpstan.neon.dist
-scanFiles:
-	- vendor/php-stubs/wordpress-stubs/wordpress-stubs.php
