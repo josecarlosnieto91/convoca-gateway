@@ -24,7 +24,7 @@ class Admin_Links extends \WP_List_Table {
 				'singular' => 'enlace',
 				'plural'   => 'enlaces',
 				'ajax'     => false,
-				'screen'   => 'bdg-links',
+				'screen'   => 'conv-gateway-links',
 			)
 		);
 	}
@@ -91,14 +91,14 @@ class Admin_Links extends \WP_List_Table {
 
 	public function column_order_id( $item ): string {
 		$meta     = CPT_Pago::get_meta( $item->ID );
-		$url      = admin_url( 'admin.php?page=bdg-payments-detail&id=' . $item->ID );
+		$url      = admin_url( 'admin.php?page=conv-gateway-payments-detail&id=' . $item->ID );
 		$order_id = $meta['order_id'] ?? '—';
 		return '<a href="' . esc_url( $url ) . '"><strong>' . esc_html( $order_id ) . '</strong></a>';
 	}
 
 	public function column_concepto( $item ): string {
 		$meta = CPT_Pago::get_meta( $item->ID );
-		$url  = admin_url( 'admin.php?page=bdg-payments-detail&id=' . $item->ID );
+		$url  = admin_url( 'admin.php?page=conv-gateway-payments-detail&id=' . $item->ID );
 
 		// Build the actual link for quick copy.
 		// expires_at puede ser string vacío cuando el meta no existe (PHP 8.1+ TypeError si pasamos string a ?int).
@@ -107,7 +107,7 @@ class Admin_Links extends \WP_List_Table {
 
 		$actions = array(
 			'view' => sprintf( '<a href="%s">%s</a>', esc_url( $url ), esc_html__( 'Ver detalles', 'convoca-gateway' ) ),
-			'copy' => sprintf( '<a href="#" class="bdg-copy-link" data-link="%s">%s</a>', esc_attr( $link_url ), esc_html__( 'Copiar enlace', 'convoca-gateway' ) ),
+			'copy' => sprintf( '<a href="#" class="conv-gateway-copy-link" data-link="%s">%s</a>', esc_attr( $link_url ), esc_html__( 'Copiar enlace', 'convoca-gateway' ) ),
 		);
 
 		return sprintf( '<strong>%s</strong> %s', esc_html( $meta['product_desc'] ), $this->row_actions( $actions ) );
@@ -183,17 +183,17 @@ class Admin_Links extends \WP_List_Table {
 		?>
 		<div class="wrap">
 			<h1 class="wp-heading-inline"><?php echo esc_html__( 'Enlaces de Pago Generados', 'convoca-gateway' ); ?></h1>
-			<a href="<?php echo esc_url( admin_url( 'admin.php?page=bdg-generador' ) ); ?>" class="page-title-action"><?php echo esc_html__( 'Generar nuevo', 'convoca-gateway' ); ?></a>
+			<a href="<?php echo esc_url( admin_url( 'admin.php?page=conv-gateway-generador' ) ); ?>" class="page-title-action"><?php echo esc_html__( 'Generar nuevo', 'convoca-gateway' ); ?></a>
 			<hr class="wp-header-end">
 
 			<form method="get">
-				<input type="hidden" name="page" value="bdg-links">
+				<input type="hidden" name="page" value="conv-gateway-links">
 				<?php $this->display(); ?>
 			</form>
 		</div>
 		<script>
 		document.addEventListener('click', function(e) {
-			if (e.target.classList.contains('bdg-copy-link')) {
+			if (e.target.classList.contains('conv-gateway-copy-link')) {
 				e.preventDefault();
 				const link = e.target.dataset.link;
 				

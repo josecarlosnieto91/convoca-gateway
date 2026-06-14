@@ -21,26 +21,26 @@ class Admin_Generador {
 
 	public function add_menu(): void {
 		add_submenu_page(
-			'bdg-payments',
+			'conv-gateway-payments',
 			__( 'Generador de Enlaces de Pago', 'convoca-gateway' ),
 			__( 'Generar Enlace', 'convoca-gateway' ),
 			'conv_gateway_manage_payments',
-			'bdg-generador',
+			'conv-gateway-generador',
 			array( $this, 'render_page' )
 		);
 
 		add_submenu_page(
-			'bdg-payments',
+			'conv-gateway-payments',
 			__( 'Enlaces de Pago', 'convoca-gateway' ),
 			__( 'Enlaces de Pago', 'convoca-gateway' ),
 			'conv_gateway_manage_payments',
-			'bdg-links',
+			'conv-gateway-links',
 			array( new Admin_Links(), 'render_page' )
 		);
 	}
 
 	public function enqueue_assets( string $hook ): void {
-		if ( strpos( $hook, 'bdg-generador' ) === false && strpos( $hook, 'bdg-links' ) === false ) {
+		if ( strpos( $hook, 'conv-gateway-generador' ) === false && strpos( $hook, 'conv-gateway-links' ) === false ) {
 			return;
 		}
 
@@ -52,7 +52,7 @@ class Admin_Generador {
 		);
 
 		wp_enqueue_script(
-			'bdg-generador',
+			'conv-gateway-generador',
 			\CONV_GATEWAY_URL . 'assets/js/generador.js',
 			array( 'convoca-common-admin-js' ),
 			\CONV_GATEWAY_VERSION,
@@ -76,12 +76,12 @@ class Admin_Generador {
 
 		$offline_methods = $this->get_offline_methods();
 		?>
-		<div class="wrap bdg-generador">
+		<div class="wrap conv-gateway-generador">
 			<h1><?php esc_html_e( 'Generador de Enlaces de Pago', 'convoca-gateway' ); ?></h1>
 			
 			<?php echo $message; ?>
 
-			<div class="bdg-generador-card">
+			<div class="conv-gateway-generador-card">
 				<form method="post" action="">
 					<?php wp_nonce_field( 'conv_gateway_generate_link_nonce', 'conv_gateway_generate_link_nonce' ); ?>
 
@@ -176,20 +176,20 @@ class Admin_Generador {
 				<hr>
 				<h2><?php esc_html_e( 'Enlace generado', 'convoca-gateway' ); ?></h2>
 				<p><?php esc_html_e( 'Copia este enlace y envíaselo al cliente:', 'convoca-gateway' ); ?></p>
-				<div class="bdg-link-output">
+				<div class="conv-gateway-link-output">
 					<input type="text" value="<?php echo esc_attr( $generated_link ); ?>" readonly class="large-text" id="conv_gateway_generated_link">
 					<button type="button" class="button" onclick="conv_gateway_copy_link()">
 						<?php esc_html_e( 'Copiar al portapapeles', 'convoca-gateway' ); ?>
 					</button>
 				</div>
 				<style>
-				.bdg-link-output {
+				.conv-gateway-link-output {
 					display: flex;
 					gap: 10px;
 					align-items: center;
 					margin-top: 10px;
 				}
-				.bdg-link-output input {
+				.conv-gateway-link-output input {
 					flex: 1;
 				}
 				</style>
@@ -227,7 +227,7 @@ class Admin_Generador {
 				<?php endif; ?>
 			</div>
 
-			<div class="bdg-generador-info">
+			<div class="conv-gateway-generador-info">
 				<h2><?php esc_html_e( 'Información', 'convoca-gateway' ); ?></h2>
 				<ul>
 					<li>El enlace permite al cliente realizar el pago directamente desde cualquier dispositivo.</li>

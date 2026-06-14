@@ -37,7 +37,7 @@ class Admin_Payments extends \WP_List_Table {
 				'singular' => 'pago',
 				'plural'   => 'pagos',
 				'ajax'     => false,
-				'screen'   => 'bdg-payments',
+				'screen'   => 'conv-gateway-payments',
 			)
 		);
 	}
@@ -46,7 +46,7 @@ class Admin_Payments extends \WP_List_Table {
 	 * Handle CSV export before headers are sent.
 	 */
 	public function handle_csv_export_early(): void {
-		if ( isset( $_GET['page'] ) && 'bdg-payments' === $_GET['page'] && isset( $_GET['action'] ) && 'export_csv' === $_GET['action'] ) {
+		if ( isset( $_GET['page'] ) && 'conv-gateway-payments' === $_GET['page'] && isset( $_GET['action'] ) && 'export_csv' === $_GET['action'] ) {
 			if ( check_admin_referer( 'conv_gateway_export_csv' ) ) {
 				$this->handle_export_csv();
 			}
@@ -60,7 +60,7 @@ class Admin_Payments extends \WP_List_Table {
 			__( 'Convoca Pagos', 'convoca-gateway' ),
 			__( 'Pagos', 'convoca-gateway' ),
 			'conv_gateway_view_payments',
-			'bdg-payments',
+			'conv-gateway-payments',
 			array( $this, 'render_page' ),
 			'dashicons-cart',
 			26
@@ -68,11 +68,11 @@ class Admin_Payments extends \WP_List_Table {
 
 		// Submenu: Payments.
 		add_submenu_page(
-			'bdg-payments',
+			'conv-gateway-payments',
 			__( 'Todos los Pagos', 'convoca-gateway' ),
 			__( 'Todos los Pagos', 'convoca-gateway' ),
 			'conv_gateway_view_payments',
-			'bdg-payments',
+			'conv-gateway-payments',
 			array( $this, 'render_page' )
 		);
 	}
@@ -217,7 +217,7 @@ class Admin_Payments extends \WP_List_Table {
 
 	public function column_order_id( $item ): string {
 		$meta = CPT_Pago::get_meta( $item->ID );
-		$url  = admin_url( 'admin.php?page=bdg-payments-detail&id=' . $item->ID );
+		$url  = admin_url( 'admin.php?page=conv-gateway-payments-detail&id=' . $item->ID );
 
 		$actions = array(
 			'view' => sprintf( '<a href="%s">%s</a>', esc_url( $url ), esc_html__( 'Ver detalle', 'convoca-gateway' ) ),
@@ -266,7 +266,7 @@ class Admin_Payments extends \WP_List_Table {
 
 	public function render_page(): void {
 
-		if ( isset( $_GET['action'] ) && 'view' === $_GET['action'] || isset( $_GET['page'] ) && 'bdg-payments-detail' === $_GET['page'] ) {
+		if ( isset( $_GET['action'] ) && 'view' === $_GET['action'] || isset( $_GET['page'] ) && 'conv-gateway-payments-detail' === $_GET['page'] ) {
 			$this->render_detail();
 			return;
 		}
@@ -275,12 +275,12 @@ class Admin_Payments extends \WP_List_Table {
 		?>
 		<div class="wrap">
 			<h1 class="wp-heading-inline"><?php _e( 'Pagos Convoca', 'convoca-gateway' ); ?></h1>
-			<a href="<?php echo wp_nonce_url( admin_url( 'admin.php?page=bdg-payments&action=export_csv' ), 'conv_gateway_export_csv' ); ?>" class="page-title-action"><?php _e( 'Exportar a CSV', 'convoca-gateway' ); ?></a>
+			<a href="<?php echo wp_nonce_url( admin_url( 'admin.php?page=conv-gateway-payments&action=export_csv' ), 'conv_gateway_export_csv' ); ?>" class="page-title-action"><?php _e( 'Exportar a CSV', 'convoca-gateway' ); ?></a>
 			<a href="<?php echo esc_url( wp_nonce_url( admin_url( 'admin-post.php?action=conv_gateway_export_payments_pdf' ), 'conv_gateway_export_payments_pdf' ) ); ?>" class="page-title-action"><?php _e( 'Exportar PDF', 'convoca-gateway' ); ?></a>
 			<hr class="wp-header-end">
 
 			<form method="get">
-				<input type="hidden" name="page" value="bdg-payments">
+				<input type="hidden" name="page" value="conv-gateway-payments">
 				<?php
 				$this->search_box( __( 'Buscar pedido', 'convoca-gateway' ), 'search_id' );
 				$this->display();
@@ -329,7 +329,7 @@ class Admin_Payments extends \WP_List_Table {
 		?>
 		<div class="wrap">
 			<h1><?php printf( esc_html__( 'Pago #%s', 'convoca-gateway' ), esc_html( $meta['order_id'] ) ); ?></h1>
-			<a href="<?php echo esc_url( admin_url( 'admin.php?page=bdg-payments' ) ); ?>" class="button">&lsaquo; <?php echo esc_html__( 'Volver al listado', 'convoca-gateway' ); ?></a>
+			<a href="<?php echo esc_url( admin_url( 'admin.php?page=conv-gateway-payments' ) ); ?>" class="button">&lsaquo; <?php echo esc_html__( 'Volver al listado', 'convoca-gateway' ); ?></a>
 
 			<div id="poststuff">
 				<div id="post-body" class="metabox-holder columns-2">

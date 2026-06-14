@@ -37,7 +37,7 @@ class Admin_Settings {
 			<p>
 				<strong>Convoca Gateway:</strong> La clave secreta de Redsys no se pudo descifrar correctamente.
 				Esto puede deberse a un cambio en las claves de seguridad de WordPress.
-				Por favor, <a href="<?php echo esc_url( admin_url( 'admin.php?page=bdg-settings' ) ); ?>">vuelve a introducir la clave secreta</a>.
+				Por favor, <a href="<?php echo esc_url( admin_url( 'admin.php?page=conv-gateway-settings' ) ); ?>">vuelve a introducir la clave secreta</a>.
 			</p>
 		</div>
 		<?php
@@ -45,11 +45,11 @@ class Admin_Settings {
 
 	public function add_menu(): void {
 		add_submenu_page(
-			'bdg-payments',
+			'conv-gateway-payments',
 			__( 'Ajustes del TPV', 'convoca-gateway' ),
 			__( 'Configuración', 'convoca-gateway' ),
 			'manage_options',
-			'bdg-settings',
+			'conv-gateway-settings',
 			array( $this, 'render_page' )
 		);
 
@@ -59,7 +59,7 @@ class Admin_Settings {
 			__( 'Detalle de Pago', 'convoca-gateway' ),
 			__( 'Detalle', 'convoca-gateway' ),
 			'conv_gateway_view_payments',
-			'bdg-payments-detail',
+			'conv-gateway-payments-detail',
 			array( new Admin_Payments(), 'render_page' )
 		);
 	}
@@ -77,7 +77,7 @@ class Admin_Settings {
 			'conv_gateway_redsys',
 			__( 'Configuración Redsys (Caja Rural de Asturias)', 'convoca-gateway' ),
 			fn() => print '<p>Introduce los datos proporcionados por tu banco para el TPV Virtual.</p>',
-			'bdg-settings'
+			'conv-gateway-settings'
 		);
 
 		$fields = array(
@@ -117,7 +117,7 @@ class Admin_Settings {
 				'conv_gateway_' . $key,
 				$field['label'],
 				fn() => $this->render_form_field( $key, $field ),
-				'bdg-settings',
+				'conv-gateway-settings',
 				'conv_gateway_redsys'
 			);
 		}
@@ -127,7 +127,7 @@ class Admin_Settings {
 			'conv_gateway_transfer',
 			__( 'Configuración Transferencia Bancaria', 'convoca-gateway' ),
 			fn() => print '<p>Datos para mostrar a los usuarios que elijan pagar por transferencia.</p>',
-			'bdg-settings'
+			'conv-gateway-settings'
 		);
 
 		$transfer_fields = array(
@@ -153,7 +153,7 @@ class Admin_Settings {
 				'conv_gateway_' . $key,
 				$field['label'],
 				fn() => $this->render_form_field( $key, $field ),
-				'bdg-settings',
+				'conv-gateway-settings',
 				'conv_gateway_transfer'
 			);
 		}
@@ -163,7 +163,7 @@ class Admin_Settings {
 			'conv_gateway_emails',
 			__( 'Notificaciones por Email', 'convoca-gateway' ),
 			fn() => print '<p>' . __( 'Configura los correos automáticos tras un pago con éxito.', 'convoca-gateway' ) . '</p>',
-			'bdg-settings'
+			'conv-gateway-settings'
 		);
 
 		$email_fields = array(
@@ -184,7 +184,7 @@ class Admin_Settings {
 				'conv_gateway_' . $key,
 				$field['label'],
 				fn() => $this->render_form_field( $key, $field ),
-				'bdg-settings',
+				'conv-gateway-settings',
 				'conv_gateway_emails'
 			);
 		}
@@ -217,7 +217,7 @@ class Admin_Settings {
 			'conv_gateway_email_templates',
 			__( 'Personalización de Plantillas', 'convoca-gateway' ),
 			fn() => print '<p>' . __( 'Usa variables: {importe}, {metodo}, {fecha}, {producto}, {enlace_inscripcion}', 'convoca-gateway' ) . '</p>',
-			'bdg-settings-emails'
+			'conv-gateway-settings-emails'
 		);
 
 		foreach ( $email_templates as $key => $field ) {
@@ -225,7 +225,7 @@ class Admin_Settings {
 				'conv_gateway_' . $key,
 				$field['label'],
 				fn() => $this->render_form_field( $key, $field ),
-				'bdg-settings-emails',
+				'conv-gateway-settings-emails',
 				'conv_gateway_email_templates'
 			);
 		}
@@ -235,7 +235,7 @@ class Admin_Settings {
 			'conv_gateway_pages',
 			__( 'Páginas de pago', 'convoca-gateway' ),
 			fn() => print '<p>Crea páginas con los shortcodes indicados y selecciónalas aquí.</p>',
-			'bdg-settings'
+			'conv-gateway-settings'
 		);
 
 		$page_fields = array(
@@ -249,7 +249,7 @@ class Admin_Settings {
 				'conv_gateway_' . $key,
 				$label,
 				fn() => $this->render_page_dropdown( $key ),
-				'bdg-settings',
+				'conv-gateway-settings',
 				'conv_gateway_pages'
 			);
 		}
@@ -424,8 +424,8 @@ class Admin_Settings {
 		$env        = $settings['environment'] ?? 'test';
 		$active_tab = $_GET['tab'] ?? 'general';
 		?>
-		<div class="wrap bdg-settings-wrap">
-			<div class="bdg-admin-header" style="display: flex; align-items: center; gap: 20px; margin-bottom: 20px;">
+		<div class="wrap conv-gateway-settings-wrap">
+			<div class="conv-gateway-admin-header" style="display: flex; align-items: center; gap: 20px; margin-bottom: 20px;">
 				<img src="<?php echo esc_url( CONVOCA_IMAGES_URL . 'logo.png' ); ?>" alt="Convoca Gateway" style="width: 80px; height: 80px; border-radius: 12px; box-shadow: 0 4px 12px rgba(0,0,0,0.1);">
 				<div>
 					<h1 style="margin: 0; padding: 0;"><?php esc_html_e( 'Pasarela de pago — Redsys', 'convoca-gateway' ); ?></h1>
@@ -434,19 +434,19 @@ class Admin_Settings {
 			</div>
 
 			<nav class="nav-tab-wrapper">
-				<a href="?page=bdg-settings&tab=general" class="nav-tab <?php echo $active_tab === 'general' ? 'nav-tab-active' : ''; ?>">
+				<a href="?page=conv-gateway-settings&tab=general" class="nav-tab <?php echo $active_tab === 'general' ? 'nav-tab-active' : ''; ?>">
 					<?php _e( 'General', 'convoca-gateway' ); ?>
 				</a>
-				<a href="?page=bdg-settings&tab=emails" class="nav-tab <?php echo $active_tab === 'emails' ? 'nav-tab-active' : ''; ?>">
+				<a href="?page=conv-gateway-settings&tab=emails" class="nav-tab <?php echo $active_tab === 'emails' ? 'nav-tab-active' : ''; ?>">
 					<?php _e( 'Correos', 'convoca-gateway' ); ?>
 				</a>
-				<a href="?page=bdg-settings&tab=status" class="nav-tab <?php echo $active_tab === 'status' ? 'nav-tab-active' : ''; ?>">
+				<a href="?page=conv-gateway-settings&tab=status" class="nav-tab <?php echo $active_tab === 'status' ? 'nav-tab-active' : ''; ?>">
 					<?php _e( 'Estado', 'convoca-gateway' ); ?>
 					<?php
 					$badge = Diagnostic::get_menu_badge();
 					if ( $badge['severity'] !== 'ok' ) :
 						?>
-						<span class="bdg-diagnostic-badge bdg-badge--<?php echo esc_attr( $badge['severity'] ); ?>">
+						<span class="conv-gateway-diagnostic-badge conv-gateway-badge--<?php echo esc_attr( $badge['severity'] ); ?>">
 							<?php echo $badge['severity'] === 'error' ? '✗' : '⚠'; ?>
 						</span>
 					<?php endif; ?>
@@ -475,14 +475,14 @@ class Admin_Settings {
 				settings_fields( 'conv_gateway_settings_group' );
 
 				if ( $active_tab === 'emails' ) {
-					do_settings_sections( 'bdg-settings-emails' );
+					do_settings_sections( 'conv-gateway-settings-emails' );
 					?>
 					<hr>
-					<button type="button" class="button js-bdg-preview-email" data-type="success"><?php _e( 'Previsualizar Éxito', 'convoca-gateway' ); ?></button>
-					<button type="button" class="button js-bdg-preview-email" data-type="failed"><?php _e( 'Previsualizar Fallo', 'convoca-gateway' ); ?></button>
+					<button type="button" class="button js-conv-gateway-preview-email" data-type="success"><?php _e( 'Previsualizar Éxito', 'convoca-gateway' ); ?></button>
+					<button type="button" class="button js-conv-gateway-preview-email" data-type="failed"><?php _e( 'Previsualizar Fallo', 'convoca-gateway' ); ?></button>
 					<?php
 				} else {
-					do_settings_sections( 'bdg-settings' );
+					do_settings_sections( 'conv-gateway-settings' );
 				}
 
 				submit_button( __( 'Guardar configuración', 'convoca-gateway' ) );
@@ -494,7 +494,7 @@ class Admin_Settings {
 		<script>
 		document.addEventListener('DOMContentLoaded', function() {
 			// Preview Emails.
-			document.querySelectorAll('.js-bdg-preview-email').forEach(function(btn) {
+			document.querySelectorAll('.js-conv-gateway-preview-email').forEach(function(btn) {
 				btn.addEventListener('click', function() {
 					const type = this.dataset.type;
 					const subjectInput = type === 'success' ? document.querySelector('input[name="conv_gateway_settings[email_success_subject]"]') : document.querySelector('input[name="conv_gateway_settings[email_failed_subject]"]');
@@ -509,7 +509,7 @@ class Admin_Settings {
 			});
 
 			// Run Diagnostic.
-			const btnDiagnostic = document.getElementById('bdg-run-diagnostic');
+			const btnDiagnostic = document.getElementById('conv-gateway-run-diagnostic');
 			if (btnDiagnostic) {
 				btnDiagnostic.addEventListener('click', function() {
 					const btn = this;
@@ -542,7 +542,7 @@ class Admin_Settings {
 			}
 
 			// Diagnostic Fixes.
-			document.querySelectorAll('.bdg-fix-button').forEach(function(btn) {
+			document.querySelectorAll('.conv-gateway-fix-button').forEach(function(btn) {
 				btn.addEventListener('click', function() {
 					const fix = this.dataset.fix;
 					this.disabled = true;
@@ -577,23 +577,23 @@ class Admin_Settings {
 		});
 		</script>
 		<style>
-		.bdg-diagnostic-badge { margin-left: 5px; }
-		.bdg-badge--ok { color: #46b450; }
-		.bdg-badge--warning { color: #f56e28; }
-		.bdg-badge--error { color: #dc3232; }
-		.bdg-diagnostic-row { padding: 12px; border-bottom: 1px solid #e0e0e0; }
-		.bdg-diagnostic-row:last-child { border-bottom: none; }
-		.bdg-diagnostic-row .bdg-severity-icon { font-size: 1.2em; margin-right: 8px; }
-		.bdg-diagnostic-row .bdg-severity-ok { color: #46b450; }
-		.bdg-diagnostic-row .bdg-severity-warning { color: #f56e28; }
-		.bdg-diagnostic-row .bdg-severity-error { color: #dc3232; }
-		.bdg-diagnostic-row .bdg-message { display: block; margin-top: 4px; color: #666; font-size: 0.9em; }
-		.bdg-diagnostic-row .bdg-fix-info { display: block; margin-top: 4px; color: #dc3232; font-size: 0.9em; }
-		.bdg-diagnostic-children { margin-left: 20px; border-left: 2px solid #e0e0e0; padding-left: 10px; margin-top: 8px; }
-		.bdg-summary { display: flex; align-items: center; gap: 10px; margin-bottom: 20px; padding: 15px; background: #f8f9fa; border-radius: 8px; }
-		.bdg-summary-icon { font-size: 2em; }
-		.bdg-summary-text h3 { margin: 0; }
-		.bdg-summary-text p { margin: 5px 0 0 0; color: #666; }
+		.conv-gateway-diagnostic-badge { margin-left: 5px; }
+		.conv-gateway-badge--ok { color: #46b450; }
+		.conv-gateway-badge--warning { color: #f56e28; }
+		.conv-gateway-badge--error { color: #dc3232; }
+		.conv-gateway-diagnostic-row { padding: 12px; border-bottom: 1px solid #e0e0e0; }
+		.conv-gateway-diagnostic-row:last-child { border-bottom: none; }
+		.conv-gateway-diagnostic-row .conv-gateway-severity-icon { font-size: 1.2em; margin-right: 8px; }
+		.conv-gateway-diagnostic-row .conv-gateway-severity-ok { color: #46b450; }
+		.conv-gateway-diagnostic-row .conv-gateway-severity-warning { color: #f56e28; }
+		.conv-gateway-diagnostic-row .conv-gateway-severity-error { color: #dc3232; }
+		.conv-gateway-diagnostic-row .conv-gateway-message { display: block; margin-top: 4px; color: #666; font-size: 0.9em; }
+		.conv-gateway-diagnostic-row .conv-gateway-fix-info { display: block; margin-top: 4px; color: #dc3232; font-size: 0.9em; }
+		.conv-gateway-diagnostic-children { margin-left: 20px; border-left: 2px solid #e0e0e0; padding-left: 10px; margin-top: 8px; }
+		.conv-gateway-summary { display: flex; align-items: center; gap: 10px; margin-bottom: 20px; padding: 15px; background: #f8f9fa; border-radius: 8px; }
+		.conv-gateway-summary-icon { font-size: 2em; }
+		.conv-gateway-summary-text h3 { margin: 0; }
+		.conv-gateway-summary-text p { margin: 5px 0 0 0; color: #666; }
 		</style>
 		<?php
 	}
@@ -620,60 +620,60 @@ class Admin_Settings {
 			$summary_title = 'Estado: Todo correcto';
 		}
 		?>
-		<div class="bdg-diagnostic-wrapper">
-			<div class="bdg-summary">
-				<div class="bdg-summary-icon bdg-badge--<?php echo esc_attr( $summary_class ); ?>">
+		<div class="conv-gateway-diagnostic-wrapper">
+			<div class="conv-gateway-summary">
+				<div class="conv-gateway-summary-icon conv-gateway-badge--<?php echo esc_attr( $summary_class ); ?>">
 					<?php echo $summary_icon; ?>
 				</div>
-				<div class="bdg-summary-text">
+				<div class="conv-gateway-summary-text">
 					<h3><?php echo esc_html( $summary_title ); ?></h3>
 					<p><?php echo esc_html( $summary_text ); ?></p>
 				</div>
-				<button type="button" id="bdg-run-diagnostic" class="button button-primary" style="margin-left: auto;">
+				<button type="button" id="conv-gateway-run-diagnostic" class="button button-primary" style="margin-left: auto;">
 					Forzar comprobación
 				</button>
 			</div>
 
-			<div class="bdg-diagnostic-results">
+			<div class="conv-gateway-diagnostic-results">
 				<?php foreach ( $results as $result ) : ?>
 					<?php
 					$severity = $result['severity'];
 					$icon     = $severity === 'ok' ? '✓' : ( $severity === 'warning' ? '⚠' : '✗' );
 					?>
-					<div class="bdg-diagnostic-row">
-						<div class="bdg-diagnostic-header">
-							<span class="bdg-severity-icon bdg-severity-<?php echo esc_attr( $severity ); ?>">
+					<div class="conv-gateway-diagnostic-row">
+						<div class="conv-gateway-diagnostic-header">
+							<span class="conv-gateway-severity-icon conv-gateway-severity-<?php echo esc_attr( $severity ); ?>">
 								<?php echo $icon; ?>
 							</span>
 							<strong><?php echo esc_html( $result['title'] ); ?></strong>
 						</div>
-						<span class="bdg-message"><?php echo esc_html( $result['message'] ); ?></span>
+						<span class="conv-gateway-message"><?php echo esc_html( $result['message'] ); ?></span>
 						<?php if ( ! empty( $result['fix'] ) ) : ?>
-							<span class="bdg-fix-info"><?php echo esc_html( $result['fix'] ); ?></span>
+							<span class="conv-gateway-fix-info"><?php echo esc_html( $result['fix'] ); ?></span>
 							<?php if ( ! empty( $result['fix_callback'] ) ) : ?>
-								<button type="button" class="button button-small bdg-fix-button" data-fix="<?php echo esc_attr( $result['slug'] ); ?>">
+								<button type="button" class="button button-small conv-gateway-fix-button" data-fix="<?php echo esc_attr( $result['slug'] ); ?>">
 									Reparar
 								</button>
 							<?php endif; ?>
 						<?php endif; ?>
 						
 						<?php if ( ! empty( $result['children'] ) ) : ?>
-							<div class="bdg-diagnostic-children">
+							<div class="conv-gateway-diagnostic-children">
 								<?php foreach ( $result['children'] as $child ) : ?>
 									<?php
 									$child_severity = $child['severity'];
 									$child_icon     = $child_severity === 'ok' ? '✓' : ( $child_severity === 'warning' ? '⚠' : '✗' );
 									?>
-									<div class="bdg-diagnostic-row">
-										<span class="bdg-severity-icon bdg-severity-<?php echo esc_attr( $child_severity ); ?>">
+									<div class="conv-gateway-diagnostic-row">
+										<span class="conv-gateway-severity-icon conv-gateway-severity-<?php echo esc_attr( $child_severity ); ?>">
 											<?php echo $child_icon; ?>
 										</span>
 										<span><?php echo esc_html( $child['title'] ); ?></span>
-										<span class="bdg-message"><?php echo esc_html( $child['message'] ); ?></span>
+										<span class="conv-gateway-message"><?php echo esc_html( $child['message'] ); ?></span>
 										<?php if ( ! empty( $child['fix'] ) ) : ?>
-											<span class="bdg-fix-info"><?php echo esc_html( $child['fix'] ); ?></span>
+											<span class="conv-gateway-fix-info"><?php echo esc_html( $child['fix'] ); ?></span>
 											<?php if ( ! empty( $child['fix_callback'] ) ) : ?>
-												<button type="button" class="button button-small bdg-fix-button" data-fix="<?php echo esc_attr( $child['slug'] ); ?>">
+												<button type="button" class="button button-small conv-gateway-fix-button" data-fix="<?php echo esc_attr( $child['slug'] ); ?>">
 													Reparar
 												</button>
 											<?php endif; ?>

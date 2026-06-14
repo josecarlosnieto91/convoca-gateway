@@ -39,35 +39,35 @@ class Admin_Dashboard {
 		$data = $this->get_dashboard_data();
 
 		?>
-		<div class="bdg-dashboard-widget">
-			<div class="bdg-stats-grid">
-				<div class="bdg-stat">
-					<span class="bdg-stat-label"><?php esc_html_e( 'Total este mes', 'convoca-gateway' ); ?></span>
-					<span class="bdg-stat-value"><?php echo esc_html( CPT_Pago::format_amount( $data['total_month'] ) ); ?></span>
+		<div class="conv-gateway-dashboard-widget">
+			<div class="conv-gateway-stats-grid">
+				<div class="conv-gateway-stat">
+					<span class="conv-gateway-stat-label"><?php esc_html_e( 'Total este mes', 'convoca-gateway' ); ?></span>
+					<span class="conv-gateway-stat-value"><?php echo esc_html( CPT_Pago::format_amount( $data['total_month'] ) ); ?></span>
 				</div>
-				<div class="bdg-stat">
-					<span class="bdg-stat-label"><?php esc_html_e( 'Pagos hoy', 'convoca-gateway' ); ?></span>
-					<span class="bdg-stat-value"><?php echo esc_html( $data['count_today'] ); ?></span>
+				<div class="conv-gateway-stat">
+					<span class="conv-gateway-stat-label"><?php esc_html_e( 'Pagos hoy', 'convoca-gateway' ); ?></span>
+					<span class="conv-gateway-stat-value"><?php echo esc_html( $data['count_today'] ); ?></span>
 				</div>
 			</div>
 
-			<div class="bdg-section">
+			<div class="conv-gateway-section">
 				<h4><?php esc_html_e( 'Métodos de pago (Mes)', 'convoca-gateway' ); ?></h4>
-				<div class="bdg-methods">
-					<div class="bdg-method-bar">
-						<div class="bdg-method-fill card" style="width: <?php echo esc_attr( $data['methods']['tarjeta_pct'] ); ?>%;"></div>
-						<div class="bdg-method-fill bizum" style="width: <?php echo esc_attr( $data['methods']['bizum_pct'] ); ?>%;"></div>
+				<div class="conv-gateway-methods">
+					<div class="conv-gateway-method-bar">
+						<div class="conv-gateway-method-fill card" style="width: <?php echo esc_attr( $data['methods']['tarjeta_pct'] ); ?>%;"></div>
+						<div class="conv-gateway-method-fill bizum" style="width: <?php echo esc_attr( $data['methods']['bizum_pct'] ); ?>%;"></div>
 					</div>
-					<div class="bdg-method-labels">
+					<div class="conv-gateway-method-labels">
 						<span>💳 <?php echo esc_html( $data['methods']['tarjeta_pct'] ); ?>% <?php esc_html_e( 'Tarjeta', 'convoca-gateway' ); ?></span>
 						<span>📱 <?php echo esc_html( $data['methods']['bizum_pct'] ); ?>% <?php esc_html_e( 'Bizum', 'convoca-gateway' ); ?></span>
 					</div>
 				</div>
 			</div>
 
-			<div class="bdg-section">
+			<div class="conv-gateway-section">
 				<h4><?php esc_html_e( 'Últimos 7 días', 'convoca-gateway' ); ?></h4>
-				<table class="bdg-chart-table">
+				<table class="conv-gateway-chart-table">
 					<thead>
 						<tr>
 							<th><?php esc_html_e( 'Día', 'convoca-gateway' ); ?></th>
@@ -87,26 +87,26 @@ class Admin_Dashboard {
 				</table>
 			</div>
 
-			<p class="bdg-footer-links">
+			<p class="conv-gateway-footer-links">
 				<a href="<?php echo esc_url( admin_url( 'edit.php?post_type=pago' ) ); ?>" class="button"><?php esc_html_e( 'Ver todos los pagos', 'convoca-gateway' ); ?></a>
-				<a href="<?php echo esc_url( admin_url( 'options-general.php?page=bdg-settings' ) ); ?>" class="button"><?php esc_html_e( 'Configuración', 'convoca-gateway' ); ?></a>
+				<a href="<?php echo esc_url( admin_url( 'options-general.php?page=conv-gateway-settings' ) ); ?>" class="button"><?php esc_html_e( 'Configuración', 'convoca-gateway' ); ?></a>
 			</p>
 		</div>
 
 		<style>
-			.bdg-stats-grid { display: grid; grid-template-columns: 1fr 1fr; gap: 10px; margin-bottom: 20px; }
-			.bdg-stat { background: #f6f7f7; padding: 15px; border-radius: 4px; border-left: 4px solid #0073aa; }
-			.bdg-stat-label { display: block; font-size: 12px; color: #646970; }
-			.bdg-stat-value { display: block; font-size: 20px; font-weight: 600; margin-top: 5px; }
-			.bdg-section h4 { margin: 15px 0 10px; border-bottom: 1px solid #dcdcde; padding-bottom: 5px; }
-			.bdg-method-bar { height: 12px; background: #dcdcde; border-radius: 6px; overflow: hidden; display: flex; margin-bottom: 5px; }
-			.bdg-method-fill.card { background: #0073aa; }
-			.bdg-method-fill.bizum { background: #46b450; }
-			.bdg-method-labels { display: flex; justify-content: space-between; font-size: 11px; }
-			.bdg-chart-table { width: 100%; border-collapse: collapse; font-size: 12px; }
-			.bdg-chart-table th { text-align: left; padding: 5px; background: #f6f7f7; }
-			.bdg-chart-table td { padding: 5px; border-bottom: 1px solid #f0f0f1; }
-			.bdg-footer-links { margin-top: 20px; border-top: 1px solid #dcdcde; padding-top: 15px; display: flex; gap: 10px; }
+			.conv-gateway-stats-grid { display: grid; grid-template-columns: 1fr 1fr; gap: 10px; margin-bottom: 20px; }
+			.conv-gateway-stat { background: #f6f7f7; padding: 15px; border-radius: 4px; border-left: 4px solid #0073aa; }
+			.conv-gateway-stat-label { display: block; font-size: 12px; color: #646970; }
+			.conv-gateway-stat-value { display: block; font-size: 20px; font-weight: 600; margin-top: 5px; }
+			.conv-gateway-section h4 { margin: 15px 0 10px; border-bottom: 1px solid #dcdcde; padding-bottom: 5px; }
+			.conv-gateway-method-bar { height: 12px; background: #dcdcde; border-radius: 6px; overflow: hidden; display: flex; margin-bottom: 5px; }
+			.conv-gateway-method-fill.card { background: #0073aa; }
+			.conv-gateway-method-fill.bizum { background: #46b450; }
+			.conv-gateway-method-labels { display: flex; justify-content: space-between; font-size: 11px; }
+			.conv-gateway-chart-table { width: 100%; border-collapse: collapse; font-size: 12px; }
+			.conv-gateway-chart-table th { text-align: left; padding: 5px; background: #f6f7f7; }
+			.conv-gateway-chart-table td { padding: 5px; border-bottom: 1px solid #f0f0f1; }
+			.conv-gateway-footer-links { margin-top: 20px; border-top: 1px solid #dcdcde; padding-top: 15px; display: flex; gap: 10px; }
 		</style>
 		<?php
 	}

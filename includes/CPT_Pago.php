@@ -66,9 +66,9 @@ class CPT_Pago {
 		if ( $typenow === 'pago' ) {
 			$post_id = isset( $_GET['post'] ) ? (int) $_GET['post'] : 0;
 			if ( $post_id > 0 ) {
-				wp_safe_redirect( admin_url( 'admin.php?page=bdg-payments-detail&id=' . $post_id ) );
+				wp_safe_redirect( admin_url( 'admin.php?page=conv-gateway-payments-detail&id=' . $post_id ) );
 			} else {
-				wp_safe_redirect( admin_url( 'admin.php?page=bdg-generador' ) );
+				wp_safe_redirect( admin_url( 'admin.php?page=conv-gateway-generador' ) );
 			}
 			exit;
 		}

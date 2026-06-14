@@ -21,7 +21,7 @@ class Block_Gateway {
 	public function register_blocks(): void {
 		// Register editor script first.
 		wp_register_script(
-			'bdg-blocks-editor',
+			'conv-gateway-blocks-editor',
 			CONV_GATEWAY_URL . 'assets/js/blocks-editor.js',
 			array( 'wp-blocks', 'wp-element', 'wp-server-side-render' ),
 			CONV_GATEWAY_VERSION,
@@ -39,7 +39,7 @@ class Block_Gateway {
 				'description'     => __( 'Página de procesamiento de pago con selección de método (tarjeta/bizum).', 'convoca-gateway' ),
 				'keywords'        => array( 'pago', 'tarjeta', 'bizum', 'redsys' ),
 				'render_callback' => array( $this, 'render_pago' ),
-				'editor_script'   => 'bdg-blocks-editor',
+				'editor_script'   => 'conv-gateway-blocks-editor',
 			)
 		);
 
@@ -54,7 +54,7 @@ class Block_Gateway {
 				'description'     => __( 'Página de confirmación tras un pago exitoso.', 'convoca-gateway' ),
 				'keywords'        => array( 'pago', 'éxito', 'confirmación' ),
 				'render_callback' => array( $this, 'render_ok' ),
-				'editor_script'   => 'bdg-blocks-editor',
+				'editor_script'   => 'conv-gateway-blocks-editor',
 			)
 		);
 
@@ -69,7 +69,7 @@ class Block_Gateway {
 				'description'     => __( 'Página de error cuando un pago no se ha podido procesar.', 'convoca-gateway' ),
 				'keywords'        => array( 'pago', 'error', 'fallido' ),
 				'render_callback' => array( $this, 'render_ko' ),
-				'editor_script'   => 'bdg-blocks-editor',
+				'editor_script'   => 'conv-gateway-blocks-editor',
 			)
 		);
 	}
