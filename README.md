@@ -1,12 +1,12 @@
-# Biodevas Gateway
+# Convoca Gateway
 
-Pasarela de pago Redsys (tarjeta + Bizum) para la Asociación Biodevas.
+Pasarela de pago Redsys (tarjeta + Bizum) para la Asociación Convoca.
 
 ## Requirements
 
 - WordPress 6.4+
 - PHP 8.1+
-- biodevas-common plugin active
+- convoca-core plugin active
 - Cuenta Redsys activa (TPV virtual)
 
 ## Main Features
@@ -23,7 +23,7 @@ Pasarela de pago Redsys (tarjeta + Bizum) para la Asociación Biodevas.
 
 ## Dependencies
 
-biodevas-common, WordPress 6.4+, PHP 8.1+, Cuenta Redsys activa
+convoca-core, WordPress 6.4+, PHP 8.1+, Cuenta Redsys activa
 
 ## Version
 

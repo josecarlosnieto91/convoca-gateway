@@ -1,4 +1,4 @@
-# Changelog - Biodevas Gateway
+# Changelog - Convoca Gateway
 
 ## 2.6.1
 - **Nuevo:** `verify_notification()` acepta ahora `HMAC_SHA256_V2` además de V1 (Redsys migra a V2). Añadido método `sign_v2()` con derivación de clave vía HMAC-SHA256.
@@ -32,7 +32,7 @@
 
 ## 1.2.0
 - **Nuevo:** Sistema de versionado de base de datos con Gateway_Upgrade_Manager.
-- **Nuevo:** Integración con Upgrade_Manager base de biodevas-common.
+- **Nuevo:** Integración con Upgrade_Manager base de convoca-core.
 - **Actualización:** Documentación técnica completa.
 
 ## 1.1.0
