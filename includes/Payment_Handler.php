@@ -1010,7 +1010,7 @@ class Payment_Handler {
 			return '<div class="convoca-alert convoca-alert--danger">
                 <h4>➠️ Error de configuración de pagos</h4>
                 <p>No se han configurado las claves de Redsys (FUC o Clave Secreta).<br>
-                Por favor, contacta con el administrador del sitio para revisar los ajustes de <em>Biodevas Gateway</em>.</p>
+                Por favor, contacta con el administrador del sitio para revisar los ajustes de <em>Convoca Gateway</em>.</p>
             </div>';
 		}
 

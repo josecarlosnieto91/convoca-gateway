@@ -175,7 +175,7 @@ class Admin_Settings {
 			'email_sender_name'  => array(
 				'label' => __( 'Nombre del remitente', 'convoca-gateway' ),
 				'type'  => 'text',
-				'desc'  => 'Ej: Biodevas Asociación',
+				'desc'  => 'Ej: ' . get_bloginfo('name'),
 			),
 		);
 

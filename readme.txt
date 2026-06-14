@@ -21,6 +21,22 @@ Plugin de pasarela de pago integrada con Redsys para el ecosistema Convoca:
 * Panel de administración — Listado con filtros por método de pago
 * Shortcodes — [convoca_pago], [convoca_pago_ok], [convoca_pago_ko]
 
+= Privacidad =
+
+Este plugin procesa pagos a través de la pasarela Redsys (tarjeta Visa/Mastercard y Bizum) y gestiona pagos por transferencia bancaria. Almacena en la base de datos local de WordPress los registros de pago: importe, fecha, método de pago, referencia de la transacción y estado del pago. También almacena los justificantes de transferencia (PDF o imágenes) que los usuarios suben voluntariamente, guardados en la carpeta de uploads de WordPress.
+
+Los datos de tarjeta de crédito y credenciales bancarias NO se almacenan en la base de datos de WordPress. El pago con tarjeta y Bizum se procesa íntegramente en los servidores seguros de Redsys, cumpliendo con los estándares PCI DSS. Este plugin solo recibe la confirmación de la transacción (autorización, referencia, importe).
+
+Los datos de pago se conservan durante el tiempo necesario para cumplir con obligaciones legales y contables (mínimo 5 años en España según legislación fiscal).
+
+No se comparten datos personales con terceros, salvo la propia pasarela Redsys para la tramitación del pago, lo cual es necesario para la ejecución del servicio contratado.
+
+Los usuarios tienen derecho a:
+* Solicitar acceso al historial de sus pagos
+* Solicitar la exportación de sus datos de pago
+* Solicitar la eliminación de registros de pago (con limitaciones legales y contables)
+Para ejercer estos derechos, contacte con el administrador del sitio.
+
 == Installation ==
 
 1. Asegúrate de que Convoca Core está activo
