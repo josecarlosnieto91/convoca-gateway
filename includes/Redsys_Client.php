@@ -329,7 +329,7 @@ class Redsys_Client {
 		if ( empty( self::merchant_code() ) || empty( self::secret_key() ) ) {
 			return '<div class="convoca-alert convoca-alert--danger">
                 <strong>Error de configuración:</strong> Faltan las claves de Redsys.<br>
-                Por favor, configura el plugin Biodevas Gateway en el administrador.
+                Por favor, configura el plugin Convoca Gateway en el administrador.
             </div>';
 		}
 

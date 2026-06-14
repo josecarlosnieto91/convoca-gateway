@@ -57,7 +57,7 @@ class Admin_Payments extends \WP_List_Table {
 	public function add_menu(): void {
 		// Main Gateway Menu.
 		add_menu_page(
-			__( 'Biodevas Pagos', 'convoca-gateway' ),
+			__( 'Convoca Pagos', 'convoca-gateway' ),
 			__( 'Pagos', 'convoca-gateway' ),
 			'conv_gateway_view_payments',
 			'bdg-payments',

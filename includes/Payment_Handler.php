@@ -766,7 +766,7 @@ class Payment_Handler {
 			</form>
 
 			<p class="conv-security-note">
-				🔒 <?php _e( 'Pago seguro gestionado por Redsys. Biodevas no almacena tus datos bancarios.', 'convoca-gateway' ); ?>
+				🔒 <?php _e( 'Pago seguro gestionado por Redsys. Convoca Gateway no almacena tus datos bancarios.', 'convoca-gateway' ); ?>
 			</p>
 		</div>
 		<?php

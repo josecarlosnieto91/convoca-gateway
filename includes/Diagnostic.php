@@ -262,7 +262,7 @@ class Diagnostic {
 			return self::result( 'database', 'Base de datos', 'Tabla de logs existente', self::SEVERITY_OK );
 		}
 
-		return self::result( 'database', 'Base de datos', 'Tabla de logs no encontrada', self::SEVERITY_WARNING, 'Los logs se almacenan en la tabla convoca_logs. Activa Biodevas Common para crearla.' );
+		return self::result( 'database', 'Base de datos', 'Tabla de logs no encontrada', self::SEVERITY_WARNING, 'Los logs se almacenan en la tabla convoca_logs. Activa Convoca Core para crearla.' );
 	}
 
 	/**

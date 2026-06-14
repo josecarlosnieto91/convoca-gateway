@@ -1,6 +1,6 @@
 <?php
 /**
- * Upgrade Manager for Biodevas Gateway.
+ * Upgrade Manager for Convoca Gateway.
  *
  * Handles database structure upgrades for the gateway plugin.
  *
