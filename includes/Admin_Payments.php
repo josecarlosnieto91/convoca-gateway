@@ -228,7 +228,7 @@ class Admin_Payments extends \WP_List_Table {
 			$actions['origin'] = sprintf( '<a href="%s" target="_blank">%s</a>', esc_url( $insc_url ), esc_html__( 'Ver inscripción', 'convoca-gateway' ) );
 		}
 		if ( $meta['origin'] === 'members' && $meta['origin_id'] ) {
-			$member_url        = admin_url( 'admin.php?page=bdv-members&member_id=' . (int) $meta['origin_id'] );
+			$member_url        = admin_url( 'admin.php?page=conv-members&member_id=' . (int) $meta['origin_id'] );
 			$actions['origin'] = sprintf( '<a href="%s" target="_blank">%s</a>', esc_url( $member_url ), esc_html__( 'Ver miembro', 'convoca-gateway' ) );
 		}
 
