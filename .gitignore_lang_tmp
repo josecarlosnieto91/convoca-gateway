@@ -1,0 +1,3 @@
+languages/*.po
+languages/*.mo
+languages/*.pot

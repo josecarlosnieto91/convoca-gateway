@@ -9,7 +9,9 @@
  * Text Domain: convoca-gateway
  * Requires at least: 6.4
  * Requires PHP: 8.1
+ * Tested up to: 7.0
  * License: GPL2
+ * Requires Plugins: convoca-core
  */
 
 

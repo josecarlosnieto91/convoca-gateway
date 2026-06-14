@@ -4,3 +4,7 @@
 /test-results/
 *.zip
 .env
+
+# Translation files (user-generated)
+*.po
+*.mo
