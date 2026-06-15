@@ -1,17 +1,17 @@
 /**
  * Convoca Gateway — Generador JS
  */
-(function (bdvAdmin) {
+(function (convAdmin) {
     'use strict';
 
-    if (!bdvAdmin) return;
+    if (!convAdmin) return;
 
     // Helper to copy the generated link
-    window.bdg_copy_link = function () {
+    window.conv_copy_link = function () {
         const copyText = document.getElementById('conv_gateway_generated_link');
         if (!copyText) return;
 
-        bdvAdmin.copyToClipboard(copyText.value, () => {
+        convAdmin.copyToClipboard(copyText.value, () => {
             alert('Enlace copiado al portapapeles');
         });
     };

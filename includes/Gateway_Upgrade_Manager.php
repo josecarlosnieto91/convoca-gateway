@@ -35,7 +35,7 @@ class Gateway_Upgrade_Manager extends Upgrade_Manager {
 	}
 
 	protected function get_transient_prefix(): string {
-		return 'bdg';
+		return 'conv';
 	}
 
 	protected function get_upgrade_callbacks(): array {
