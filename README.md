@@ -31,6 +31,10 @@ convoca-core, WordPress 6.4+, PHP 8.1+, Cuenta Redsys activa
 
 ## Changelog
 
+### 2.6.2
+- docs: add MANUAL_USUARIO.md with Redsys + payments guide
+- dev: update phpstan.neon to level 5
+
 ### 2.6.1
 - **Nuevo:** Soporte HMAC_SHA256_V2 en verify_notification() + método sign_v2().
 
