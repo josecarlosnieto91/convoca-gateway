@@ -4,7 +4,7 @@ Tags: payment, redsys, gateway, bizum, card, transfer
 Requires at least: 6.4
 Tested up to: 7.0
 Requires PHP: 8.1
-Stable tag: 2.6.1
+Stable tag: 2.6.2
 License: GPL-2.0-or-later
 License URI: https://www.gnu.org/licenses/gpl-2.0.html
 
@@ -46,6 +46,10 @@ Para ejercer estos derechos, contacte con el administrador del sitio.
 
 == Changelog ==
 
+
+= 2.6.2 =
+* Added: MANUAL_USUARIO.md with complete admin guide
+* Dev: Added phpstan.neon for static analysis
 = 2.6.1 =
 * Nuevo: Soporte HMAC_SHA256_V2 (Redsys migración)
 
@@ -64,5 +68,9 @@ Para ejercer estos derechos, contacte con el administrador del sitio.
 
 == Upgrade Notice ==
 
+
+= 2.6.2 =
+* Added: MANUAL_USUARIO.md with complete admin guide
+* Dev: Added phpstan.neon for static analysis
 = 2.6.1 =
 Actualización de seguridad: soporte HMAC_SHA256_V2. Se recomienda actualizar.
