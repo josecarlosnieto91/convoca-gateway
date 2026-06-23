@@ -3,7 +3,7 @@
  * Plugin Name: Convoca Gateway — Payment Gateway
  * Plugin URI: https://convoca.org.
  * Description: Redsys payment gateway (card + Bizum).
- * Version: 2.6.1
+ * Version: 2.6.2
  * Author:      Jose Carlos Nieto Ramos
  * Author URI:  https://josecarlosnietoramos.wordpress.com.
  * Text Domain: convoca-gateway
