@@ -1,728 +1,712 @@
-# Copyright (C) 2026 Jose Carlos Nieto Ramos
-# This file is distributed under the GPL2.
+# SOME DESCRIPTIVE TITLE.
+# Copyright (C) YEAR THE PACKAGE'S COPYRIGHT HOLDER
+# This file is distributed under the same license as the PACKAGE package.
+# FIRST AUTHOR <EMAIL@ADDRESS>, YEAR.
+#
+#, fuzzy
 msgid ""
 msgstr ""
-"Project-Id-Version: Convoca Gateway — Payment Gateway 2.6.1\n"
-"Report-Msgid-Bugs-To: https://wordpress.org/support/plugin/convoca-gateway\n"
+"Project-Id-Version: PACKAGE VERSION\n"
+"Report-Msgid-Bugs-To: \n"
+"POT-Creation-Date: 2026-06-24 07:07+0200\n"
+"PO-Revision-Date: YEAR-MO-DA HO:MI+ZONE\n"
 "Last-Translator: FULL NAME <EMAIL@ADDRESS>\n"
 "Language-Team: LANGUAGE <LL@li.org>\n"
+"Language: \n"
 "MIME-Version: 1.0\n"
 "Content-Type: text/plain; charset=UTF-8\n"
 "Content-Transfer-Encoding: 8bit\n"
-"POT-Creation-Date: 2026-06-14T13:49:10+00:00\n"
-"PO-Revision-Date: YEAR-MO-DA HO:MI+ZONE\n"
-"X-Generator: WP-CLI 2.12.0\n"
-"X-Domain: convoca-gateway\n"
 
-#. Plugin Name of the plugin
-#: convoca-gateway.php
-msgid "Convoca Gateway — Payment Gateway"
-msgstr ""
-
-#. Plugin URI of the plugin
-#: convoca-gateway.php
-msgid "https://convoca.org."
-msgstr ""
-
-#. Description of the plugin
-#: convoca-gateway.php
-msgid "Redsys payment gateway (card + Bizum)."
-msgstr ""
-
-#. Author of the plugin
-#: convoca-gateway.php
-msgid "Jose Carlos Nieto Ramos"
-msgstr ""
-
-#. Author URI of the plugin
-#: convoca-gateway.php
-msgid "https://josecarlosnietoramos.wordpress.com."
-msgstr ""
-
-#: admin/class-admin-generador.php:25
-#: admin/class-admin-generador.php:80
+#: convoca-gateway/admin/class-admin-generador.php:25
+#: convoca-gateway/admin/class-admin-generador.php:80
 msgid "Generador de Enlaces de Pago"
 msgstr ""
 
-#: admin/class-admin-generador.php:26
+#: convoca-gateway/admin/class-admin-generador.php:26
 msgid "Generar Enlace"
 msgstr ""
 
-#: admin/class-admin-generador.php:34
-#: admin/class-admin-generador.php:35
+#: convoca-gateway/admin/class-admin-generador.php:34
+#: convoca-gateway/admin/class-admin-generador.php:35
 msgid "Enlaces de Pago"
 msgstr ""
 
-#: admin/class-admin-generador.php:91
+#: convoca-gateway/admin/class-admin-generador.php:91
 msgid "Cantidad (€)"
 msgstr ""
 
-#: admin/class-admin-generador.php:103
-#: includes/Admin_Links.php:36
-#: includes/Email_Notifications.php:70
+#: convoca-gateway/admin/class-admin-generador.php:103
+#: convoca-gateway/includes/Admin_Links.php:36
+#: convoca-gateway/includes/Email_Notifications.php:70
 msgid "Concepto"
 msgstr ""
 
-#: admin/class-admin-generador.php:115
+#: convoca-gateway/admin/class-admin-generador.php:115
 msgid "Método de pago"
 msgstr ""
 
-#: admin/class-admin-generador.php:119
+#: convoca-gateway/admin/class-admin-generador.php:119
 msgid "Cualquiera (usuario elige)"
 msgstr ""
 
-#: admin/class-admin-generador.php:120
-#: includes/Admin_Dashboard.php:62
-#: includes/Admin_Links.php:119
-#: includes/Dashboard_Widget.php:66
+#: convoca-gateway/admin/class-admin-generador.php:120
+#: convoca-gateway/includes/Admin_Links.php:119
+#: convoca-gateway/includes/Admin_Dashboard.php:62
+#: convoca-gateway/includes/Dashboard_Widget.php:66
 msgid "Tarjeta"
 msgstr ""
 
-#: admin/class-admin-generador.php:121
-#: includes/Admin_Dashboard.php:63
-#: includes/Admin_Links.php:120
-#: includes/Dashboard_Widget.php:67
+#: convoca-gateway/admin/class-admin-generador.php:121
+#: convoca-gateway/includes/Admin_Links.php:120
+#: convoca-gateway/includes/Admin_Dashboard.php:63
+#: convoca-gateway/includes/Dashboard_Widget.php:67
 msgid "Bizum"
 msgstr ""
 
-#: admin/class-admin-generador.php:123
-#: includes/Admin_Links.php:121
+#: convoca-gateway/admin/class-admin-generador.php:123
+#: convoca-gateway/includes/Admin_Links.php:121
 msgid "Transferencia"
 msgstr ""
 
-#: admin/class-admin-generador.php:131
+#: convoca-gateway/admin/class-admin-generador.php:131
 msgid "Email del destinatario"
 msgstr ""
 
-#: admin/class-admin-generador.php:143
+#: convoca-gateway/admin/class-admin-generador.php:143
 msgid "Parámetros personalizados"
 msgstr ""
 
-#: admin/class-admin-generador.php:154
+#: convoca-gateway/admin/class-admin-generador.php:154
 msgid "Fecha de caducidad"
 msgstr ""
 
-#: admin/class-admin-generador.php:162
+#: convoca-gateway/admin/class-admin-generador.php:162
 msgid "El enlace no caduca nunca"
 msgstr ""
 
-#: admin/class-admin-generador.php:170
+#: convoca-gateway/admin/class-admin-generador.php:170
 msgid "Generar enlace"
 msgstr ""
 
-#: admin/class-admin-generador.php:177
+#: convoca-gateway/admin/class-admin-generador.php:177
 msgid "Enlace generado"
 msgstr ""
 
-#: admin/class-admin-generador.php:178
+#: convoca-gateway/admin/class-admin-generador.php:178
 msgid "Copia este enlace y envíaselo al cliente:"
 msgstr ""
 
-#: admin/class-admin-generador.php:182
+#: convoca-gateway/admin/class-admin-generador.php:182
 msgid "Copiar al portapapeles"
 msgstr ""
 
-#: admin/class-admin-generador.php:231
+#: convoca-gateway/admin/class-admin-generador.php:231
 msgid "Información"
 msgstr ""
 
-#: includes/Admin_Dashboard.php:30
-#: includes/Dashboard_Widget.php:30
-msgid "Resumen de Pagos Convoca"
-msgstr ""
-
-#: includes/Admin_Dashboard.php:45
-#: includes/Dashboard_Widget.php:45
-msgid "Total este mes"
-msgstr ""
-
-#: includes/Admin_Dashboard.php:49
-#: includes/Dashboard_Widget.php:49
-msgid "Pagos hoy"
-msgstr ""
-
-#: includes/Admin_Dashboard.php:55
-msgid "Métodos de pago (Mes)"
-msgstr ""
-
-#: includes/Admin_Dashboard.php:69
-msgid "Últimos 7 días"
-msgstr ""
-
-#: includes/Admin_Dashboard.php:73
-#: includes/Dashboard_Widget.php:84
-msgid "Día"
-msgstr ""
-
-#: includes/Admin_Dashboard.php:74
-#: includes/Admin_Payments.php:61
-#: includes/CPT_Pago.php:82
-msgid "Pagos"
-msgstr ""
-
-#: includes/Admin_Dashboard.php:75
-#: includes/Dashboard_Widget.php:86
-msgid "Total"
-msgstr ""
-
-#: includes/Admin_Dashboard.php:91
-#: includes/Dashboard_Widget.php:111
-msgid "Ver todos los pagos"
-msgstr ""
-
-#: includes/Admin_Dashboard.php:92
-#: includes/Admin_Settings.php:50
-#: includes/Dashboard_Widget.php:112
-msgid "Configuración"
-msgstr ""
-
-#: includes/Admin_Links.php:35
-#: includes/Admin_Payments.php:83
+#: convoca-gateway/includes/Admin_Links.php:35
+#: convoca-gateway/includes/Admin_Payments.php:83
 msgid "Pedido"
 msgstr ""
 
-#: includes/Admin_Links.php:37
-#: includes/Admin_Payments.php:84
-#: includes/Admin_Payments.php:351
-#: includes/Email_Notifications.php:69
+#: convoca-gateway/includes/Admin_Links.php:37
+#: convoca-gateway/includes/Email_Notifications.php:69
+#: convoca-gateway/includes/Admin_Payments.php:84
+#: convoca-gateway/includes/Admin_Payments.php:351
 msgid "Importe"
 msgstr ""
 
-#: includes/Admin_Links.php:38
-#: includes/Admin_Payments.php:85
-#: includes/Admin_Payments.php:355
-#: includes/CSV_Exporter.php:62
+#: convoca-gateway/includes/Admin_Links.php:38
+#: convoca-gateway/includes/CSV_Exporter.php:62
+#: convoca-gateway/includes/Admin_Payments.php:85
+#: convoca-gateway/includes/Admin_Payments.php:355
 msgid "Método"
 msgstr ""
 
-#: includes/Admin_Links.php:39
-#: includes/Admin_Payments.php:87
-#: includes/Admin_Payments.php:359
-#: includes/CSV_Exporter.php:64
+#: convoca-gateway/includes/Admin_Links.php:39
+#: convoca-gateway/includes/CSV_Exporter.php:64
+#: convoca-gateway/includes/Admin_Payments.php:87
+#: convoca-gateway/includes/Admin_Payments.php:359
 msgid "Origen"
 msgstr ""
 
-#: includes/Admin_Links.php:40
+#: convoca-gateway/includes/Admin_Links.php:40
 msgid "Email Destinatario"
 msgstr ""
 
-#: includes/Admin_Links.php:41
+#: convoca-gateway/includes/Admin_Links.php:41
 msgid "Estado Pago"
 msgstr ""
 
-#: includes/Admin_Links.php:42
-#: includes/Admin_Links.php:172
+#: convoca-gateway/includes/Admin_Links.php:42
+#: convoca-gateway/includes/Admin_Links.php:172
 msgid "Activo"
 msgstr ""
 
-#: includes/Admin_Links.php:43
+#: convoca-gateway/includes/Admin_Links.php:43
 msgid "Caducidad"
 msgstr ""
 
-#: includes/Admin_Links.php:44
+#: convoca-gateway/includes/Admin_Links.php:44
 msgid "Generado"
 msgstr ""
 
-#: includes/Admin_Links.php:109
+#: convoca-gateway/includes/Admin_Links.php:109
 msgid "Ver detalles"
 msgstr ""
 
-#: includes/Admin_Links.php:110
+#: convoca-gateway/includes/Admin_Links.php:110
 msgid "Copiar enlace"
 msgstr ""
 
-#: includes/Admin_Links.php:122
+#: convoca-gateway/includes/Admin_Links.php:122
 msgid "Cualquier método"
 msgstr ""
 
-#: includes/Admin_Links.php:128
+#: convoca-gateway/includes/Admin_Links.php:128
 msgid "Enlace de pago"
 msgstr ""
 
-#: includes/Admin_Links.php:149
-#: includes/CPT_Pago.php:333
+#: convoca-gateway/includes/Admin_Links.php:149
+#: convoca-gateway/includes/CPT_Pago.php:333
 msgid "Nunca"
 msgstr ""
 
-#: includes/Admin_Links.php:165
+#: convoca-gateway/includes/Admin_Links.php:165
 msgid "Usado"
 msgstr ""
 
-#: includes/Admin_Links.php:169
+#: convoca-gateway/includes/Admin_Links.php:169
 msgid "Caducado"
 msgstr ""
 
-#: includes/Admin_Links.php:185
+#: convoca-gateway/includes/Admin_Links.php:185
 msgid "Enlaces de Pago Generados"
 msgstr ""
 
-#: includes/Admin_Links.php:186
+#: convoca-gateway/includes/Admin_Links.php:186
 msgid "Generar nuevo"
 msgstr ""
 
-#: includes/Admin_Payments.php:60
-msgid "Convoca Pagos"
-msgstr ""
-
-#: includes/Admin_Payments.php:72
-#: includes/Admin_Payments.php:73
-msgid "Todos los Pagos"
-msgstr ""
-
-#: includes/Admin_Payments.php:86
-#: includes/Admin_Payments.php:347
-#: includes/Admin_Settings.php:444
-#: includes/CSV_Exporter.php:63
-msgid "Estado"
-msgstr ""
-
-#: includes/Admin_Payments.php:88
-#: includes/Admin_Payments.php:398
-#: includes/Email_Notifications.php:71
-msgid "Fecha"
-msgstr ""
-
-#: includes/Admin_Payments.php:113
-msgid "Todos los estados"
-msgstr ""
-
-#: includes/Admin_Payments.php:122
-msgid "Todos los métodos"
-msgstr ""
-
-#: includes/Admin_Payments.php:135
-msgid "Todos los orígenes"
-msgstr ""
-
-#: includes/Admin_Payments.php:145
-msgid "Filtrar"
-msgstr ""
-
-#: includes/Admin_Payments.php:148
-msgid "Exportar CSV"
-msgstr ""
-
-#: includes/Admin_Payments.php:223
-msgid "Ver detalle"
-msgstr ""
-
-#: includes/Admin_Payments.php:228
-msgid "Ver inscripción"
-msgstr ""
-
-#: includes/Admin_Payments.php:232
-msgid "Ver miembro"
-msgstr ""
-
-#: includes/Admin_Payments.php:277
-msgid "Pagos Convoca"
-msgstr ""
-
-#: includes/Admin_Payments.php:278
-msgid "Exportar a CSV"
-msgstr ""
-
-#: includes/Admin_Payments.php:279
-msgid "Exportar PDF"
-msgstr ""
-
-#: includes/Admin_Payments.php:285
-msgid "Buscar pedido"
-msgstr ""
-
-#: includes/Admin_Payments.php:298
-msgid "Pago no encontrado."
-msgstr ""
-
-#: includes/Admin_Payments.php:312
-msgid "Email reenviado a la cola."
-msgstr ""
-
-#: includes/Admin_Payments.php:318
-msgid "Pago marcado como reembolsado."
-msgstr ""
-
-#: includes/Admin_Payments.php:325
-#: includes/Admin_Payments.php:531
-msgid "Pago marcado como PAGADO manualmente."
-msgstr ""
-
-#: includes/Admin_Payments.php:331
-#, php-format
-msgid "Pago #%s"
-msgstr ""
-
-#: includes/Admin_Payments.php:332
-msgid "Volver al listado"
-msgstr ""
-
-#: includes/Admin_Payments.php:339
-msgid "Información del Pago"
-msgstr ""
-
-#: includes/Admin_Payments.php:343
-#: includes/CSV_Exporter.php:60
-msgid "ID Pedido"
-msgstr ""
-
-#: includes/Admin_Payments.php:366
-msgid "Descripción producto"
-msgstr ""
-
-#: includes/Admin_Payments.php:370
-msgid "Código Autorización"
-msgstr ""
-
-#: includes/Admin_Payments.php:374
-msgid "Respuesta Redsys"
-msgstr ""
-
-#: includes/Admin_Payments.php:379
-msgid "Justificante de pago"
-msgstr ""
-
-#: includes/Admin_Payments.php:383
-msgid "Ver justificante"
-msgstr ""
-
-#: includes/Admin_Payments.php:393
-msgid "Registro de eventos (Logs)"
-msgstr ""
-
-#: includes/Admin_Payments.php:399
-msgid "Nivel"
-msgstr ""
-
-#: includes/Admin_Payments.php:400
-msgid "Mensaje"
-msgstr ""
-
-#: includes/Admin_Payments.php:405
-msgid "No hay eventos registrados."
-msgstr ""
-
-#: includes/Admin_Payments.php:424
-msgid "Acciones"
-msgstr ""
-
-#: includes/Admin_Payments.php:429
-msgid "Reenviar email de confirmación"
-msgstr ""
-
-#: includes/Admin_Payments.php:431
-msgid "Solo disponible para pagos completados."
-msgstr ""
-
-#: includes/Admin_Payments.php:437
-msgid "Confirmar Pago Manual"
-msgstr ""
-
-#: includes/Admin_Payments.php:438
-msgid "Úsalo para confirmar transferencias recibidas."
-msgstr ""
-
-#: includes/Admin_Payments.php:445
-msgid "Marcar como Reembolsado"
-msgstr ""
-
-#: includes/Admin_Payments.php:451
-msgid "Ver inscripción original"
-msgstr ""
-
-#: includes/Admin_Payments.php:514
-msgid "Pago marcado como REEMBOLSADO manualmente."
-msgstr ""
-
-#: includes/Admin_Settings.php:49
-msgid "Ajustes del TPV"
-msgstr ""
-
-#: includes/Admin_Settings.php:59
-msgid "Detalle de Pago"
-msgstr ""
-
-#: includes/Admin_Settings.php:60
-msgid "Detalle"
-msgstr ""
-
-#: includes/Admin_Settings.php:78
-msgid "Configuración Redsys (Caja Rural de Asturias)"
-msgstr ""
-
-#: includes/Admin_Settings.php:128
-msgid "Configuración Transferencia Bancaria"
-msgstr ""
-
-#: includes/Admin_Settings.php:164
-msgid "Notificaciones por Email"
-msgstr ""
-
-#: includes/Admin_Settings.php:165
-msgid "Configura los correos automáticos tras un pago con éxito."
-msgstr ""
-
-#: includes/Admin_Settings.php:171
-msgid "Habilitar confirmación de pago"
-msgstr ""
-
-#: includes/Admin_Settings.php:173
-msgid "Envía un email al usuario cuando el pago se completa."
-msgstr ""
-
-#: includes/Admin_Settings.php:176
-msgid "Nombre del remitente"
-msgstr ""
-
-#: includes/Admin_Settings.php:195
-msgid "Asunto (Éxito)"
-msgstr ""
-
-#: includes/Admin_Settings.php:197
-msgid "Asunto del correo tras un pago exitoso."
-msgstr ""
-
-#: includes/Admin_Settings.php:200
-msgid "Cuerpo (Éxito)"
-msgstr ""
-
-#: includes/Admin_Settings.php:202
-msgid "Contenido del correo tras un pago exitoso."
-msgstr ""
-
-#: includes/Admin_Settings.php:205
-msgid "Asunto (Fallo)"
-msgstr ""
-
-#: includes/Admin_Settings.php:207
-msgid "Asunto del correo tras un pago fallido."
-msgstr ""
-
-#: includes/Admin_Settings.php:210
-msgid "Cuerpo (Fallo)"
-msgstr ""
-
-#: includes/Admin_Settings.php:212
-msgid "Contenido del correo tras un pago fallido."
-msgstr ""
-
-#: includes/Admin_Settings.php:218
-msgid "Personalización de Plantillas"
-msgstr ""
-
-#: includes/Admin_Settings.php:219
-msgid "Usa variables: {importe}, {metodo}, {fecha}, {producto}, {enlace_inscripcion}"
-msgstr ""
-
-#: includes/Admin_Settings.php:236
-msgid "Páginas de pago"
-msgstr ""
-
-#: includes/Admin_Settings.php:278
-msgid "Definido en wp-config.php"
-msgstr ""
-
-#: includes/Admin_Settings.php:319
-msgid "Introduce clave para actualizar..."
-msgstr ""
-
-#: includes/Admin_Settings.php:359
-msgid "El código de comercio debe tener exactamente 9 dígitos."
-msgstr ""
-
-#: includes/Admin_Settings.php:365
-msgid "El número de terminal debe tener entre 1 y 3 dígitos."
-msgstr ""
-
-#: includes/Admin_Settings.php:374
-msgid "El IBAN no tiene un formato válido."
-msgstr ""
-
-#: includes/Admin_Settings.php:387
-msgid "La clave secreta debe tener al menos 16 caracteres."
-msgstr ""
-
-#: includes/Admin_Settings.php:420
-msgid "Convoca Common no está activo. Algunas funciones de la pasarela podrían no estar disponibles."
-msgstr ""
-
-#: includes/Admin_Settings.php:431
-msgid "Pasarela de pago — Redsys"
-msgstr ""
-
-#: includes/Admin_Settings.php:432
-msgid "Configuración y estado de transacciones"
-msgstr ""
-
-#: includes/Admin_Settings.php:438
-msgid "General"
-msgstr ""
-
-#: includes/Admin_Settings.php:441
-msgid "Correos"
-msgstr ""
-
-#: includes/Admin_Settings.php:481
-msgid "Previsualizar Éxito"
-msgstr ""
-
-#: includes/Admin_Settings.php:482
-msgid "Previsualizar Fallo"
-msgstr ""
-
-#: includes/Admin_Settings.php:488
-msgid "Guardar configuración"
-msgstr ""
-
-#: includes/Block_Gateway.php:36
+#: convoca-gateway/includes/Block_Gateway.php:36
 msgid "Página de Pago"
 msgstr ""
 
-#: includes/Block_Gateway.php:39
-msgid "Página de procesamiento de pago con selección de método (tarjeta/bizum)."
+#: convoca-gateway/includes/Block_Gateway.php:39
+msgid ""
+"Página de procesamiento de pago con selección de método (tarjeta/bizum)."
 msgstr ""
 
-#: includes/Block_Gateway.php:51
+#: convoca-gateway/includes/Block_Gateway.php:51
 msgid "Pago Correcto"
 msgstr ""
 
-#: includes/Block_Gateway.php:54
+#: convoca-gateway/includes/Block_Gateway.php:54
 msgid "Página de confirmación tras un pago exitoso."
 msgstr ""
 
-#: includes/Block_Gateway.php:66
+#: convoca-gateway/includes/Block_Gateway.php:66
 msgid "Pago Fallido"
 msgstr ""
 
-#: includes/Block_Gateway.php:69
+#: convoca-gateway/includes/Block_Gateway.php:69
 msgid "Página de error cuando un pago no se ha podido procesar."
 msgstr ""
 
-#: includes/CPT_Pago.php:83
+#: convoca-gateway/includes/CPT_Pago.php:82
+#: convoca-gateway/includes/Admin_Dashboard.php:74
+#: convoca-gateway/includes/Admin_Payments.php:61
+msgid "Pagos"
+msgstr ""
+
+#: convoca-gateway/includes/CPT_Pago.php:83
 msgid "Pago"
 msgstr ""
 
-#: includes/CPT_Pago.php:115
+#: convoca-gateway/includes/CPT_Pago.php:115
 msgid "El importe debe ser mayor que 0."
 msgstr ""
 
-#: includes/CPT_Pago.php:248
+#: convoca-gateway/includes/CPT_Pago.php:248
 msgid "El importe mínimo es 0.50€"
 msgstr ""
 
-#: includes/CSV_Exporter.php:25
-msgid "No tienes permisos suficientes para exportar el historial de pagos."
+#: convoca-gateway/includes/Email_Notifications.php:60
+msgid "Confirmación de pago: {producto}"
 msgstr ""
 
-#: includes/CSV_Exporter.php:26
-msgid "Acceso Denegado"
+#: convoca-gateway/includes/Email_Notifications.php:61
+msgid "Problema con tu pago: {producto}"
 msgstr ""
 
-#: includes/CSV_Exporter.php:59
-msgid "ID"
+#: convoca-gateway/includes/Email_Notifications.php:66
+msgid "Resumen de tu pago"
 msgstr ""
 
-#: includes/CSV_Exporter.php:61
-#: includes/Payment_Handler.php:747
-msgid "Importe (€)"
+#: convoca-gateway/includes/Email_Notifications.php:67
+msgid "Hemos recibido correctamente tu pago. Detalles:"
 msgstr ""
 
-#: includes/CSV_Exporter.php:65
-msgid "Email Usuario"
+#: convoca-gateway/includes/Email_Notifications.php:71
+#: convoca-gateway/includes/Admin_Payments.php:88
+#: convoca-gateway/includes/Admin_Payments.php:398
+msgid "Fecha"
 msgstr ""
 
-#: includes/CSV_Exporter.php:66
-msgid "Fecha Creación"
+#: convoca-gateway/includes/Email_Notifications.php:73
+msgid "Error en el pago"
 msgstr ""
 
-#: includes/CSV_Exporter.php:67
-msgid "Fecha Pago"
+#: convoca-gateway/includes/Email_Notifications.php:74
+msgid "No hemos podido procesar tu pago para {producto}."
 msgstr ""
 
-#: includes/CSV_Exporter.php:126
-msgid "Inscripción"
+#: convoca-gateway/includes/Email_Notifications.php:75
+msgid "Puedes volver a intentarlo aquí:"
 msgstr ""
 
-#: includes/CSV_Exporter.php:127
-msgid "Socio/a"
+#: convoca-gateway/includes/Admin_Dashboard.php:30
+#: convoca-gateway/includes/Dashboard_Widget.php:30
+msgid "Resumen de Pagos Convoca"
 msgstr ""
 
-#: includes/Dashboard_Widget.php:53
+#: convoca-gateway/includes/Admin_Dashboard.php:45
+#: convoca-gateway/includes/Dashboard_Widget.php:45
+msgid "Total este mes"
+msgstr ""
+
+#: convoca-gateway/includes/Admin_Dashboard.php:49
+#: convoca-gateway/includes/Dashboard_Widget.php:49
+msgid "Pagos hoy"
+msgstr ""
+
+#: convoca-gateway/includes/Admin_Dashboard.php:55
+msgid "Métodos de pago (Mes)"
+msgstr ""
+
+#: convoca-gateway/includes/Admin_Dashboard.php:69
+msgid "Últimos 7 días"
+msgstr ""
+
+#: convoca-gateway/includes/Admin_Dashboard.php:73
+#: convoca-gateway/includes/Dashboard_Widget.php:84
+msgid "Día"
+msgstr ""
+
+#: convoca-gateway/includes/Admin_Dashboard.php:75
+#: convoca-gateway/includes/Dashboard_Widget.php:86
+msgid "Total"
+msgstr ""
+
+#: convoca-gateway/includes/Admin_Dashboard.php:91
+#: convoca-gateway/includes/Dashboard_Widget.php:111
+msgid "Ver todos los pagos"
+msgstr ""
+
+#: convoca-gateway/includes/Admin_Dashboard.php:92
+#: convoca-gateway/includes/Dashboard_Widget.php:112
+#: convoca-gateway/includes/Admin_Settings.php:50
+msgid "Configuración"
+msgstr ""
+
+#: convoca-gateway/includes/Dashboard_Widget.php:53
 msgid "Pagos este mes"
 msgstr ""
 
-#: includes/Dashboard_Widget.php:59
+#: convoca-gateway/includes/Dashboard_Widget.php:59
 msgid "Uso de Métodos (Mes)"
 msgstr ""
 
-#: includes/Dashboard_Widget.php:73
+#: convoca-gateway/includes/Dashboard_Widget.php:73
 msgid "Evolución (7 días)"
 msgstr ""
 
-#: includes/Dashboard_Widget.php:85
+#: convoca-gateway/includes/Dashboard_Widget.php:85
 msgid "Resumen"
 msgstr ""
 
-#: includes/Dashboard_Widget.php:97
+#: convoca-gateway/includes/Dashboard_Widget.php:97
 #, php-format
 msgid "%1$d pagos, %2$s"
 msgstr ""
 
-#: includes/Email_Notifications.php:60
-msgid "Confirmación de pago: {producto}"
+#: convoca-gateway/includes/Admin_Settings.php:49
+msgid "Ajustes del TPV"
 msgstr ""
 
-#: includes/Email_Notifications.php:61
-msgid "Problema con tu pago: {producto}"
+#: convoca-gateway/includes/Admin_Settings.php:59
+msgid "Detalle de Pago"
 msgstr ""
 
-#: includes/Email_Notifications.php:66
-msgid "Resumen de tu pago"
+#: convoca-gateway/includes/Admin_Settings.php:60
+msgid "Detalle"
 msgstr ""
 
-#: includes/Email_Notifications.php:67
-msgid "Hemos recibido correctamente tu pago. Detalles:"
+#: convoca-gateway/includes/Admin_Settings.php:78
+msgid "Configuración Redsys (Caja Rural de Asturias)"
 msgstr ""
 
-#: includes/Email_Notifications.php:73
-msgid "Error en el pago"
+#: convoca-gateway/includes/Admin_Settings.php:128
+msgid "Configuración Transferencia Bancaria"
 msgstr ""
 
-#: includes/Email_Notifications.php:74
-msgid "No hemos podido procesar tu pago para {producto}."
+#: convoca-gateway/includes/Admin_Settings.php:164
+msgid "Notificaciones por Email"
 msgstr ""
 
-#: includes/Email_Notifications.php:75
-msgid "Puedes volver a intentarlo aquí:"
+#: convoca-gateway/includes/Admin_Settings.php:165
+msgid "Configura los correos automáticos tras un pago con éxito."
 msgstr ""
 
-#: includes/Payment_Handler.php:305
+#: convoca-gateway/includes/Admin_Settings.php:171
+msgid "Habilitar confirmación de pago"
+msgstr ""
+
+#: convoca-gateway/includes/Admin_Settings.php:173
+msgid "Envía un email al usuario cuando el pago se completa."
+msgstr ""
+
+#: convoca-gateway/includes/Admin_Settings.php:176
+msgid "Nombre del remitente"
+msgstr ""
+
+#: convoca-gateway/includes/Admin_Settings.php:195
+msgid "Asunto (Éxito)"
+msgstr ""
+
+#: convoca-gateway/includes/Admin_Settings.php:197
+msgid "Asunto del correo tras un pago exitoso."
+msgstr ""
+
+#: convoca-gateway/includes/Admin_Settings.php:200
+msgid "Cuerpo (Éxito)"
+msgstr ""
+
+#: convoca-gateway/includes/Admin_Settings.php:202
+msgid "Contenido del correo tras un pago exitoso."
+msgstr ""
+
+#: convoca-gateway/includes/Admin_Settings.php:205
+msgid "Asunto (Fallo)"
+msgstr ""
+
+#: convoca-gateway/includes/Admin_Settings.php:207
+msgid "Asunto del correo tras un pago fallido."
+msgstr ""
+
+#: convoca-gateway/includes/Admin_Settings.php:210
+msgid "Cuerpo (Fallo)"
+msgstr ""
+
+#: convoca-gateway/includes/Admin_Settings.php:212
+msgid "Contenido del correo tras un pago fallido."
+msgstr ""
+
+#: convoca-gateway/includes/Admin_Settings.php:218
+msgid "Personalización de Plantillas"
+msgstr ""
+
+#: convoca-gateway/includes/Admin_Settings.php:219
+msgid ""
+"Usa variables: {importe}, {metodo}, {fecha}, {producto}, {enlace_inscripcion}"
+msgstr ""
+
+#: convoca-gateway/includes/Admin_Settings.php:236
+msgid "Páginas de pago"
+msgstr ""
+
+#: convoca-gateway/includes/Admin_Settings.php:278
+msgid "Definido en wp-config.php"
+msgstr ""
+
+#: convoca-gateway/includes/Admin_Settings.php:319
+msgid "Introduce clave para actualizar..."
+msgstr ""
+
+#: convoca-gateway/includes/Admin_Settings.php:359
+msgid "El código de comercio debe tener exactamente 9 dígitos."
+msgstr ""
+
+#: convoca-gateway/includes/Admin_Settings.php:365
+msgid "El número de terminal debe tener entre 1 y 3 dígitos."
+msgstr ""
+
+#: convoca-gateway/includes/Admin_Settings.php:374
+msgid "El IBAN no tiene un formato válido."
+msgstr ""
+
+#: convoca-gateway/includes/Admin_Settings.php:387
+msgid "La clave secreta debe tener al menos 16 caracteres."
+msgstr ""
+
+#: convoca-gateway/includes/Admin_Settings.php:420
+msgid ""
+"Convoca Common no está activo. Algunas funciones de la pasarela podrían no "
+"estar disponibles."
+msgstr ""
+
+#: convoca-gateway/includes/Admin_Settings.php:431
+msgid "Pasarela de pago — Redsys"
+msgstr ""
+
+#: convoca-gateway/includes/Admin_Settings.php:432
+msgid "Configuración y estado de transacciones"
+msgstr ""
+
+#: convoca-gateway/includes/Admin_Settings.php:438
+msgid "General"
+msgstr ""
+
+#: convoca-gateway/includes/Admin_Settings.php:441
+msgid "Correos"
+msgstr ""
+
+#: convoca-gateway/includes/Admin_Settings.php:444
+#: convoca-gateway/includes/CSV_Exporter.php:63
+#: convoca-gateway/includes/Admin_Payments.php:86
+#: convoca-gateway/includes/Admin_Payments.php:347
+msgid "Estado"
+msgstr ""
+
+#: convoca-gateway/includes/Admin_Settings.php:481
+msgid "Previsualizar Éxito"
+msgstr ""
+
+#: convoca-gateway/includes/Admin_Settings.php:482
+msgid "Previsualizar Fallo"
+msgstr ""
+
+#: convoca-gateway/includes/Admin_Settings.php:488
+msgid "Guardar configuración"
+msgstr ""
+
+#: convoca-gateway/includes/CSV_Exporter.php:25
+msgid "No tienes permisos suficientes para exportar el historial de pagos."
+msgstr ""
+
+#: convoca-gateway/includes/CSV_Exporter.php:26
+msgid "Acceso Denegado"
+msgstr ""
+
+#: convoca-gateway/includes/CSV_Exporter.php:59
+msgid "ID"
+msgstr ""
+
+#: convoca-gateway/includes/CSV_Exporter.php:60
+#: convoca-gateway/includes/Admin_Payments.php:343
+msgid "ID Pedido"
+msgstr ""
+
+#: convoca-gateway/includes/CSV_Exporter.php:61
+#: convoca-gateway/includes/Payment_Handler.php:747
+msgid "Importe (€)"
+msgstr ""
+
+#: convoca-gateway/includes/CSV_Exporter.php:65
+msgid "Email Usuario"
+msgstr ""
+
+#: convoca-gateway/includes/CSV_Exporter.php:66
+msgid "Fecha Creación"
+msgstr ""
+
+#: convoca-gateway/includes/CSV_Exporter.php:67
+msgid "Fecha Pago"
+msgstr ""
+
+#: convoca-gateway/includes/CSV_Exporter.php:126
+msgid "Inscripción"
+msgstr ""
+
+#: convoca-gateway/includes/CSV_Exporter.php:127
+msgid "Socio/a"
+msgstr ""
+
+#: convoca-gateway/includes/Admin_Payments.php:60
+msgid "Convoca Pagos"
+msgstr ""
+
+#: convoca-gateway/includes/Admin_Payments.php:72
+#: convoca-gateway/includes/Admin_Payments.php:73
+msgid "Todos los Pagos"
+msgstr ""
+
+#: convoca-gateway/includes/Admin_Payments.php:113
+msgid "Todos los estados"
+msgstr ""
+
+#: convoca-gateway/includes/Admin_Payments.php:122
+msgid "Todos los métodos"
+msgstr ""
+
+#: convoca-gateway/includes/Admin_Payments.php:135
+msgid "Todos los orígenes"
+msgstr ""
+
+#: convoca-gateway/includes/Admin_Payments.php:145
+msgid "Filtrar"
+msgstr ""
+
+#: convoca-gateway/includes/Admin_Payments.php:148
+msgid "Exportar CSV"
+msgstr ""
+
+#: convoca-gateway/includes/Admin_Payments.php:223
+msgid "Ver detalle"
+msgstr ""
+
+#: convoca-gateway/includes/Admin_Payments.php:228
+msgid "Ver inscripción"
+msgstr ""
+
+#: convoca-gateway/includes/Admin_Payments.php:232
+msgid "Ver miembro"
+msgstr ""
+
+#: convoca-gateway/includes/Admin_Payments.php:277
+msgid "Pagos Convoca"
+msgstr ""
+
+#: convoca-gateway/includes/Admin_Payments.php:278
+msgid "Exportar a CSV"
+msgstr ""
+
+#: convoca-gateway/includes/Admin_Payments.php:279
+msgid "Exportar PDF"
+msgstr ""
+
+#: convoca-gateway/includes/Admin_Payments.php:285
+msgid "Buscar pedido"
+msgstr ""
+
+#: convoca-gateway/includes/Admin_Payments.php:298
+msgid "Pago no encontrado."
+msgstr ""
+
+#: convoca-gateway/includes/Admin_Payments.php:312
+msgid "Email reenviado a la cola."
+msgstr ""
+
+#: convoca-gateway/includes/Admin_Payments.php:318
+msgid "Pago marcado como reembolsado."
+msgstr ""
+
+#: convoca-gateway/includes/Admin_Payments.php:325
+#: convoca-gateway/includes/Admin_Payments.php:531
+msgid "Pago marcado como PAGADO manualmente."
+msgstr ""
+
+#: convoca-gateway/includes/Admin_Payments.php:331
+#, php-format
+msgid "Pago #%s"
+msgstr ""
+
+#: convoca-gateway/includes/Admin_Payments.php:332
+msgid "Volver al listado"
+msgstr ""
+
+#: convoca-gateway/includes/Admin_Payments.php:339
+msgid "Información del Pago"
+msgstr ""
+
+#: convoca-gateway/includes/Admin_Payments.php:366
+msgid "Descripción producto"
+msgstr ""
+
+#: convoca-gateway/includes/Admin_Payments.php:370
+msgid "Código Autorización"
+msgstr ""
+
+#: convoca-gateway/includes/Admin_Payments.php:374
+msgid "Respuesta Redsys"
+msgstr ""
+
+#: convoca-gateway/includes/Admin_Payments.php:379
+msgid "Justificante de pago"
+msgstr ""
+
+#: convoca-gateway/includes/Admin_Payments.php:383
+msgid "Ver justificante"
+msgstr ""
+
+#: convoca-gateway/includes/Admin_Payments.php:393
+msgid "Registro de eventos (Logs)"
+msgstr ""
+
+#: convoca-gateway/includes/Admin_Payments.php:399
+msgid "Nivel"
+msgstr ""
+
+#: convoca-gateway/includes/Admin_Payments.php:400
+msgid "Mensaje"
+msgstr ""
+
+#: convoca-gateway/includes/Admin_Payments.php:405
+msgid "No hay eventos registrados."
+msgstr ""
+
+#: convoca-gateway/includes/Admin_Payments.php:424
+msgid "Acciones"
+msgstr ""
+
+#: convoca-gateway/includes/Admin_Payments.php:429
+msgid "Reenviar email de confirmación"
+msgstr ""
+
+#: convoca-gateway/includes/Admin_Payments.php:431
+msgid "Solo disponible para pagos completados."
+msgstr ""
+
+#: convoca-gateway/includes/Admin_Payments.php:437
+msgid "Confirmar Pago Manual"
+msgstr ""
+
+#: convoca-gateway/includes/Admin_Payments.php:438
+msgid "Úsalo para confirmar transferencias recibidas."
+msgstr ""
+
+#: convoca-gateway/includes/Admin_Payments.php:445
+msgid "Marcar como Reembolsado"
+msgstr ""
+
+#: convoca-gateway/includes/Admin_Payments.php:451
+msgid "Ver inscripción original"
+msgstr ""
+
+#: convoca-gateway/includes/Admin_Payments.php:514
+msgid "Pago marcado como REEMBOLSADO manualmente."
+msgstr ""
+
+#: convoca-gateway/includes/Payment_Handler.php:305
 msgid "Email de notificación"
 msgstr ""
 
-#: includes/Payment_Handler.php:734
+#: convoca-gateway/includes/Payment_Handler.php:734
 msgid "Emitir Pago Nuevo"
 msgstr ""
 
-#: includes/Payment_Handler.php:735
+#: convoca-gateway/includes/Payment_Handler.php:735
 msgid "Introduce los datos para realizar un pago seguro."
 msgstr ""
 
-#: includes/Payment_Handler.php:752
+#: convoca-gateway/includes/Payment_Handler.php:752
 msgid "Concepto o Actividad"
 msgstr ""
 
-#: includes/Payment_Handler.php:753
+#: convoca-gateway/includes/Payment_Handler.php:753
 msgid "Ej: Inscripción Taller Aves"
 msgstr ""
 
-#: includes/Payment_Handler.php:757
+#: convoca-gateway/includes/Payment_Handler.php:757
 msgid "Email para el recibo"
 msgstr ""
 
-#: includes/Payment_Handler.php:763
+#: convoca-gateway/includes/Payment_Handler.php:763
 msgid "Continuar al pago"
 msgstr ""
 
-#: includes/Payment_Handler.php:769
-msgid "Pago seguro gestionado por Redsys. Convoca Gateway no almacena tus datos bancarios."
+#: convoca-gateway/includes/Payment_Handler.php:769
+msgid ""
+"Pago seguro gestionado por Redsys. Convoca Gateway no almacena tus datos "
+"bancarios."
 msgstr ""
