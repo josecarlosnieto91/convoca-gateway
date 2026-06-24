@@ -13,6 +13,11 @@ if (!isset($GLOBALS['wpdb'])) {
         public function prepare($query, ...$args) { return $query; }
     };
 }
+
+// Mock Convoca\Core\Logger
+if (!class_exists('Convoca\\Core\\Logger')) {
+    require_once __DIR__ . '/StubLogger.php';
+}
 if (!function_exists('get_option')) {
     function get_option($key, $default = false) { return $default; }
     function get_page_by_title($title) { return null; }
@@ -24,6 +29,8 @@ if (!function_exists('get_option')) {
     function esc_url($s) { return $s; }
     function admin_url($path) { return "/wp-admin/$path"; }
     function update_option($key, $value, $autoload = null) { return true; }
+    function delete_option($key) { return true; }
+    function current_time($format) { return '2025-01-01 00:00:00'; }
     function wp_next_scheduled($hook, $args = array()) { return false; }
     function wp_schedule_event($timestamp, $recurrence, $hook, $args = array()) { return true; }
 }
