@@ -50,20 +50,20 @@ if ( ! class_exists( '\\Convoca\\Core\\Utils' ) ) {
 }
 
 /* ── Constants ────────────────────────────────── */
-if ( ! defined( 'CONV_GATEWAY_VERSION' ) ) {
-	define( 'CONV_GATEWAY_VERSION', '2.6.1' );
+if ( ! defined( 'CONVOCA_GATEWAY_VERSION' ) ) {
+	define( 'CONVOCA_GATEWAY_VERSION', '2.6.1' );
 }
-if ( ! defined( 'CONV_GATEWAY_DB_VERSION' ) ) {
-	define( 'CONV_GATEWAY_DB_VERSION', '1.0.2' );
+if ( ! defined( 'CONVOCA_GATEWAY_DB_VERSION' ) ) {
+	define( 'CONVOCA_GATEWAY_DB_VERSION', '1.0.2' );
 }
-if ( ! defined( 'CONV_GATEWAY_DIR' ) ) {
-	define( 'CONV_GATEWAY_DIR', plugin_dir_path( __FILE__ ) );
+if ( ! defined( 'CONVOCA_GATEWAY_DIR' ) ) {
+	define( 'CONVOCA_GATEWAY_DIR', plugin_dir_path( __FILE__ ) );
 }
-if ( ! defined( 'CONV_GATEWAY_URL' ) ) {
-	define( 'CONV_GATEWAY_URL', plugin_dir_url( __FILE__ ) );
+if ( ! defined( 'CONVOCA_GATEWAY_URL' ) ) {
+	define( 'CONVOCA_GATEWAY_URL', plugin_dir_url( __FILE__ ) );
 }
-if ( ! defined( 'CONV_GATEWAY_BASENAME' ) ) {
-	define( 'CONV_GATEWAY_BASENAME', plugin_basename( __FILE__ ) );
+if ( ! defined( 'CONVOCA_GATEWAY_BASENAME' ) ) {
+	define( 'CONVOCA_GATEWAY_BASENAME', plugin_basename( __FILE__ ) );
 }
 
 /* ── Autoload ─────────────────────────────────── */
@@ -137,13 +137,13 @@ register_activation_hook(
 	function () {
 		CPT_Pago::register();
 		flush_rewrite_rules();
-		add_option( 'conv_gateway_db_version', CONV_GATEWAY_DB_VERSION, '', false );
+		add_option( 'convoca_gateway_db_version', CONVOCA_GATEWAY_DB_VERSION, '', false );
 	}
 );
 
 /* ── Public API Functions ─────────────────────── */
 
-if ( ! function_exists( 'conv_gateway_create_payment' ) ) {
+if ( ! function_exists( 'convoca_gateway_create_payment' ) ) {
 	/**
 	 * Global wrapper to create a payment.
 	 *
@@ -155,13 +155,13 @@ if ( ! function_exists( 'conv_gateway_create_payment' ) ) {
 	}
 }
 
-if ( ! function_exists( 'conv_get_gateway_settings' ) ) {
+if ( ! function_exists( 'convoca_get_gateway_settings' ) ) {
 	/**
 	 * Retrieve Gateway settings.
 	 *
 	 * @return array
 	 */
 	function conv_get_gateway_settings(): array {
-		return get_option( 'conv_gateway_settings', array() );
+		return get_option( 'convoca_gateway_settings', array() );
 	}
 }

@@ -36,7 +36,7 @@ class Email_Notifications {
 	 * Generic sender logic.
 	 */
 	private function maybe_send( int $payment_id, string $type ): void {
-		$settings = get_option( 'conv_gateway_settings', array() );
+		$settings = get_option( 'convoca_gateway_settings', array() );
 		$enabled  = ( $settings['email_confirmation'] ?? '0' ) === '1';
 
 		if ( ! $enabled ) {

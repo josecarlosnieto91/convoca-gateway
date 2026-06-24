@@ -17,14 +17,14 @@ if ( defined( 'CONVOCA_KEEP_DATA_ON_UNINSTALL' ) && CONVOCA_KEEP_DATA_ON_UNINSTA
 }
 
 // Clear scheduled hooks.
-wp_clear_scheduled_hook( 'conv_gateway_cleanup_pending' );
-wp_clear_scheduled_hook( 'conv_gateway_retry_notifications' );
+wp_clear_scheduled_hook( 'convoca_gateway_cleanup_pending' );
+wp_clear_scheduled_hook( 'convoca_gateway_retry_notifications' );
 
 // Delete options.
-delete_option( 'conv_gateway_redsys_config' );
-delete_option( 'conv_gateway_db_version' );
-delete_option( 'conv_gateway_notification_retry_limit' );
-delete_option( 'conv_gateway_settings' );
+delete_option( 'convoca_gateway_redsys_config' );
+delete_option( 'convoca_gateway_db_version' );
+delete_option( 'convoca_gateway_notification_retry_limit' );
+delete_option( 'convoca_gateway_settings' );
 
 // Delete posts of CPT 'pago'.
 $payments = get_posts(

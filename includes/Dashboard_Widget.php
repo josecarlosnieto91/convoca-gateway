@@ -21,12 +21,12 @@ class Dashboard_Widget {
 	 * Register the dashboard widget.
 	 */
 	public function register_widget(): void {
-		if ( ! current_user_can( 'conv_gateway_view_payments' ) ) {
+		if ( ! current_user_can( 'convoca_gateway_view_payments' ) ) {
 			return;
 		}
 
 		wp_add_dashboard_widget(
-			'conv_gateway_payment_summary',
+			'convoca_gateway_payment_summary',
 			__( 'Resumen de Pagos Convoca', 'convoca-gateway' ),
 			array( $this, 'render_widget' )
 		);
@@ -141,7 +141,7 @@ class Dashboard_Widget {
 	private function get_dashboard_data(): array {
 		global $wpdb;
 
-		$data = get_transient( 'conv_gateway_dashboard_stats' );
+		$data = get_transient( 'convoca_gateway_dashboard_stats' );
 		if ( false !== $data ) {
 			return $data;
 		}
@@ -175,7 +175,7 @@ class Dashboard_Widget {
 				),
 				'last_7_days' => array(),
 			);
-			set_transient( 'conv_gateway_dashboard_stats', $data, 300 );
+			set_transient( 'convoca_gateway_dashboard_stats', $data, 300 );
 			return $data;
 		}
 
@@ -256,7 +256,7 @@ class Dashboard_Widget {
 			'last_7_days' => $last_7_days,
 		);
 
-		set_transient( 'conv_gateway_dashboard_stats', $data, HOUR_IN_SECONDS );
+		set_transient( 'convoca_gateway_dashboard_stats', $data, HOUR_IN_SECONDS );
 
 		return $data;
 	}

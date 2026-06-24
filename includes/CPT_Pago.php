@@ -297,10 +297,10 @@ class CPT_Pago {
 		}
 
 		// Use a persistent salt for payment links to prevent them from becoming invalid if WP_SALT changes.
-		$persistent_salt = get_option( 'conv_gateway_persistent_salt' );
+		$persistent_salt = get_option( 'convoca_gateway_persistent_salt' );
 		if ( ! $persistent_salt ) {
 			$persistent_salt = wp_generate_password( 64, true, true );
-			update_option( 'conv_gateway_persistent_salt', $persistent_salt );
+			update_option( 'convoca_gateway_persistent_salt', $persistent_salt );
 		}
 
 		$token = hash_hmac( 'sha256', $post_id . '|' . $expires_ts, $persistent_salt );
@@ -352,7 +352,7 @@ class CPT_Pago {
 	 * @return string Full payment URL.
 	 */
 	public static function build_payment_link( int $pago_id, string $token, ?int $expires_ts = null ): string {
-		$payment_page_id = get_option( 'conv_gateway_payment_page_id', 0 );
+		$payment_page_id = get_option( 'convoca_gateway_payment_page_id', 0 );
 		if ( $payment_page_id ) {
 			$base_url = get_permalink( $payment_page_id );
 		}
@@ -363,8 +363,8 @@ class CPT_Pago {
 
 		return add_query_arg(
 			array(
-				'conv_gateway_pago' => $pago_id,
-				'conv_gateway_key'  => $token,
+				'convoca_gateway_pago' => $pago_id,
+				'convoca_gateway_key'  => $token,
 			),
 			$base_url
 		);

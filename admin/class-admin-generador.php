@@ -24,7 +24,7 @@ class Admin_Generador {
 			'conv-gateway-payments',
 			__( 'Generador de Enlaces de Pago', 'convoca-gateway' ),
 			__( 'Generar Enlace', 'convoca-gateway' ),
-			'conv_gateway_manage_payments',
+			'convoca_gateway_manage_payments',
 			'conv-gateway-generador',
 			array( $this, 'render_page' )
 		);
@@ -33,7 +33,7 @@ class Admin_Generador {
 			'conv-gateway-payments',
 			__( 'Enlaces de Pago', 'convoca-gateway' ),
 			__( 'Enlaces de Pago', 'convoca-gateway' ),
-			'conv_gateway_manage_payments',
+			'convoca_gateway_manage_payments',
 			'conv-gateway-links',
 			array( new Admin_Links(), 'render_page' )
 		);
@@ -46,16 +46,16 @@ class Admin_Generador {
 
 		wp_enqueue_style(
 			'convoca-common-admin',
-			\CONV_COMMON_URL . 'assets/css/convoca-common.css',
+			\CONVOCA_COMMON_URL . 'assets/css/convoca-common.css',
 			array(),
-			\CONV_COMMON_VERSION
+			\CONVOCA_COMMON_VERSION
 		);
 
 		wp_enqueue_script(
 			'conv-gateway-generador',
-			\CONV_GATEWAY_URL . 'assets/js/generador.js',
+			\CONVOCA_GATEWAY_URL . 'assets/js/generador.js',
 			array( 'convoca-common-admin-js' ),
-			\CONV_GATEWAY_VERSION,
+			\CONVOCA_GATEWAY_VERSION,
 			true
 		);
 	}
@@ -64,7 +64,7 @@ class Admin_Generador {
 		$message        = '';
 		$generated_link = '';
 
-		if ( isset( $_POST['conv_gateway_generate_link'] ) && check_admin_referer( 'conv_gateway_generate_link_nonce', 'conv_gateway_generate_link_nonce' ) ) {
+		if ( isset( $_POST['convoca_gateway_generate_link'] ) && check_admin_referer( 'convoca_gateway_generate_link_nonce', 'convoca_gateway_generate_link_nonce' ) ) {
 			$result = $this->process_generation( $_POST );
 
 			if ( is_wp_error( $result ) ) {
@@ -83,7 +83,7 @@ class Admin_Generador {
 
 			<div class="conv-gateway-generador-card">
 				<form method="post" action="">
-					<?php wp_nonce_field( 'conv_gateway_generate_link_nonce', 'conv_gateway_generate_link_nonce' ); ?>
+					<?php wp_nonce_field( 'convoca_gateway_generate_link_nonce', 'convoca_gateway_generate_link_nonce' ); ?>
 
 					<table class="form-table">
 						<tr>
@@ -195,7 +195,7 @@ class Admin_Generador {
 				</style>
 				<script>
 				function conv_gateway_copy_link() {
-					const input = document.getElementById('conv_gateway_generated_link');
+					const input = document.getElementById('convoca_gateway_generated_link');
 					const btn = event.currentTarget;
 					const link = input.value;
 
@@ -242,12 +242,12 @@ class Admin_Generador {
 	}
 
 	private function process_generation( array $post ): array|\WP_Error {
-		$amount = (float) ( $post['conv_gateway_amount'] ?? 0 );
+		$amount = (float) ( $post['convoca_gateway_amount'] ?? 0 );
 		if ( $amount < 0.50 ) {
 			return new \WP_Error( 'invalid_amount', 'El importe mínimo es 0.50€' );
 		}
 
-		$concepto = sanitize_text_field( $post['conv_gateway_concepto'] ?? '' );
+		$concepto = sanitize_text_field( $post['convoca_gateway_concepto'] ?? '' );
 		if ( empty( $concepto ) ) {
 			return new \WP_Error( 'missing_concept', 'El concepto es obligatorio' );
 		}
@@ -256,16 +256,16 @@ class Admin_Generador {
 			return new \WP_Error( 'long_concept', 'El concepto no puede exceder 125 caracteres' );
 		}
 
-		$method        = sanitize_text_field( $post['conv_gateway_method'] ?? 'any' );
+		$method        = sanitize_text_field( $post['convoca_gateway_method'] ?? 'any' );
 		$valid_methods = array( 'any', 'tarjeta', 'bizum', 'transferencia' );
 		if ( ! in_array( $method, $valid_methods, true ) ) {
 			return new \WP_Error( 'invalid_method', 'Método de pago no válido' );
 		}
 
-		$email         = sanitize_email( $post['conv_gateway_email'] ?? '' );
-		$params        = sanitize_textarea_field( $post['conv_gateway_params'] ?? '' );
-		$expires       = sanitize_text_field( $post['conv_gateway_expires'] ?? '' );
-		$never_expires = ! empty( $post['conv_gateway_never_expires'] );
+		$email         = sanitize_email( $post['convoca_gateway_email'] ?? '' );
+		$params        = sanitize_textarea_field( $post['convoca_gateway_params'] ?? '' );
+		$expires       = sanitize_text_field( $post['convoca_gateway_expires'] ?? '' );
+		$never_expires = ! empty( $post['convoca_gateway_never_expires'] );
 
 		$pago_id = CPT_Pago::create_link_payment(
 			array(
@@ -294,7 +294,7 @@ class Admin_Generador {
 	}
 
 	private function get_offline_methods(): array {
-		$settings         = get_option( 'conv_gateway_settings', array() );
+		$settings         = get_option( 'convoca_gateway_settings', array() );
 		$transfer_enabled = ! empty( $settings['iban'] );
 		return $transfer_enabled ? array( 'transferencia' ) : array();
 	}
