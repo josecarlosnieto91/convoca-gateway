@@ -10,15 +10,6 @@ namespace Convoca\Gateway\Tests;
 
 use PHPUnit\Framework\TestCase;
 
-/**
- * Minimal Logger stub so decrypt_key error paths don't fatal.
- */
-class StubLogger
-{
-    public static function error(string $msg, string $ctx = ''): void {}
-    public static function warning(string $msg, string $ctx = ''): void {}
-}
-
 class RedsysClientTest extends TestCase
 {
     private function loadClass(): void
@@ -31,11 +22,6 @@ class RedsysClientTest extends TestCase
 
     protected function setUp(): void
     {
-        // ABSPATH guard: define before loading the class.
-        if (!defined('ABSPATH')) {
-            define('ABSPATH', dirname(__DIR__, 2) . '/');
-        }
-
         $this->loadClass();
     }
 
@@ -48,7 +34,6 @@ class RedsysClientTest extends TestCase
     {
         $ref    = new \ReflectionClass($class);
         $method = $ref->getMethod($method);
-        $method->setAccessible(true);
         return $method->invokeArgs(null, $args);
     }
 
