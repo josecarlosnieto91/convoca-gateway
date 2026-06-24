@@ -31,10 +31,10 @@
     },
     "autoload": {
         "psr-4": {
-            "Convoca\\Gateway\\": [
-                "includes/",
-                "admin/"
-            ]
-        }
+            "Convoca\\Gateway\\": "includes/"
+        },
+        "classmap": [
+            "admin/"
+        ]
     }
 }
