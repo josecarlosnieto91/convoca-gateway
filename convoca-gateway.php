@@ -33,14 +33,7 @@ if ( file_exists( $composer_autoload ) ) {
 }
 
 /* ── Convoca Core fallback ────────────────────────── */
-if ( ! class_exists( '\\Convoca\\Core\\Utils' ) ) {
-	$core_path = WP_PLUGIN_DIR . '/convoca-core/includes';
-	if ( is_dir( $core_path ) ) {
-		foreach ( glob( $core_path . '/class-*.php' ) as $file ) {
-			require_once $file;
-		}
-	}
-}
+// Core classes auto-loaded via Convoca Core's Composer PSR-4
 
 /* ── Startup guard: convoca-common must be active ── */
 if ( ! class_exists( '\\Convoca\\Core\\Utils' ) ) {
@@ -73,24 +66,7 @@ if ( ! defined( 'CONV_GATEWAY_BASENAME' ) ) {
 }
 
 /* ── Autoload ─────────────────────────────────── */
-spl_autoload_register(
-	function ( string $class ) {
-		$prefix = 'Convoca\\Gateway\\';
-		if ( ! str_starts_with( $class, $prefix ) ) {
-			return;
-		}
-		$relative = str_replace( $prefix, '', $class );
-		$relative = strtolower( str_replace( '_', '-', $relative ) );
-
-		foreach ( array( 'includes/', 'admin/' ) as $dir ) {
-			$file = CONV_GATEWAY_DIR . $dir . 'class-' . $relative . '.php';
-			if ( file_exists( $file ) ) {
-				require_once $file;
-				return;
-			}
-		}
-	}
-);
+// PSR-4 autoloading handled by Composer (vendor/autoload.php)
 
 /* ── Deactivation cleanup ── */
 register_deactivation_hook(
