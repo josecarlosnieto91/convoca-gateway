@@ -8,7 +8,7 @@ namespace Convoca\Gateway\Tests;
 use PHPUnit\Framework\TestCase;
 
 // Mock WordPress functions
-if (!function_exists('Convoca\Gateway\phpversion')) {
+if (!function_exists('get_option')) {
     function get_option($key, $default = false) { return $default; }
     function get_page_by_title($title) { return null; }
     function is_ssl() { return true; }
