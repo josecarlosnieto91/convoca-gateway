@@ -20,8 +20,8 @@ class Admin_Settings {
 	public function __construct() {
 		add_action( 'admin_menu', array( $this, 'add_menu' ) );
 		add_action( 'admin_init', array( $this, 'register_settings' ) );
-		add_action( 'wp_ajax_conv_diagnostic_run', array( $this, 'ajax_diagnostic_run' ) );
-		add_action( 'wp_ajax_conv_diagnostic_fix', array( $this, 'ajax_diagnostic_fix' ) );
+		add_action( 'wp_ajax_convoca_diagnostic_run', array( $this, 'ajax_diagnostic_run' ) );
+		add_action( 'wp_ajax_convoca_diagnostic_fix', array( $this, 'ajax_diagnostic_fix' ) );
 		add_action( 'admin_notices', array( $this, 'secret_key_warning' ) );
 	}
 
@@ -497,8 +497,8 @@ class Admin_Settings {
 			document.querySelectorAll('.js-conv-gateway-preview-email').forEach(function(btn) {
 				btn.addEventListener('click', function() {
 					const type = this.dataset.type;
-					const subjectInput = type === 'success' ? document.querySelector('input[name="conv_gateway_settings[email_success_subject]"]') : document.querySelector('input[name="conv_gateway_settings[email_failed_subject]"]');
-					const bodyInput = type === 'success' ? document.querySelector('textarea[name="conv_gateway_settings[email_success_body]"]') : document.querySelector('textarea[name="conv_gateway_settings[email_failed_body]"]');
+					const subjectInput = type === 'success' ? document.querySelector('input[name="convoca_gateway_settings[email_success_subject]"]') : document.querySelector('input[name="convoca_gateway_settings[email_failed_subject]"]');
+					const bodyInput = type === 'success' ? document.querySelector('textarea[name="convoca_gateway_settings[email_success_body]"]') : document.querySelector('textarea[name="convoca_gateway_settings[email_failed_body]"]');
 					
 					const previewWindow = window.open('', '_blank', 'width=600,height=400');
 					if (previewWindow) {

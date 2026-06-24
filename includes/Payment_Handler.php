@@ -63,9 +63,9 @@ class Payment_Handler {
 			$wpdb->prepare(
 				"SELECT pm_tok.meta_value 
              FROM {$wpdb->postmeta} pm_orig
-             JOIN {$wpdb->postmeta} pm_tok ON pm_orig.post_id = pm_tok.post_id AND pm_tok.meta_key = '_conv_redsys_merchant_id'
-             JOIN {$wpdb->postmeta} pm_stat ON pm_orig.post_id = pm_stat.post_id AND pm_stat.meta_key = '_conv_status' AND pm_stat.meta_value = 'paid'
-             WHERE pm_orig.meta_key = '_conv_origin_id' AND pm_orig.meta_value = %d
+             JOIN {$wpdb->postmeta} pm_tok ON pm_orig.post_id = pm_tok.post_id AND pm_tok.meta_key = '_convoca_redsys_merchant_id'
+             JOIN {$wpdb->postmeta} pm_stat ON pm_orig.post_id = pm_stat.post_id AND pm_stat.meta_key = '_convoca_status' AND pm_stat.meta_value = 'paid'
+             WHERE pm_orig.meta_key = '_convoca_origin_id' AND pm_orig.meta_value = %d
                AND pm_tok.meta_value != ''
              ORDER BY pm_orig.post_id DESC LIMIT 1",
 				$member_id
@@ -114,7 +114,7 @@ class Payment_Handler {
 		}
 
 		if ( ! empty( $data['tokenize'] ) ) {
-			update_post_meta( $pago_id, '_conv_tokenize', '1' );
+			update_post_meta( $pago_id, '_convoca_tokenize', '1' );
 		}
 
 		$payment_url = self::get_payment_link( $pago_id );
@@ -166,7 +166,7 @@ class Payment_Handler {
 		} else {
 			$ts              = time();
 			$args['convoca_gateway_t']   = $ts;
-			$args['convoca_gateway_key'] = hash_hmac( 'sha256', $pago_id . '|' . $ts . '_conv_payment', self::get_persistent_salt() );
+			$args['convoca_gateway_key'] = hash_hmac( 'sha256', $pago_id . '|' . $ts . '_convoca_payment', self::get_persistent_salt() );
 		}
 
 		return add_query_arg( $args, $base_url );
@@ -223,13 +223,13 @@ class Payment_Handler {
 			return '<div class="convoca-alert convoca-alert--danger">Pago no encontrado.</div>';
 		}
 
-		$stored_key = get_post_meta( $pago_id, '_conv_link_key', true );
+		$stored_key = get_post_meta( $pago_id, '_convoca_link_key', true );
 		if ( ! $stored_key || ! hash_equals( $stored_key, $key ) ) {
 			\Convoca\Core\Logger::warning( "Intento de acceso con token inválido. Pago ID: $pago_id", 'Gateway/LinkPayment', $pago_id );
 			return '<div class="convoca-alert convoca-alert--danger">Enlace de pago inválido.</div>';
 		}
 
-		$stored_expires = get_post_meta( $pago_id, '_conv_expires_at', true );
+		$stored_expires = get_post_meta( $pago_id, '_convoca_expires_at', true );
 		if ( $stored_expires && $stored_expires < time() ) {
 			return '<div class="convoca-alert convoca-alert--warning">El enlace de pago ha caducado. Por favor, contacta con el administrador para solicitar uno nuevo.</div>';
 		}
@@ -240,21 +240,21 @@ class Payment_Handler {
 			return '<div class="convoca-alert convoca-alert--success">✅ Este pago ya ha sido completado' . ( $paid_at ? ' el ' . $paid_at : '' ) . '.</div>';
 		}
 
-		$product_desc     = get_post_meta( $pago_id, '_conv_product_desc', true );
-		$amount_cents     = (int) get_post_meta( $pago_id, '_conv_amount_cents', true );
-		$suggested_method = get_post_meta( $pago_id, '_conv_method', true );
-		$recipient_email  = get_post_meta( $pago_id, '_conv_recipient_email', true );
-		$params           = get_post_meta( $pago_id, '_conv_params', true );
+		$product_desc     = get_post_meta( $pago_id, '_convoca_product_desc', true );
+		$amount_cents     = (int) get_post_meta( $pago_id, '_convoca_amount_cents', true );
+		$suggested_method = get_post_meta( $pago_id, '_convoca_method', true );
+		$recipient_email  = get_post_meta( $pago_id, '_convoca_recipient_email', true );
+		$params           = get_post_meta( $pago_id, '_convoca_params', true );
 		$params           = is_array( $params ) ? $params : array();
 
 		$selected_method = sanitize_text_field( $_GET['convoca_gateway_method'] ?? '' );
 		if ( $selected_method && in_array( $selected_method, array( 'tarjeta', 'bizum' ), true ) ) {
-			update_post_meta( $pago_id, '_conv_method', $selected_method );
+			update_post_meta( $pago_id, '_convoca_method', $selected_method );
 			return $this->render_redsys_redirect( $pago_id, $meta, $selected_method );
 		}
 
 		if ( $selected_method === 'transferencia' ) {
-			update_post_meta( $pago_id, '_conv_method', 'transferencia' );
+			update_post_meta( $pago_id, '_convoca_method', 'transferencia' );
 			return $this->render_transfer_instructions( $pago_id, $meta );
 		}
 
@@ -266,7 +266,7 @@ class Payment_Handler {
 	 */
 	private function render_link_form( int $pago_id, array $meta, string $product_desc, int $amount_cents, string $suggested_method, string $recipient_email, array $params ): string {
 		$amount_display = CPT_Pago::format_amount( $amount_cents );
-		$base_url       = self::get_payment_link( $pago_id, get_post_meta( $pago_id, '_conv_link_key', true ), get_post_meta( $pago_id, '_conv_expires_at', true ) );
+		$base_url       = self::get_payment_link( $pago_id, get_post_meta( $pago_id, '_convoca_link_key', true ), get_post_meta( $pago_id, '_convoca_expires_at', true ) );
 
 		$card_url     = add_query_arg( 'convoca_gateway_method', 'tarjeta', $base_url );
 		$bizum_url    = add_query_arg( 'convoca_gateway_method', 'bizum', $base_url );
@@ -302,8 +302,8 @@ class Payment_Handler {
 
 			<form method="post" action="" class="conv-link-form">
 				<div class="conv-email-field">
-					<label for="conv_gateway_email"><?php esc_html_e( 'Email de notificación', 'convoca-gateway' ); ?></label>
-					<input type="email" name="conv_gateway_email" id="conv_gateway_email" value="<?php echo esc_attr( $recipient_email ); ?>" class="regular-text">
+					<label for="convoca_gateway_email"><?php esc_html_e( 'Email de notificación', 'convoca-gateway' ); ?></label>
+					<input type="email" name="convoca_gateway_email" id="convoca_gateway_email" value="<?php echo esc_attr( $recipient_email ); ?>" class="regular-text">
 				</div>
 
 				<h4>Selecciona un método de pago</h4>
@@ -544,14 +544,14 @@ class Payment_Handler {
 				<?php endif; ?>
 
 				<?php
-				$proof_file = get_post_meta( $pago_id, '_conv_proof_file', true );
+				$proof_file = get_post_meta( $pago_id, '_convoca_proof_file', true );
 				if ( ! $this->upload_success && ! $proof_file ) :
 					?>
 				<form method="post" enctype="multipart/form-data" class="conv-upload-form">
 					<?php wp_nonce_field( 'convoca_gateway_proof_upload_action', 'convoca_gateway_proof_nonce' ); ?>
-					<input type="hidden" name="conv_gateway_upload_proof" value="1">
+					<input type="hidden" name="convoca_gateway_upload_proof" value="1">
 					<div class="form-group">
-						<input type="file" name="conv_gateway_proof_file" accept=".pdf,image/*" required>
+						<input type="file" name="convoca_gateway_proof_file" accept=".pdf,image/*" required>
 						<button type="submit" class="wp-block-button__link">Enviar justificante</button>
 					</div>
 				</form>
@@ -684,7 +684,7 @@ class Payment_Handler {
 		}
 
 		// Delete previous file if exists.
-		$old_url = get_post_meta( $pago_id, '_conv_proof_file', true );
+		$old_url = get_post_meta( $pago_id, '_convoca_proof_file', true );
 		if ( $old_url ) {
 			$upload_dir = wp_upload_dir();
 			$old_path   = str_replace( $upload_dir['baseurl'], $upload_dir['basedir'], $old_url );
@@ -696,7 +696,7 @@ class Payment_Handler {
 		$movefile = wp_handle_upload( $uploaded_file, $upload_overrides );
 
 		if ( $movefile && ! isset( $movefile['error'] ) ) {
-			update_post_meta( $pago_id, '_conv_proof_file', $movefile['url'] );
+			update_post_meta( $pago_id, '_convoca_proof_file', $movefile['url'] );
 
 			// Protect the upload directory against script execution.
 			$upload_dir    = wp_upload_dir();
@@ -706,9 +706,9 @@ class Payment_Handler {
 			}
 
 			// Add a note to the payment.
-			$notes  = get_post_meta( $pago_id, '_conv_notes', true );
+			$notes  = get_post_meta( $pago_id, '_convoca_notes', true );
 			$notes .= "\n\n[USER] Justificante de pago adjuntado el " . wp_date( 'd/m/Y H:i' ) . ': ' . $movefile['url'];
-			update_post_meta( $pago_id, '_conv_notes', $notes );
+			update_post_meta( $pago_id, '_convoca_notes', $notes );
 
 			\Convoca\Core\Logger::info(
 				"Justificante de pago subido para Pago #$pago_id",
@@ -741,7 +741,7 @@ class Payment_Handler {
 
 			<form method="post" action="" class="conv-manual-form">
 				<?php wp_nonce_field( 'convoca_gateway_manual_payment_action', 'convoca_gateway_manual_nonce' ); ?>
-				<input type="hidden" name="conv_gateway_manual_payment" value="1">
+				<input type="hidden" name="convoca_gateway_manual_payment" value="1">
 
 				<div class="form-group">
 					<label for="amount"><?php _e( 'Importe (€)', 'convoca-gateway' ); ?></label>
@@ -803,7 +803,7 @@ class Payment_Handler {
 			return $this->render_manual_form( $pago_id->get_error_message() );
 		}
 
-		$token = get_post_meta( $pago_id, '_conv_link_key', true );
+		$token = get_post_meta( $pago_id, '_convoca_link_key', true );
 		$url   = self::get_payment_link( $pago_id, $token );
 
 		return '<script>window.location.href="' . esc_url_raw( $url ) . '";</script>' .
@@ -814,8 +814,8 @@ class Payment_Handler {
 	 * Render payment page for legacy system (24h expiration).
 	 */
 	private function render_legacy_payment_page( int $pago_id, int $ts, string $key ): string {
-		$persistent_hash = hash_hmac( 'sha256', $pago_id . '|' . $ts . '_conv_payment', self::get_persistent_salt() );
-		$legacy_hash     = wp_hash( $pago_id . '|' . $ts . '_conv_payment' );
+		$persistent_hash = hash_hmac( 'sha256', $pago_id . '|' . $ts . '_convoca_payment', self::get_persistent_salt() );
+		$legacy_hash     = wp_hash( $pago_id . '|' . $ts . '_convoca_payment' );
 
 		if ( ! hash_equals( $persistent_hash, $key ) && ! hash_equals( $legacy_hash, $key ) ) {
 			return '<div class="convoca-alert convoca-alert--danger">Enlace de pago inválido o corrupto.</div>';
@@ -833,12 +833,12 @@ class Payment_Handler {
 		$selected_method = sanitize_text_field( $_GET['convoca_gateway_method'] ?? '' );
 
 		if ( $selected_method && in_array( $selected_method, array( 'tarjeta', 'bizum' ), true ) ) {
-			update_post_meta( $pago_id, '_conv_method', $selected_method );
+			update_post_meta( $pago_id, '_convoca_method', $selected_method );
 			return $this->render_redsys_redirect( $pago_id, $meta, $selected_method );
 		}
 
 		if ( $selected_method === 'transferencia' ) {
-			update_post_meta( $pago_id, '_conv_method', 'transferencia' );
+			update_post_meta( $pago_id, '_convoca_method', 'transferencia' );
 			return $this->render_transfer_instructions( $pago_id, $meta );
 		}
 
@@ -1000,8 +1000,8 @@ class Payment_Handler {
 		$ok_page  = (int) ( $settings['ok_page_id'] ?? 0 );
 		$ko_page  = (int) ( $settings['ko_page_id'] ?? 0 );
 
-		$url_ok = $ok_page ? add_query_arg( 'convoca_gateway_pago', $pago_id, get_permalink( $ok_page ) ) : home_url( '/pago-completado/?conv_gateway_pago=' . $pago_id );
-		$url_ko = $ko_page ? add_query_arg( 'convoca_gateway_pago', $pago_id, get_permalink( $ko_page ) ) : home_url( '/pago-error/?conv_gateway_pago=' . $pago_id );
+		$url_ok = $ok_page ? add_query_arg( 'convoca_gateway_pago', $pago_id, get_permalink( $ok_page ) ) : home_url( '/pago-completado/?convoca_gateway_pago=' . $pago_id );
+		$url_ko = $ko_page ? add_query_arg( 'convoca_gateway_pago', $pago_id, get_permalink( $ko_page ) ) : home_url( '/pago-error/?convoca_gateway_pago=' . $pago_id );
 
 		$notify_url = get_rest_url( null, 'convoca-gateway/v1/notify' );
 
@@ -1016,7 +1016,7 @@ class Payment_Handler {
 
 		wp_enqueue_script( 'conv-redsys' );
 
-		$tokenize = get_post_meta( $pago_id, '_conv_tokenize', true ) === '1';
+		$tokenize = get_post_meta( $pago_id, '_convoca_tokenize', true ) === '1';
 
 		$form = Redsys_Client::build_form(
 			array(
@@ -1123,7 +1123,7 @@ class Payment_Handler {
 		}
 
 		// 3. Re-check status AFTER acquiring the lock
-		$current_status = get_post_meta( $pago_id, '_conv_status', true );
+		$current_status = get_post_meta( $pago_id, '_convoca_status', true );
 		if ( $current_status === 'paid' ) {
 			--$savepoint_depth;
 			if ( $savepoint_depth === 0 ) {
@@ -1137,17 +1137,17 @@ class Payment_Handler {
 		$new_status  = $is_approved ? 'paid' : 'failed';
 
 		try {
-			update_post_meta( $pago_id, '_conv_status', $new_status );
-			update_post_meta( $pago_id, '_conv_redsys_response', $response_code );
-			update_post_meta( $pago_id, '_conv_redsys_auth_code', $auth_code );
-			update_post_meta( $pago_id, '_conv_redsys_full_log', wp_json_encode( $data ) );
+			update_post_meta( $pago_id, '_convoca_status', $new_status );
+			update_post_meta( $pago_id, '_convoca_redsys_response', $response_code );
+			update_post_meta( $pago_id, '_convoca_redsys_auth_code', $auth_code );
+			update_post_meta( $pago_id, '_convoca_redsys_full_log', wp_json_encode( $data ) );
 
 			if ( ! empty( $data['Ds_MerchantIdentifier'] ) ) {
-				update_post_meta( $pago_id, '_conv_redsys_merchant_id', sanitize_text_field( $data['Ds_MerchantIdentifier'] ) );
+				update_post_meta( $pago_id, '_convoca_redsys_merchant_id', sanitize_text_field( $data['Ds_MerchantIdentifier'] ) );
 			}
 
 			if ( $is_approved ) {
-				update_post_meta( $pago_id, '_conv_paid_at', current_time( 'mysql' ) );
+				update_post_meta( $pago_id, '_convoca_paid_at', current_time( 'mysql' ) );
 
 				// Get fresh meta for the hooks.
 				$meta = CPT_Pago::get_meta( $pago_id );
@@ -1191,8 +1191,8 @@ class Payment_Handler {
 
 		// Safety check: if the payment is not paid, show an error and a link to retry.
 		if ( ( $meta['status'] ?? '' ) !== 'paid' ) {
-			$token   = get_post_meta( $pago_id, '_conv_link_key', true );
-			$expires = get_post_meta( $pago_id, '_conv_expires_at', true );
+			$token   = get_post_meta( $pago_id, '_convoca_link_key', true );
+			$expires = get_post_meta( $pago_id, '_convoca_expires_at', true );
 			$url     = self::get_payment_link( $pago_id, $token, $expires );
 
 			return '<div class="convoca-alert convoca-alert--warning">

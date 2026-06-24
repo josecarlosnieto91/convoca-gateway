@@ -88,10 +88,10 @@ class Admin_Generador {
 					<table class="form-table">
 						<tr>
 							<th scope="row">
-								<label for="conv_gateway_amount"><?php esc_html_e( 'Cantidad (€)', 'convoca-gateway' ); ?> *</label>
+								<label for="convoca_gateway_amount"><?php esc_html_e( 'Cantidad (€)', 'convoca-gateway' ); ?> *</label>
 							</th>
 							<td>
-								<input type="number" name="conv_gateway_amount" id="conv_gateway_amount" 
+								<input type="number" name="convoca_gateway_amount" id="convoca_gateway_amount" 
 										class="regular-text" step="0.01" min="0.50" required
 										placeholder="Ej: 50.00">
 								<p class="description">Importe en euros (mínimo 0.50€)</p>
@@ -100,10 +100,10 @@ class Admin_Generador {
 
 						<tr>
 							<th scope="row">
-								<label for="conv_gateway_concepto"><?php esc_html_e( 'Concepto', 'convoca-gateway' ); ?> *</label>
+								<label for="convoca_gateway_concepto"><?php esc_html_e( 'Concepto', 'convoca-gateway' ); ?> *</label>
 							</th>
 							<td>
-								<input type="text" name="conv_gateway_concepto" id="conv_gateway_concepto" 
+								<input type="text" name="convoca_gateway_concepto" id="convoca_gateway_concepto" 
 										class="regular-text" maxlength="125" required
 										placeholder="Ej: Cuota mensual de socio">
 								<p class="description">Descripción del pago (máx. 125 caracteres)</p>
@@ -112,10 +112,10 @@ class Admin_Generador {
 
 						<tr>
 							<th scope="row">
-								<label for="conv_gateway_method"><?php esc_html_e( 'Método de pago', 'convoca-gateway' ); ?></label>
+								<label for="convoca_gateway_method"><?php esc_html_e( 'Método de pago', 'convoca-gateway' ); ?></label>
 							</th>
 							<td>
-								<select name="conv_gateway_method" id="conv_gateway_method">
+								<select name="convoca_gateway_method" id="convoca_gateway_method">
 									<option value="any"><?php esc_html_e( 'Cualquiera (usuario elige)', 'convoca-gateway' ); ?></option>
 									<option value="tarjeta"><?php esc_html_e( 'Tarjeta', 'convoca-gateway' ); ?></option>
 									<option value="bizum"><?php esc_html_e( 'Bizum', 'convoca-gateway' ); ?></option>
@@ -128,10 +128,10 @@ class Admin_Generador {
 
 						<tr>
 							<th scope="row">
-								<label for="conv_gateway_email"><?php esc_html_e( 'Email del destinatario', 'convoca-gateway' ); ?></label>
+								<label for="convoca_gateway_email"><?php esc_html_e( 'Email del destinatario', 'convoca-gateway' ); ?></label>
 							</th>
 							<td>
-								<input type="email" name="conv_gateway_email" id="conv_gateway_email" 
+								<input type="email" name="convoca_gateway_email" id="convoca_gateway_email" 
 										class="regular-text" 
 										placeholder="Ej: cliente@email.com">
 								<p class="description">Pre-rellena el email en el formulario de pago</p>
@@ -140,10 +140,10 @@ class Admin_Generador {
 
 						<tr>
 							<th scope="row">
-								<label for="conv_gateway_params"><?php esc_html_e( 'Parámetros personalizados', 'convoca-gateway' ); ?></label>
+								<label for="convoca_gateway_params"><?php esc_html_e( 'Parámetros personalizados', 'convoca-gateway' ); ?></label>
 							</th>
 							<td>
-								<textarea name="conv_gateway_params" id="conv_gateway_params" rows="4" class="large-text"
+								<textarea name="convoca_gateway_params" id="convoca_gateway_params" rows="4" class="large-text"
 											placeholder="referencia=12345&#10;factura=ABC-001&#10;concepto_extra=Pago mensual"></textarea>
 								<p class="description">Clave=Valor por línea. Se mostrarán en el formulario como datos adicionales.</p>
 							</td>
@@ -151,14 +151,14 @@ class Admin_Generador {
 
 						<tr>
 							<th scope="row">
-								<label for="conv_gateway_expires"><?php esc_html_e( 'Fecha de caducidad', 'convoca-gateway' ); ?></label>
+								<label for="convoca_gateway_expires"><?php esc_html_e( 'Fecha de caducidad', 'convoca-gateway' ); ?></label>
 							</th>
 							<td>
-								<input type="date" name="conv_gateway_expires" id="conv_gateway_expires" class="regular-text"
+								<input type="date" name="convoca_gateway_expires" id="convoca_gateway_expires" class="regular-text"
 										min="<?php echo esc_attr( wp_date( 'Y-m-d', strtotime( '+1 day' ) ) ); ?>">
 								<p class="description">Dejar vacío para usar la validez por defecto (7 días)</p>
 								<label style="display: block; margin-top: 10px;">
-									<input type="checkbox" name="conv_gateway_never_expires" id="conv_gateway_never_expires" value="1">
+									<input type="checkbox" name="convoca_gateway_never_expires" id="convoca_gateway_never_expires" value="1">
 									<?php esc_html_e( 'El enlace no caduca nunca', 'convoca-gateway' ); ?>
 								</label>
 							</td>
@@ -166,7 +166,7 @@ class Admin_Generador {
 					</table>
 
 					<p class="submit">
-						<button type="submit" name="conv_gateway_generate_link" class="button button-primary">
+						<button type="submit" name="convoca_gateway_generate_link" class="button button-primary">
 							<?php esc_html_e( 'Generar enlace', 'convoca-gateway' ); ?>
 						</button>
 					</p>
@@ -177,8 +177,8 @@ class Admin_Generador {
 				<h2><?php esc_html_e( 'Enlace generado', 'convoca-gateway' ); ?></h2>
 				<p><?php esc_html_e( 'Copia este enlace y envíaselo al cliente:', 'convoca-gateway' ); ?></p>
 				<div class="conv-gateway-link-output">
-					<input type="text" value="<?php echo esc_attr( $generated_link ); ?>" readonly class="large-text" id="conv_gateway_generated_link">
-					<button type="button" class="button" onclick="conv_gateway_copy_link()">
+					<input type="text" value="<?php echo esc_attr( $generated_link ); ?>" readonly class="large-text" id="convoca_gateway_generated_link">
+					<button type="button" class="button" onclick="convoca_gateway_copy_link()">
 						<?php esc_html_e( 'Copiar al portapapeles', 'convoca-gateway' ); ?>
 					</button>
 				</div>
@@ -194,7 +194,7 @@ class Admin_Generador {
 				}
 				</style>
 				<script>
-				function conv_gateway_copy_link() {
+				function convoca_gateway_copy_link() {
 					const input = document.getElementById('convoca_gateway_generated_link');
 					const btn = event.currentTarget;
 					const link = input.value;
@@ -282,8 +282,8 @@ class Admin_Generador {
 			return $pago_id;
 		}
 
-		$token      = get_post_meta( $pago_id, '_conv_link_key', true );
-		$expires_ts = get_post_meta( $pago_id, '_conv_expires_at', true );
+		$token      = get_post_meta( $pago_id, '_convoca_link_key', true );
+		$expires_ts = get_post_meta( $pago_id, '_convoca_expires_at', true );
 
 		$url = Payment_Handler::get_payment_link( $pago_id, $token, $expires_ts );
 

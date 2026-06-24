@@ -43,7 +43,7 @@ class Email_Notifications {
 			return;
 		}
 
-		$email = get_post_meta( $payment_id, '_conv_payer_email', true );
+		$email = get_post_meta( $payment_id, '_convoca_payer_email', true );
 		if ( empty( $email ) ) {
 			return;
 		}
@@ -92,10 +92,10 @@ class Email_Notifications {
 	 * Build variables for replacement.
 	 */
 	private function get_template_vars( int $payment_id ): array {
-		$amount_cents = (int) get_post_meta( $payment_id, '_conv_amount_cents', true );
-		$method       = get_post_meta( $payment_id, '_conv_method', true );
-		$origin       = get_post_meta( $payment_id, '_conv_origin', true );
-		$enroll_url   = get_post_meta( $payment_id, '_conv_enroll_url', true );
+		$amount_cents = (int) get_post_meta( $payment_id, '_convoca_amount_cents', true );
+		$method       = get_post_meta( $payment_id, '_convoca_method', true );
+		$origin       = get_post_meta( $payment_id, '_convoca_origin', true );
+		$enroll_url   = get_post_meta( $payment_id, '_convoca_enroll_url', true );
 
 		// Build payment link.
 		$payment_url = Payment_Handler::get_payment_link( $payment_id );

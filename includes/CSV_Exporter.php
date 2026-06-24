@@ -110,9 +110,9 @@ class CSV_Exporter {
 
 		switch ( $origin ) {
 			case 'enroll':
-				return (string) get_post_meta( $origin_id, '_conv_email', true );
+				return (string) get_post_meta( $origin_id, '_convoca_email', true );
 			case 'members':
-				return (string) get_post_meta( $origin_id, '_conv_email', true );
+				return (string) get_post_meta( $origin_id, '_convoca_email', true );
 			default:
 				return '—';
 		}

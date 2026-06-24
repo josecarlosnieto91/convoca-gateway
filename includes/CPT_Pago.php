@@ -150,7 +150,7 @@ class CPT_Pago {
 		);
 
 		foreach ( $meta as $key => $val ) {
-			update_post_meta( $post_id, '_conv_' . $key, $val );
+			update_post_meta( $post_id, '_convoca_' . $key, $val );
 		}
 
 		return $post_id;
@@ -162,7 +162,7 @@ class CPT_Pago {
 	public static function get_meta( int $post_id ): array {
 		$data = array();
 		foreach ( self::META_KEYS as $key ) {
-			$data[ $key ] = get_post_meta( $post_id, '_conv_' . $key, true );
+			$data[ $key ] = get_post_meta( $post_id, '_convoca_' . $key, true );
 		}
 		return $data;
 	}
@@ -178,7 +178,7 @@ class CPT_Pago {
 				'post_status'    => 'publish',
 				'meta_query'     => array(
 					array(
-						'key'   => '_conv_order_id',
+						'key'   => '_convoca_order_id',
 						'value' => $order_id,
 					),
 				),
@@ -202,7 +202,7 @@ class CPT_Pago {
 			$wpdb->prepare(
 				"SELECT p.ID FROM {$wpdb->posts} p
              JOIN {$wpdb->postmeta} pm ON p.ID = pm.post_id
-             WHERE pm.meta_key = '_conv_order_id' AND pm.meta_value = %s 
+             WHERE pm.meta_key = '_convoca_order_id' AND pm.meta_value = %s 
              AND p.post_type = 'pago'
              LIMIT 1 FOR UPDATE",
 				$order_id
@@ -284,7 +284,7 @@ class CPT_Pago {
 		);
 
 		foreach ( $meta as $key => $val ) {
-			update_post_meta( $post_id, '_conv_' . $key, $val );
+			update_post_meta( $post_id, '_convoca_' . $key, $val );
 		}
 
 		$expires_at = $data['expires_at'] ?? '';
@@ -305,10 +305,10 @@ class CPT_Pago {
 
 		$token = hash_hmac( 'sha256', $post_id . '|' . $expires_ts, $persistent_salt );
 
-		update_post_meta( $post_id, '_conv_link_key', $token );
-		update_post_meta( $post_id, '_conv_expires_at', $expires_ts );
-		update_post_meta( $post_id, '_conv_recipient_email', sanitize_email( $data['email'] ?? '' ) );
-		update_post_meta( $post_id, '_conv_link_generated_by', get_current_user_id() );
+		update_post_meta( $post_id, '_convoca_link_key', $token );
+		update_post_meta( $post_id, '_convoca_expires_at', $expires_ts );
+		update_post_meta( $post_id, '_convoca_recipient_email', sanitize_email( $data['email'] ?? '' ) );
+		update_post_meta( $post_id, '_convoca_link_generated_by', get_current_user_id() );
 
 		$params = array();
 		if ( ! empty( $data['params'] ) ) {
@@ -320,7 +320,7 @@ class CPT_Pago {
 				}
 			}
 		}
-		update_post_meta( $post_id, '_conv_params', $params );
+		update_post_meta( $post_id, '_convoca_params', $params );
 
 		$admin_user = wp_get_current_user();
 		$admin_name = $admin_user->display_name ?? $admin_user->user_login ?? 'Admin';
@@ -332,7 +332,7 @@ class CPT_Pago {
 			$data['method'] ?? 'any',
 			$expires_ts ? wp_date( 'd/m/Y H:i', $expires_ts ) : __( 'Nunca', 'convoca-gateway' )
 		);
-		update_post_meta( $post_id, '_conv_notes', $notas );
+		update_post_meta( $post_id, '_convoca_notes', $notas );
 
 		\Convoca\Core\Logger::info(
 			"Enlace de pago generado: ID $post_id, Importe: {$data['amount']}€, Concepto: {$data['concepto']}",

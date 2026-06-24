@@ -171,7 +171,7 @@ class Admin_Payments extends \WP_List_Table {
 		// Sortable columns.
 		if ( 'amount' === $orderby ) {
 			$args['orderby']  = 'meta_value_num';
-			$args['meta_key'] = '_conv_amount_cents';
+			$args['meta_key'] = '_convoca_amount_cents';
 		} else {
 			$args['orderby'] = 'date';
 		}
@@ -179,7 +179,7 @@ class Admin_Payments extends \WP_List_Table {
 		// Search by order_id.
 		if ( ! empty( $search ) ) {
 			$args['meta_query'][] = array(
-				'key'     => '_conv_order_id',
+				'key'     => '_convoca_order_id',
 				'value'   => $search,
 				'compare' => 'LIKE',
 			);
@@ -189,7 +189,7 @@ class Admin_Payments extends \WP_List_Table {
 		foreach ( array( 'status', 'method', 'origin' ) as $key ) {
 			if ( ! empty( $get_data[ $key . '_filter' ] ) ) {
 				$args['meta_query'][] = array(
-					'key'   => '_conv_' . $key,
+					'key'   => '_convoca_' . $key,
 					'value' => sanitize_text_field( $get_data[ $key . '_filter' ] ),
 				);
 			}
@@ -276,7 +276,7 @@ class Admin_Payments extends \WP_List_Table {
 		<div class="wrap">
 			<h1 class="wp-heading-inline"><?php _e( 'Pagos Convoca', 'convoca-gateway' ); ?></h1>
 			<a href="<?php echo wp_nonce_url( admin_url( 'admin.php?page=conv-gateway-payments&action=export_csv' ), 'convoca_gateway_export_csv' ); ?>" class="page-title-action"><?php _e( 'Exportar a CSV', 'convoca-gateway' ); ?></a>
-			<a href="<?php echo esc_url( wp_nonce_url( admin_url( 'admin-post.php?action=conv_gateway_export_payments_pdf' ), 'convoca_gateway_export_payments_pdf' ) ); ?>" class="page-title-action"><?php _e( 'Exportar PDF', 'convoca-gateway' ); ?></a>
+			<a href="<?php echo esc_url( wp_nonce_url( admin_url( 'admin-post.php?action=convoca_gateway_export_payments_pdf' ), 'convoca_gateway_export_payments_pdf' ) ); ?>" class="page-title-action"><?php _e( 'Exportar PDF', 'convoca-gateway' ); ?></a>
 			<hr class="wp-header-end">
 
 			<form method="get">
@@ -425,7 +425,7 @@ class Admin_Payments extends \WP_List_Table {
 							<div class="inside">
 								<form method="post">
 									<?php wp_nonce_field( 'convoca_gateway_resend_' . $id ); ?>
-									<button type="submit" name="conv_gateway_resend_email" class="button button-large" <?php echo $meta['status'] !== 'paid' ? 'disabled' : ''; ?>>
+									<button type="submit" name="convoca_gateway_resend_email" class="button button-large" <?php echo $meta['status'] !== 'paid' ? 'disabled' : ''; ?>>
 										<?php _e( 'Reenviar email de confirmación', 'convoca-gateway' ); ?>
 									</button>
 									<p class="description"><?php _e( 'Solo disponible para pagos completados.', 'convoca-gateway' ); ?></p>
@@ -434,7 +434,7 @@ class Admin_Payments extends \WP_List_Table {
 									<hr>
 									<form method="post" onsubmit="return confirm('¿Confirmas que has recibido el dinero de este pago?');">
 										<?php wp_nonce_field( 'convoca_gateway_mark_paid_' . $id ); ?>
-										<button type="submit" name="conv_gateway_mark_paid" class="button button-primary full-width"><?php _e( 'Confirmar Pago Manual', 'convoca-gateway' ); ?></button>
+										<button type="submit" name="convoca_gateway_mark_paid" class="button button-primary full-width"><?php _e( 'Confirmar Pago Manual', 'convoca-gateway' ); ?></button>
 										<p class="description"><?php _e( 'Úsalo para confirmar transferencias recibidas.', 'convoca-gateway' ); ?></p>
 									</form>
 								<?php endif; ?>
@@ -442,7 +442,7 @@ class Admin_Payments extends \WP_List_Table {
 									<hr>
 									<form method="post" onsubmit="return confirm('¿Estás seguro de marcar este pago como reembolsado?');">
 										<?php wp_nonce_field( 'convoca_gateway_refund_' . $id ); ?>
-										<button type="submit" name="conv_gateway_refund_payment" class="button button-link-delete" style="color: #d63638;"><?php _e( 'Marcar como Reembolsado', 'convoca-gateway' ); ?></button>
+										<button type="submit" name="convoca_gateway_refund_payment" class="button button-link-delete" style="color: #d63638;"><?php _e( 'Marcar como Reembolsado', 'convoca-gateway' ); ?></button>
 									</form>
 								<?php endif; ?>
 								<hr>
@@ -478,14 +478,14 @@ class Admin_Payments extends \WP_List_Table {
 			'post_type'   => 'pago',
 			'post_status' => 'publish',
 			'orderby'     => 'meta_value',
-			'meta_key'    => '_conv_created_at',
+			'meta_key'    => '_convoca_created_at',
 			'order'       => $order,
 		);
 
 		// Search by order_id.
 		if ( ! empty( $search ) ) {
 			$args['meta_query'][] = array(
-				'key'     => '_conv_order_id',
+				'key'     => '_convoca_order_id',
 				'value'   => $search,
 				'compare' => 'LIKE',
 			);
@@ -495,7 +495,7 @@ class Admin_Payments extends \WP_List_Table {
 		foreach ( array( 'status', 'method', 'origin' ) as $key ) {
 			if ( ! empty( $get_data[ $key . '_filter' ] ) ) {
 				$args['meta_query'][] = array(
-					'key'   => '_conv_' . $key,
+					'key'   => '_convoca_' . $key,
 					'value' => sanitize_text_field( $get_data[ $key . '_filter' ] ),
 				);
 			}
@@ -508,7 +508,7 @@ class Admin_Payments extends \WP_List_Table {
 	 * Mark payment as refunded.
 	 */
 	private function handle_refund( int $id ): void {
-		update_post_meta( $id, '_conv_status', 'refunded' );
+		update_post_meta( $id, '_convoca_status', 'refunded' );
 
 		\Convoca\Core\Logger::log(
 			__( 'Pago marcado como REEMBOLSADO manualmente.', 'convoca-gateway' ),
@@ -524,8 +524,8 @@ class Admin_Payments extends \WP_List_Table {
 	 * Mark payment as paid manually.
 	 */
 	private function handle_manual_paid( int $id ): void {
-		update_post_meta( $id, '_conv_status', 'paid' );
-		update_post_meta( $id, '_conv_paid_at', current_time( 'mysql' ) );
+		update_post_meta( $id, '_convoca_status', 'paid' );
+		update_post_meta( $id, '_convoca_paid_at', current_time( 'mysql' ) );
 
 		\Convoca\Core\Logger::log(
 			__( 'Pago marcado como PAGADO manualmente.', 'convoca-gateway' ),
