@@ -1,4 +1,4 @@
-# MANUAL_USUARIO.md — Convoca Gateway v2.6.1
+# MANUAL_USUARIO.md — Convoca Gateway v2.6.2
 
 > Guía para administradores: pasarela de pagos con Redsys.
 
