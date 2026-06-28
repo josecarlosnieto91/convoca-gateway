@@ -432,7 +432,7 @@ class Admin_Payments extends \WP_List_Table {
 								</form>
 								<?php if ( $meta['status'] !== 'paid' ) : ?>
 									<hr>
-									<form method="post" onsubmit="return confirm('¿Confirmas que has recibido el dinero de este pago?');">
+									<form method="post" onsubmit="return confirm('<?php echo esc_js( __( '¿Confirmas que has recibido el dinero de este pago?', 'convoca-gateway' ) ); ?>');">
 										<?php wp_nonce_field( 'convoca_gateway_mark_paid_' . $id ); ?>
 										<button type="submit" name="convoca_gateway_mark_paid" class="button button-primary full-width"><?php _e( 'Confirmar Pago Manual', 'convoca-gateway' ); ?></button>
 										<p class="description"><?php _e( 'Úsalo para confirmar transferencias recibidas.', 'convoca-gateway' ); ?></p>
@@ -440,7 +440,7 @@ class Admin_Payments extends \WP_List_Table {
 								<?php endif; ?>
 								<?php if ( $meta['status'] === 'paid' ) : ?>
 									<hr>
-									<form method="post" onsubmit="return confirm('¿Estás seguro de marcar este pago como reembolsado?');">
+									<form method="post" onsubmit="return confirm('<?php echo esc_js( __( '¿Estás seguro de marcar este pago como reembolsado?', 'convoca-gateway' ) ); ?>');">
 										<?php wp_nonce_field( 'convoca_gateway_refund_' . $id ); ?>
 										<button type="submit" name="convoca_gateway_refund_payment" class="button button-link-delete" style="color: #d63638;"><?php _e( 'Marcar como Reembolsado', 'convoca-gateway' ); ?></button>
 									</form>

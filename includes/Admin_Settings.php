@@ -752,25 +752,25 @@ class Admin_Settings {
 		check_ajax_referer( 'convoca_gateway_diagnostic_nonce', 'nonce' );
 
 		if ( ! current_user_can( 'manage_options' ) ) {
-			wp_send_json_error( array( 'message' => 'Sin permisos' ) );
+			wp_send_json_error( array( 'message' => __( 'Sin permisos', 'convoca-gateway' ) ) );
 		}
 
 		Diagnostic::run_all( true );
-		wp_send_json_success( array( 'message' => 'Diagnóstico completado' ) );
+		wp_send_json_success( array( 'message' => __( 'Diagnóstico completado', 'convoca-gateway' ) ) );
 	}
 
 	public function ajax_diagnostic_fix(): void {
 		check_ajax_referer( 'convoca_gateway_diagnostic_nonce', 'nonce' );
 
 		if ( ! current_user_can( 'manage_options' ) ) {
-			wp_send_json_error( array( 'message' => 'Sin permisos' ) );
+			wp_send_json_error( array( 'message' => __( 'Sin permisos', 'convoca-gateway' ) ) );
 		}
 
 		$fix = sanitize_text_field( $_POST['fix'] ?? '' );
 
 		$result = array(
 			'success' => false,
-			'message' => 'Acción no encontrada',
+			'message' => __( 'Acción no encontrada', 'convoca-gateway' ),
 		);
 
 		switch ( $fix ) {
