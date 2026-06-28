@@ -1247,7 +1247,7 @@ class Payment_Handler {
 			<h3>Pago no completado</h3>
 			<p>El pago no se ha podido procesar. Puede deberse a una cancelación o un problema con tu banco.</p>
 			<p>Si el problema persiste, contacta con nosotros en
-				<a href="mailto:coordinacion@getconvoca.app">coordinacion@getconvoca.app</a>.
+				<a href="mailto:coordinacion@biodevas.org">coordinacion@biodevas.org</a>.
 			</p>
 			<?php if ( $pago_id ) : ?>
 				<?php
