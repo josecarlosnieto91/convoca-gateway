@@ -238,6 +238,20 @@ class Admin_Settings {
 			'conv-gateway-settings'
 		);
 
+		// Recurring payments section (PRO).
+		add_settings_section(
+			'convoca_gateway_recurring',
+			__( '💳 Pagos Recurrentes', 'convoca-gateway' ),
+			function () {
+				if ( \Convoca\Core\License_Manager::has_pro( 'gateway' ) ) {
+					print '<p>Configura suscripciones y pagos periódicos con tarjeta o domiciliación.</p>';
+				} else {
+					print '<div class="convoca-alert convoca-alert--info" style="display:block;margin-bottom:20px;padding:12px 16px;background:#f0f9ff;border:1px solid #bae6fd;border-radius:8px;"><p style="margin:0;">🔒 <strong>Pagos Recurrentes</strong> es una funcionalidad PRO. <a href="' . esc_url( admin_url( 'admin.php?page=convoca-license' ) ) . '" style="font-weight:600;">Activa tu licencia</a> para desbloquear suscripciones y pagos periódicos.</p></div>';
+				}
+			},
+			'conv-gateway-settings'
+		);
+
 		$page_fields = array(
 			'payment_page_id' => 'Página de pago ([convoca_pago])',
 			'ok_page_id'      => 'Página de éxito ([convoca_pago_ok])',
@@ -252,6 +266,47 @@ class Admin_Settings {
 				'conv-gateway-settings',
 				'convoca_gateway_pages'
 			);
+		}
+
+		// Recurring payments fields (PRO).
+		if ( \Convoca\Core\License_Manager::has_pro( 'gateway' ) ) {
+			$recurring_fields = array(
+				'recurring_enabled'       => array(
+					'label' => __( 'Habilitar pagos recurrentes', 'convoca-gateway' ),
+					'type'  => 'checkbox',
+					'desc'  => __( 'Permite configurar suscripciones y domiciliaciones para cuotas periódicas.', 'convoca-gateway' ),
+				),
+				'recurring_period'        => array(
+					'label'   => __( 'Periodo por defecto', 'convoca-gateway' ),
+					'type'    => 'select',
+					'options' => array(
+						'monthly'  => 'Mensual',
+						'quarterly' => 'Trimestral',
+						'yearly'   => 'Anual',
+					),
+					'desc'    => __( 'Periodicidad por defecto para nuevas suscripciones.', 'convoca-gateway' ),
+				),
+				'recurring_max_charges'   => array(
+					'label' => __( 'Número máximo de cobros', 'convoca-gateway' ),
+					'type'  => 'number',
+					'desc'  => __( '0 = ilimitado (hasta que se cancele).', 'convoca-gateway' ),
+				),
+				'recurring_grace_period'  => array(
+					'label' => __( 'Días de gracia', 'convoca-gateway' ),
+					'type'  => 'number',
+					'desc'  => __( 'Días de espera antes de marcar un recibo como fallido.', 'convoca-gateway' ),
+				),
+			);
+
+			foreach ( $recurring_fields as $key => $field ) {
+				add_settings_field(
+					'convoca_gateway_' . $key,
+					$field['label'],
+					fn() => $this->render_form_field( $key, $field ),
+					'conv-gateway-settings',
+					'convoca_gateway_recurring'
+				);
+			}
 		}
 	}
 
@@ -407,6 +462,10 @@ class Admin_Settings {
 			'email_success_body'    => wp_kses_post( $input['email_success_body'] ?? '' ),
 			'email_failed_subject'  => sanitize_text_field( $input['email_failed_subject'] ?? '' ),
 			'email_failed_body'     => wp_kses_post( $input['email_failed_body'] ?? '' ),
+			'recurring_enabled'     => isset( $input['recurring_enabled'] ) ? '1' : '0',
+			'recurring_period'      => in_array( $input['recurring_period'] ?? '', array( 'monthly', 'quarterly', 'yearly' ) ) ? $input['recurring_period'] : 'monthly',
+			'recurring_max_charges' => absint( $input['recurring_max_charges'] ?? 0 ),
+			'recurring_grace_period' => absint( $input['recurring_grace_period'] ?? 7 ),
 		);
 	}
 
