@@ -1,6 +1,6 @@
 === Convoca Gateway ===
 Contributors: josecarlosnietoramos
-Tags: payments, redsys, TPV, donations, fees, asociaciones
+Tags: payments, redsys, TPV, donations, fees, associations
 Requires at least: 6.4
 Tested up to: 7.0
 Requires PHP: 8.1
@@ -8,25 +8,32 @@ Stable tag: 2.6.2
 License: GPL-2.0-or-later
 License URI: https://www.gnu.org/licenses/gpl-2.0.html
 
-Pasarela de pago Redsys para cuotas de socio, donaciones e inscripciones.
+Redsys payment gateway for membership fees, donations and registrations.
 
 == Description ==
 
-Procesa pagos a través de Redsys (Sermepa), el TPV virtual más usado en España. Permite crear pagos manuales, generar links de pago únicos, y recibir notificaciones automáticas.
+Process payments through Redsys (Sermepa), the most widely used virtual POS in Spain. Allows creating manual payments, generating unique payment links, and receiving automatic notifications.
 
-* Integración con Redsys/Sermepa (SHA-256)
-* Links de pago únicos para compartir
-* Panel de pagos con filtros y exportación CSV
-* Notificaciones automáticas con validación HMAC
-* Shortcode `[convoca_pago]` para formulario público
-* Integración con Convoca Members (actualización automática de membresías)
+* Integration with Redsys/Sermepa (SHA-256)
+* Unique payment links for sharing
+* Payment panel with filters and CSV export
+* Automatic notifications with HMAC validation
+* `[convoca_pago]` shortcode for public form
+* Integration with Convoca Members (automatic membership updates)
 
-= Servicios externos =
+= External Services =
 
-Este plugin se conecta con la pasarela de pago Redsys para procesar transacciones. Los datos de pago se envían a los servidores de Redsys siguiendo los estándares de seguridad del sector. También puede contactar con getconvoca.app para validar licencias PRO.
+This plugin connects to the Redsys payment gateway to process transactions. Payment data is sent to Redsys servers following industry security standards. It may also contact getconvoca.app to validate PRO licenses.
+
+== Installation ==
+
+1. Make sure Convoca Core is active
+2. Upload the `convoca-gateway` folder to `/wp-content/plugins/`
+3. Activate the plugin from the Plugins menu
+4. Configure your Redsys account in Settings > Convoca Gateway
 
 == Changelog ==
 
 = 2.6.2 =
-* Mejora: 57 tests unitarios, 124 aserciones
-* Nuevo: Tests de firma HMAC, importes y notificaciones
+* Improvement: 57 unit tests, 124 assertions
+* New: HMAC signature, amounts and notifications tests

@@ -1,769 +1,813 @@
-# SOME DESCRIPTIVE TITLE.
-# Copyright (C) YEAR THE PACKAGE'S COPYRIGHT HOLDER
-# This file is distributed under the same license as the PACKAGE package.
-# FIRST AUTHOR <EMAIL@ADDRESS>, YEAR.
-#
-#, fuzzy
+# Copyright (C) 2026 Jose Carlos Nieto Ramos
+# This file is distributed under the GPL-2.0-or-later.
 msgid ""
 msgstr ""
-"Project-Id-Version: PACKAGE VERSION\n"
-"Report-Msgid-Bugs-To: \n"
-"POT-Creation-Date: 2026-06-29 00:36+0200\n"
-"PO-Revision-Date: YEAR-MO-DA HO:MI+ZONE\n"
+"Project-Id-Version: convoca-gateway 2.6.2\n"
+"Report-Msgid-Bugs-To: https://wordpress.org/support/plugin/convoca-gateway\n"
 "Last-Translator: FULL NAME <EMAIL@ADDRESS>\n"
 "Language-Team: LANGUAGE <LL@li.org>\n"
-"Language: \n"
 "MIME-Version: 1.0\n"
 "Content-Type: text/plain; charset=UTF-8\n"
 "Content-Transfer-Encoding: 8bit\n"
+"POT-Creation-Date: 2026-07-05T06:52:08+00:00\n"
+"PO-Revision-Date: YEAR-MO-DA HO:MI+ZONE\n"
+"X-Generator: WP-CLI 2.12.0\n"
+"X-Domain: convoca-gateway\n"
 
-#: admin/class-admin-generador.php:25 admin/class-admin-generador.php:80
+#. Plugin Name of the plugin
+#: convoca-gateway.php
+msgid "Convoca Gateway — Payment Gateway"
+msgstr ""
+
+#. Plugin URI of the plugin
+#. Author URI of the plugin
+#: convoca-gateway.php
+msgid "https://getconvoca.app"
+msgstr ""
+
+#. Description of the plugin
+#: convoca-gateway.php
+msgid "Redsys payment gateway (card + Bizum)."
+msgstr ""
+
+#. Author of the plugin
+#: convoca-gateway.php
+msgid "Jose Carlos Nieto Ramos"
+msgstr ""
+
+#: admin/class-admin-generador.php:41
+#: admin/class-admin-generador.php:96
 msgid "Generador de Enlaces de Pago"
 msgstr ""
 
-#: admin/class-admin-generador.php:26
+#: admin/class-admin-generador.php:42
 msgid "Generar Enlace"
 msgstr ""
 
-#: admin/class-admin-generador.php:34 admin/class-admin-generador.php:35
+#: admin/class-admin-generador.php:50
+#: admin/class-admin-generador.php:51
 msgid "Enlaces de Pago"
 msgstr ""
 
-#: admin/class-admin-generador.php:91
+#: admin/class-admin-generador.php:107
 msgid "Cantidad (€)"
 msgstr ""
 
-#: admin/class-admin-generador.php:103 includes/Admin_Links.php:36
-#: includes/Email_Notifications.php:70
+#: admin/class-admin-generador.php:119
+#: includes/Admin_Links.php:52
+#: includes/Email_Notifications.php:86
 msgid "Concepto"
 msgstr ""
 
-#: admin/class-admin-generador.php:115
+#: admin/class-admin-generador.php:131
 msgid "Método de pago"
 msgstr ""
 
-#: admin/class-admin-generador.php:119
+#: admin/class-admin-generador.php:135
 msgid "Cualquiera (usuario elige)"
 msgstr ""
 
-#: admin/class-admin-generador.php:120 includes/Admin_Links.php:119
-#: includes/Admin_Dashboard.php:62 includes/Dashboard_Widget.php:66
+#: admin/class-admin-generador.php:136
+#: includes/Admin_Dashboard.php:78
+#: includes/Admin_Links.php:135
+#: includes/Dashboard_Widget.php:82
 msgid "Tarjeta"
 msgstr ""
 
-#: admin/class-admin-generador.php:121 includes/Admin_Links.php:120
-#: includes/Admin_Dashboard.php:63 includes/Dashboard_Widget.php:67
+#: admin/class-admin-generador.php:137
+#: includes/Admin_Dashboard.php:79
+#: includes/Admin_Links.php:136
+#: includes/Dashboard_Widget.php:83
 msgid "Bizum"
 msgstr ""
 
-#: admin/class-admin-generador.php:123 includes/Admin_Links.php:121
+#: admin/class-admin-generador.php:139
+#: includes/Admin_Links.php:137
 msgid "Transferencia"
 msgstr ""
 
-#: admin/class-admin-generador.php:131
+#: admin/class-admin-generador.php:147
 msgid "Email del destinatario"
 msgstr ""
 
-#: admin/class-admin-generador.php:143
+#: admin/class-admin-generador.php:159
 msgid "Parámetros personalizados"
 msgstr ""
 
-#: admin/class-admin-generador.php:154
+#: admin/class-admin-generador.php:170
 msgid "Fecha de caducidad"
 msgstr ""
 
-#: admin/class-admin-generador.php:162
+#: admin/class-admin-generador.php:178
 msgid "El enlace no caduca nunca"
 msgstr ""
 
-#: admin/class-admin-generador.php:170
+#: admin/class-admin-generador.php:186
 msgid "Generar enlace"
 msgstr ""
 
-#: admin/class-admin-generador.php:177
+#: admin/class-admin-generador.php:193
 msgid "Enlace generado"
 msgstr ""
 
-#: admin/class-admin-generador.php:178
+#: admin/class-admin-generador.php:194
 msgid "Copia este enlace y envíaselo al cliente:"
 msgstr ""
 
-#: admin/class-admin-generador.php:182
+#: admin/class-admin-generador.php:198
 msgid "Copiar al portapapeles"
 msgstr ""
 
-#: admin/class-admin-generador.php:231
+#: admin/class-admin-generador.php:247
 msgid "Información"
 msgstr ""
 
-#: includes/Admin_Links.php:35 includes/Admin_Payments.php:83
-msgid "Pedido"
-msgstr ""
-
-#: includes/Admin_Links.php:37 includes/Email_Notifications.php:69
-#: includes/Admin_Payments.php:84 includes/Admin_Payments.php:351
-msgid "Importe"
-msgstr ""
-
-#: includes/Admin_Links.php:38 includes/CSV_Exporter.php:62
-#: includes/Admin_Payments.php:85 includes/Admin_Payments.php:355
-msgid "Método"
-msgstr ""
-
-#: includes/Admin_Links.php:39 includes/CSV_Exporter.php:64
-#: includes/Admin_Payments.php:87 includes/Admin_Payments.php:359
-msgid "Origen"
-msgstr ""
-
-#: includes/Admin_Links.php:40
-msgid "Email Destinatario"
-msgstr ""
-
-#: includes/Admin_Links.php:41
-msgid "Estado Pago"
-msgstr ""
-
-#: includes/Admin_Links.php:42 includes/Admin_Links.php:172
-msgid "Activo"
-msgstr ""
-
-#: includes/Admin_Links.php:43
-msgid "Caducidad"
-msgstr ""
-
-#: includes/Admin_Links.php:44
-msgid "Generado"
-msgstr ""
-
-#: includes/Admin_Links.php:109
-msgid "Ver detalles"
-msgstr ""
-
-#: includes/Admin_Links.php:110
-msgid "Copiar enlace"
-msgstr ""
-
-#: includes/Admin_Links.php:122
-msgid "Cualquier método"
-msgstr ""
-
-#: includes/Admin_Links.php:128
-msgid "Enlace de pago"
-msgstr ""
-
-#: includes/Admin_Links.php:149 includes/CPT_Pago.php:333
-msgid "Nunca"
-msgstr ""
-
-#: includes/Admin_Links.php:165
-msgid "Usado"
-msgstr ""
-
-#: includes/Admin_Links.php:169
-msgid "Caducado"
-msgstr ""
-
-#: includes/Admin_Links.php:185
-msgid "Enlaces de Pago Generados"
-msgstr ""
-
-#: includes/Admin_Links.php:186
-msgid "Generar nuevo"
-msgstr ""
-
-#: includes/Block_Gateway.php:36
-msgid "Página de Pago"
-msgstr ""
-
-#: includes/Block_Gateway.php:39
-msgid ""
-"Página de procesamiento de pago con selección de método (tarjeta/bizum)."
-msgstr ""
-
-#: includes/Block_Gateway.php:51
-msgid "Pago Correcto"
-msgstr ""
-
-#: includes/Block_Gateway.php:54
-msgid "Página de confirmación tras un pago exitoso."
-msgstr ""
-
-#: includes/Block_Gateway.php:66
-msgid "Pago Fallido"
-msgstr ""
-
-#: includes/Block_Gateway.php:69
-msgid "Página de error cuando un pago no se ha podido procesar."
-msgstr ""
-
-#: includes/CPT_Pago.php:82 includes/Admin_Dashboard.php:74
-#: includes/Admin_Payments.php:61
-msgid "Pagos"
-msgstr ""
-
-#: includes/CPT_Pago.php:83
-msgid "Pago"
-msgstr ""
-
-#: includes/CPT_Pago.php:115
-msgid "El importe debe ser mayor que 0."
-msgstr ""
-
-#: includes/CPT_Pago.php:248
-msgid "El importe mínimo es 0.50€"
-msgstr ""
-
-#: includes/Email_Notifications.php:60
-msgid "Confirmación de pago: {producto}"
-msgstr ""
-
-#: includes/Email_Notifications.php:61
-msgid "Problema con tu pago: {producto}"
-msgstr ""
-
-#: includes/Email_Notifications.php:66
-msgid "Resumen de tu pago"
-msgstr ""
-
-#: includes/Email_Notifications.php:67
-msgid "Hemos recibido correctamente tu pago. Detalles:"
-msgstr ""
-
-#: includes/Email_Notifications.php:71 includes/Admin_Payments.php:88
-#: includes/Admin_Payments.php:398
-msgid "Fecha"
-msgstr ""
-
-#: includes/Email_Notifications.php:73
-msgid "Error en el pago"
-msgstr ""
-
-#: includes/Email_Notifications.php:74
-msgid "No hemos podido procesar tu pago para {producto}."
-msgstr ""
-
-#: includes/Email_Notifications.php:75
-msgid "Puedes volver a intentarlo aquí:"
-msgstr ""
-
-#: includes/Admin_Dashboard.php:30 includes/Dashboard_Widget.php:30
+#: includes/Admin_Dashboard.php:46
+#: includes/Dashboard_Widget.php:46
 msgid "Resumen de Pagos Convoca"
 msgstr ""
 
-#: includes/Admin_Dashboard.php:45 includes/Dashboard_Widget.php:45
+#: includes/Admin_Dashboard.php:61
+#: includes/Dashboard_Widget.php:61
 msgid "Total este mes"
 msgstr ""
 
-#: includes/Admin_Dashboard.php:49 includes/Dashboard_Widget.php:49
+#: includes/Admin_Dashboard.php:65
+#: includes/Dashboard_Widget.php:65
 msgid "Pagos hoy"
 msgstr ""
 
-#: includes/Admin_Dashboard.php:55
+#: includes/Admin_Dashboard.php:71
 msgid "Métodos de pago (Mes)"
 msgstr ""
 
-#: includes/Admin_Dashboard.php:69
+#: includes/Admin_Dashboard.php:85
 msgid "Últimos 7 días"
 msgstr ""
 
-#: includes/Admin_Dashboard.php:73 includes/Dashboard_Widget.php:84
+#: includes/Admin_Dashboard.php:89
+#: includes/Dashboard_Widget.php:100
 msgid "Día"
 msgstr ""
 
-#: includes/Admin_Dashboard.php:75 includes/Dashboard_Widget.php:86
+#: includes/Admin_Dashboard.php:90
+#: includes/Admin_Payments.php:77
+#: includes/CPT_Pago.php:98
+msgid "Pagos"
+msgstr ""
+
+#: includes/Admin_Dashboard.php:91
+#: includes/Dashboard_Widget.php:102
 msgid "Total"
 msgstr ""
 
-#: includes/Admin_Dashboard.php:91 includes/Dashboard_Widget.php:111
+#: includes/Admin_Dashboard.php:107
+#: includes/Dashboard_Widget.php:127
 msgid "Ver todos los pagos"
 msgstr ""
 
-#: includes/Admin_Dashboard.php:92 includes/Dashboard_Widget.php:112
-#: includes/Admin_Settings.php:50
+#: includes/Admin_Dashboard.php:108
+#: includes/Admin_Settings.php:66
+#: includes/Dashboard_Widget.php:128
 msgid "Configuración"
 msgstr ""
 
-#: includes/Dashboard_Widget.php:53
-msgid "Pagos este mes"
+#: includes/Admin_Links.php:51
+#: includes/Admin_Payments.php:99
+msgid "Pedido"
 msgstr ""
 
-#: includes/Dashboard_Widget.php:59
-msgid "Uso de Métodos (Mes)"
+#: includes/Admin_Links.php:53
+#: includes/Admin_Payments.php:100
+#: includes/Admin_Payments.php:364
+#: includes/Email_Notifications.php:85
+msgid "Importe"
 msgstr ""
 
-#: includes/Dashboard_Widget.php:73
-msgid "Evolución (7 días)"
+#: includes/Admin_Links.php:54
+#: includes/Admin_Payments.php:101
+#: includes/Admin_Payments.php:368
+#: includes/CSV_Exporter.php:78
+msgid "Método"
 msgstr ""
 
-#: includes/Dashboard_Widget.php:85
-msgid "Resumen"
+#: includes/Admin_Links.php:55
+#: includes/Admin_Payments.php:103
+#: includes/Admin_Payments.php:372
+#: includes/CSV_Exporter.php:80
+msgid "Origen"
 msgstr ""
 
-#: includes/Dashboard_Widget.php:97
-#, php-format
-msgid "%1$d pagos, %2$s"
+#: includes/Admin_Links.php:56
+msgid "Email Destinatario"
 msgstr ""
 
-#: includes/CSV_Exporter.php:25
-msgid "No tienes permisos suficientes para exportar el historial de pagos."
+#: includes/Admin_Links.php:57
+msgid "Estado Pago"
 msgstr ""
 
-#: includes/CSV_Exporter.php:26
-msgid "Acceso Denegado"
+#: includes/Admin_Links.php:58
+#: includes/Admin_Links.php:188
+msgid "Activo"
 msgstr ""
 
-#: includes/CSV_Exporter.php:59
-msgid "ID"
+#: includes/Admin_Links.php:59
+msgid "Caducidad"
 msgstr ""
 
-#: includes/CSV_Exporter.php:60 includes/Admin_Payments.php:343
-msgid "ID Pedido"
+#: includes/Admin_Links.php:60
+msgid "Generado"
 msgstr ""
 
-#: includes/CSV_Exporter.php:61 includes/Payment_Handler.php:747
-msgid "Importe (€)"
+#: includes/Admin_Links.php:125
+msgid "Ver detalles"
 msgstr ""
 
-#: includes/CSV_Exporter.php:63 includes/Admin_Settings.php:503
-#: includes/Admin_Payments.php:86 includes/Admin_Payments.php:347
-msgid "Estado"
+#: includes/Admin_Links.php:126
+msgid "Copiar enlace"
 msgstr ""
 
-#: includes/CSV_Exporter.php:65
-msgid "Email Usuario"
+#: includes/Admin_Links.php:138
+msgid "Cualquier método"
 msgstr ""
 
-#: includes/CSV_Exporter.php:66
-msgid "Fecha Creación"
+#: includes/Admin_Links.php:144
+msgid "Enlace de pago"
 msgstr ""
 
-#: includes/CSV_Exporter.php:67
-msgid "Fecha Pago"
+#: includes/Admin_Links.php:165
+#: includes/CPT_Pago.php:349
+msgid "Nunca"
 msgstr ""
 
-#: includes/CSV_Exporter.php:126
-msgid "Inscripción"
+#: includes/Admin_Links.php:181
+msgid "Usado"
 msgstr ""
 
-#: includes/CSV_Exporter.php:127
-msgid "Socio/a"
+#: includes/Admin_Links.php:185
+msgid "Caducado"
 msgstr ""
 
-#: includes/Payment_Handler.php:305
-msgid "Email de notificación"
+#: includes/Admin_Links.php:201
+msgid "Enlaces de Pago Generados"
 msgstr ""
 
-#: includes/Payment_Handler.php:734
-msgid "Emitir Pago Nuevo"
+#: includes/Admin_Links.php:202
+msgid "Generar nuevo"
 msgstr ""
 
-#: includes/Payment_Handler.php:735
-msgid "Introduce los datos para realizar un pago seguro."
-msgstr ""
-
-#: includes/Payment_Handler.php:752
-msgid "Concepto o Actividad"
-msgstr ""
-
-#: includes/Payment_Handler.php:753
-msgid "Ej: Inscripción Taller Aves"
-msgstr ""
-
-#: includes/Payment_Handler.php:757
-msgid "Email para el recibo"
-msgstr ""
-
-#: includes/Payment_Handler.php:763
-msgid "Continuar al pago"
-msgstr ""
-
-#: includes/Payment_Handler.php:769
-msgid ""
-"Pago seguro gestionado por Redsys. Convoca Gateway no almacena tus datos "
-"bancarios."
-msgstr ""
-
-#: includes/Admin_Settings.php:49
-msgid "Ajustes del TPV"
-msgstr ""
-
-#: includes/Admin_Settings.php:59
-msgid "Detalle de Pago"
-msgstr ""
-
-#: includes/Admin_Settings.php:60
-msgid "Detalle"
-msgstr ""
-
-#: includes/Admin_Settings.php:78
-msgid "Configuración Redsys (Caja Rural de Asturias)"
-msgstr ""
-
-#: includes/Admin_Settings.php:128
-msgid "Configuración Transferencia Bancaria"
-msgstr ""
-
-#: includes/Admin_Settings.php:164
-msgid "Notificaciones por Email"
-msgstr ""
-
-#: includes/Admin_Settings.php:165
-msgid "Configura los correos automáticos tras un pago con éxito."
-msgstr ""
-
-#: includes/Admin_Settings.php:171
-msgid "Habilitar confirmación de pago"
-msgstr ""
-
-#: includes/Admin_Settings.php:173
-msgid "Envía un email al usuario cuando el pago se completa."
-msgstr ""
-
-#: includes/Admin_Settings.php:176
-msgid "Nombre del remitente"
-msgstr ""
-
-#: includes/Admin_Settings.php:195
-msgid "Asunto (Éxito)"
-msgstr ""
-
-#: includes/Admin_Settings.php:197
-msgid "Asunto del correo tras un pago exitoso."
-msgstr ""
-
-#: includes/Admin_Settings.php:200
-msgid "Cuerpo (Éxito)"
-msgstr ""
-
-#: includes/Admin_Settings.php:202
-msgid "Contenido del correo tras un pago exitoso."
-msgstr ""
-
-#: includes/Admin_Settings.php:205
-msgid "Asunto (Fallo)"
-msgstr ""
-
-#: includes/Admin_Settings.php:207
-msgid "Asunto del correo tras un pago fallido."
-msgstr ""
-
-#: includes/Admin_Settings.php:210
-msgid "Cuerpo (Fallo)"
-msgstr ""
-
-#: includes/Admin_Settings.php:212
-msgid "Contenido del correo tras un pago fallido."
-msgstr ""
-
-#: includes/Admin_Settings.php:218
-msgid "Personalización de Plantillas"
-msgstr ""
-
-#: includes/Admin_Settings.php:219
-msgid ""
-"Usa variables: {importe}, {metodo}, {fecha}, {producto}, {enlace_inscripcion}"
-msgstr ""
-
-#: includes/Admin_Settings.php:236
-msgid "Páginas de pago"
-msgstr ""
-
-#: includes/Admin_Settings.php:244
-msgid "💳 Pagos Recurrentes"
-msgstr ""
-
-#: includes/Admin_Settings.php:275
-msgid "Habilitar pagos recurrentes"
-msgstr ""
-
-#: includes/Admin_Settings.php:277
-msgid ""
-"Permite configurar suscripciones y domiciliaciones para cuotas periódicas."
-msgstr ""
-
-#: includes/Admin_Settings.php:280
-msgid "Periodo por defecto"
-msgstr ""
-
-#: includes/Admin_Settings.php:287
-msgid "Periodicidad por defecto para nuevas suscripciones."
-msgstr ""
-
-#: includes/Admin_Settings.php:290
-msgid "Número máximo de cobros"
-msgstr ""
-
-#: includes/Admin_Settings.php:292
-msgid "0 = ilimitado (hasta que se cancele)."
-msgstr ""
-
-#: includes/Admin_Settings.php:295
-msgid "Días de gracia"
-msgstr ""
-
-#: includes/Admin_Settings.php:297
-msgid "Días de espera antes de marcar un recibo como fallido."
-msgstr ""
-
-#: includes/Admin_Settings.php:333
-msgid "Definido en wp-config.php"
-msgstr ""
-
-#: includes/Admin_Settings.php:374
-msgid "Introduce clave para actualizar..."
-msgstr ""
-
-#: includes/Admin_Settings.php:414
-msgid "El código de comercio debe tener exactamente 9 dígitos."
-msgstr ""
-
-#: includes/Admin_Settings.php:420
-msgid "El número de terminal debe tener entre 1 y 3 dígitos."
-msgstr ""
-
-#: includes/Admin_Settings.php:429
-msgid "El IBAN no tiene un formato válido."
-msgstr ""
-
-#: includes/Admin_Settings.php:442
-msgid "La clave secreta debe tener al menos 16 caracteres."
-msgstr ""
-
-#: includes/Admin_Settings.php:479
-msgid ""
-"Convoca Common no está activo. Algunas funciones de la pasarela podrían no "
-"estar disponibles."
-msgstr ""
-
-#: includes/Admin_Settings.php:490
-msgid "Pasarela de pago — Redsys"
-msgstr ""
-
-#: includes/Admin_Settings.php:491
-msgid "Configuración y estado de transacciones"
-msgstr ""
-
-#: includes/Admin_Settings.php:497
-msgid "General"
-msgstr ""
-
-#: includes/Admin_Settings.php:500
-msgid "Correos"
-msgstr ""
-
-#: includes/Admin_Settings.php:540
-msgid "Previsualizar Éxito"
-msgstr ""
-
-#: includes/Admin_Settings.php:541
-msgid "Previsualizar Fallo"
-msgstr ""
-
-#: includes/Admin_Settings.php:547
-msgid "Guardar configuración"
-msgstr ""
-
-#: includes/Admin_Settings.php:755 includes/Admin_Settings.php:766
-msgid "Sin permisos"
-msgstr ""
-
-#: includes/Admin_Settings.php:759
-msgid "Diagnóstico completado"
-msgstr ""
-
-#: includes/Admin_Settings.php:773
-msgid "Acción no encontrada"
-msgstr ""
-
-#: includes/Admin_Payments.php:60
+#: includes/Admin_Payments.php:76
 msgid "Convoca Pagos"
 msgstr ""
 
-#: includes/Admin_Payments.php:72 includes/Admin_Payments.php:73
+#: includes/Admin_Payments.php:88
+#: includes/Admin_Payments.php:89
 msgid "Todos los Pagos"
 msgstr ""
 
-#: includes/Admin_Payments.php:113
+#: includes/Admin_Payments.php:102
+#: includes/Admin_Payments.php:360
+#: includes/Admin_Settings.php:519
+#: includes/CSV_Exporter.php:79
+msgid "Estado"
+msgstr ""
+
+#: includes/Admin_Payments.php:104
+#: includes/Admin_Payments.php:411
+#: includes/Email_Notifications.php:87
+msgid "Fecha"
+msgstr ""
+
+#: includes/Admin_Payments.php:129
 msgid "Todos los estados"
 msgstr ""
 
-#: includes/Admin_Payments.php:122
+#: includes/Admin_Payments.php:137
 msgid "Todos los métodos"
 msgstr ""
 
-#: includes/Admin_Payments.php:135
+#: includes/Admin_Payments.php:149
 msgid "Todos los orígenes"
 msgstr ""
 
-#: includes/Admin_Payments.php:145
+#: includes/Admin_Payments.php:158
 msgid "Filtrar"
 msgstr ""
 
-#: includes/Admin_Payments.php:148
+#: includes/Admin_Payments.php:161
 msgid "Exportar CSV"
 msgstr ""
 
-#: includes/Admin_Payments.php:223
+#: includes/Admin_Payments.php:236
 msgid "Ver detalle"
 msgstr ""
 
-#: includes/Admin_Payments.php:228
+#: includes/Admin_Payments.php:241
 msgid "Ver inscripción"
 msgstr ""
 
-#: includes/Admin_Payments.php:232
+#: includes/Admin_Payments.php:245
 msgid "Ver miembro"
 msgstr ""
 
-#: includes/Admin_Payments.php:277
+#: includes/Admin_Payments.php:290
 msgid "Pagos Convoca"
 msgstr ""
 
-#: includes/Admin_Payments.php:278
+#: includes/Admin_Payments.php:291
 msgid "Exportar a CSV"
 msgstr ""
 
-#: includes/Admin_Payments.php:279
+#: includes/Admin_Payments.php:292
 msgid "Exportar PDF"
 msgstr ""
 
-#: includes/Admin_Payments.php:285
+#: includes/Admin_Payments.php:298
 msgid "Buscar pedido"
 msgstr ""
 
-#: includes/Admin_Payments.php:298
+#: includes/Admin_Payments.php:311
 msgid "Pago no encontrado."
 msgstr ""
 
-#: includes/Admin_Payments.php:312
+#: includes/Admin_Payments.php:325
 msgid "Email reenviado a la cola."
 msgstr ""
 
-#: includes/Admin_Payments.php:318
+#: includes/Admin_Payments.php:331
 msgid "Pago marcado como reembolsado."
 msgstr ""
 
-#: includes/Admin_Payments.php:325 includes/Admin_Payments.php:531
+#: includes/Admin_Payments.php:338
+#: includes/Admin_Payments.php:544
 msgid "Pago marcado como PAGADO manualmente."
 msgstr ""
 
-#: includes/Admin_Payments.php:331
+#: includes/Admin_Payments.php:344
 #, php-format
 msgid "Pago #%s"
 msgstr ""
 
-#: includes/Admin_Payments.php:332
+#: includes/Admin_Payments.php:345
 msgid "Volver al listado"
 msgstr ""
 
-#: includes/Admin_Payments.php:339
+#: includes/Admin_Payments.php:352
 msgid "Información del Pago"
 msgstr ""
 
-#: includes/Admin_Payments.php:366
-msgid "Descripción producto"
-msgstr ""
-
-#: includes/Admin_Payments.php:370
-msgid "Código Autorización"
-msgstr ""
-
-#: includes/Admin_Payments.php:374
-msgid "Respuesta Redsys"
+#: includes/Admin_Payments.php:356
+#: includes/CSV_Exporter.php:76
+msgid "ID Pedido"
 msgstr ""
 
 #: includes/Admin_Payments.php:379
-msgid "Justificante de pago"
+msgid "Descripción producto"
 msgstr ""
 
 #: includes/Admin_Payments.php:383
+msgid "Código Autorización"
+msgstr ""
+
+#: includes/Admin_Payments.php:387
+msgid "Respuesta Redsys"
+msgstr ""
+
+#: includes/Admin_Payments.php:392
+msgid "Justificante de pago"
+msgstr ""
+
+#: includes/Admin_Payments.php:396
 msgid "Ver justificante"
 msgstr ""
 
-#: includes/Admin_Payments.php:393
+#: includes/Admin_Payments.php:406
 msgid "Registro de eventos (Logs)"
 msgstr ""
 
-#: includes/Admin_Payments.php:399
+#: includes/Admin_Payments.php:412
 msgid "Nivel"
 msgstr ""
 
-#: includes/Admin_Payments.php:400
+#: includes/Admin_Payments.php:413
 msgid "Mensaje"
 msgstr ""
 
-#: includes/Admin_Payments.php:405
+#: includes/Admin_Payments.php:418
 msgid "No hay eventos registrados."
 msgstr ""
 
-#: includes/Admin_Payments.php:424
+#: includes/Admin_Payments.php:437
 msgid "Acciones"
 msgstr ""
 
-#: includes/Admin_Payments.php:429
+#: includes/Admin_Payments.php:442
 msgid "Reenviar email de confirmación"
 msgstr ""
 
-#: includes/Admin_Payments.php:431
+#: includes/Admin_Payments.php:444
 msgid "Solo disponible para pagos completados."
 msgstr ""
 
-#: includes/Admin_Payments.php:435
+#: includes/Admin_Payments.php:448
 msgid "¿Confirmas que has recibido el dinero de este pago?"
 msgstr ""
 
-#: includes/Admin_Payments.php:437
+#: includes/Admin_Payments.php:450
 msgid "Confirmar Pago Manual"
 msgstr ""
 
-#: includes/Admin_Payments.php:438
+#: includes/Admin_Payments.php:451
 msgid "Úsalo para confirmar transferencias recibidas."
 msgstr ""
 
-#: includes/Admin_Payments.php:443
+#: includes/Admin_Payments.php:456
 msgid "¿Estás seguro de marcar este pago como reembolsado?"
 msgstr ""
 
-#: includes/Admin_Payments.php:445
+#: includes/Admin_Payments.php:458
 msgid "Marcar como Reembolsado"
 msgstr ""
 
-#: includes/Admin_Payments.php:451
+#: includes/Admin_Payments.php:464
 msgid "Ver inscripción original"
 msgstr ""
 
-#: includes/Admin_Payments.php:514
+#: includes/Admin_Payments.php:527
 msgid "Pago marcado como REEMBOLSADO manualmente."
 msgstr ""
 
-#: includes/Diagnostic.php:194
+#: includes/Admin_Settings.php:65
+msgid "Ajustes del TPV"
+msgstr ""
+
+#: includes/Admin_Settings.php:75
+msgid "Detalle de Pago"
+msgstr ""
+
+#: includes/Admin_Settings.php:76
+msgid "Detalle"
+msgstr ""
+
+#: includes/Admin_Settings.php:94
+msgid "Configuración Redsys (Caja Rural de Asturias)"
+msgstr ""
+
+#: includes/Admin_Settings.php:144
+msgid "Configuración Transferencia Bancaria"
+msgstr ""
+
+#: includes/Admin_Settings.php:180
+msgid "Notificaciones por Email"
+msgstr ""
+
+#: includes/Admin_Settings.php:181
+msgid "Configura los correos automáticos tras un pago con éxito."
+msgstr ""
+
+#: includes/Admin_Settings.php:187
+msgid "Habilitar confirmación de pago"
+msgstr ""
+
+#: includes/Admin_Settings.php:189
+msgid "Envía un email al usuario cuando el pago se completa."
+msgstr ""
+
+#: includes/Admin_Settings.php:192
+msgid "Nombre del remitente"
+msgstr ""
+
+#: includes/Admin_Settings.php:211
+msgid "Asunto (Éxito)"
+msgstr ""
+
+#: includes/Admin_Settings.php:213
+msgid "Asunto del correo tras un pago exitoso."
+msgstr ""
+
+#: includes/Admin_Settings.php:216
+msgid "Cuerpo (Éxito)"
+msgstr ""
+
+#: includes/Admin_Settings.php:218
+msgid "Contenido del correo tras un pago exitoso."
+msgstr ""
+
+#: includes/Admin_Settings.php:221
+msgid "Asunto (Fallo)"
+msgstr ""
+
+#: includes/Admin_Settings.php:223
+msgid "Asunto del correo tras un pago fallido."
+msgstr ""
+
+#: includes/Admin_Settings.php:226
+msgid "Cuerpo (Fallo)"
+msgstr ""
+
+#: includes/Admin_Settings.php:228
+msgid "Contenido del correo tras un pago fallido."
+msgstr ""
+
+#: includes/Admin_Settings.php:234
+msgid "Personalización de Plantillas"
+msgstr ""
+
+#: includes/Admin_Settings.php:235
+msgid "Usa variables: {importe}, {metodo}, {fecha}, {producto}, {enlace_inscripcion}"
+msgstr ""
+
+#: includes/Admin_Settings.php:252
+msgid "Páginas de pago"
+msgstr ""
+
+#: includes/Admin_Settings.php:260
+msgid "💳 Pagos Recurrentes"
+msgstr ""
+
+#: includes/Admin_Settings.php:291
+msgid "Habilitar pagos recurrentes"
+msgstr ""
+
+#: includes/Admin_Settings.php:293
+msgid "Permite configurar suscripciones y domiciliaciones para cuotas periódicas."
+msgstr ""
+
+#: includes/Admin_Settings.php:296
+msgid "Periodo por defecto"
+msgstr ""
+
+#: includes/Admin_Settings.php:303
+msgid "Periodicidad por defecto para nuevas suscripciones."
+msgstr ""
+
+#: includes/Admin_Settings.php:306
+msgid "Número máximo de cobros"
+msgstr ""
+
+#: includes/Admin_Settings.php:308
+msgid "0 = ilimitado (hasta que se cancele)."
+msgstr ""
+
+#: includes/Admin_Settings.php:311
+msgid "Días de gracia"
+msgstr ""
+
+#: includes/Admin_Settings.php:313
+msgid "Días de espera antes de marcar un recibo como fallido."
+msgstr ""
+
+#: includes/Admin_Settings.php:349
+msgid "Definido en wp-config.php"
+msgstr ""
+
+#: includes/Admin_Settings.php:390
+msgid "Introduce clave para actualizar..."
+msgstr ""
+
+#: includes/Admin_Settings.php:430
+msgid "El código de comercio debe tener exactamente 9 dígitos."
+msgstr ""
+
+#: includes/Admin_Settings.php:436
+msgid "El número de terminal debe tener entre 1 y 3 dígitos."
+msgstr ""
+
+#: includes/Admin_Settings.php:445
+msgid "El IBAN no tiene un formato válido."
+msgstr ""
+
+#: includes/Admin_Settings.php:458
+msgid "La clave secreta debe tener al menos 16 caracteres."
+msgstr ""
+
+#: includes/Admin_Settings.php:495
+msgid "Convoca Common no está activo. Algunas funciones de la pasarela podrían no estar disponibles."
+msgstr ""
+
+#: includes/Admin_Settings.php:506
+msgid "Pasarela de pago — Redsys"
+msgstr ""
+
+#: includes/Admin_Settings.php:507
+msgid "Configuración y estado de transacciones"
+msgstr ""
+
+#: includes/Admin_Settings.php:513
+msgid "General"
+msgstr ""
+
+#: includes/Admin_Settings.php:516
+msgid "Correos"
+msgstr ""
+
+#: includes/Admin_Settings.php:556
+msgid "Previsualizar Éxito"
+msgstr ""
+
+#: includes/Admin_Settings.php:557
+msgid "Previsualizar Fallo"
+msgstr ""
+
+#: includes/Admin_Settings.php:563
+msgid "Guardar configuración"
+msgstr ""
+
+#: includes/Admin_Settings.php:771
+#: includes/Admin_Settings.php:782
+msgid "Sin permisos"
+msgstr ""
+
+#: includes/Admin_Settings.php:775
+msgid "Diagnóstico completado"
+msgstr ""
+
+#: includes/Admin_Settings.php:789
+msgid "Acción no encontrada"
+msgstr ""
+
+#: includes/Block_Gateway.php:52
+msgid "Página de Pago"
+msgstr ""
+
+#: includes/Block_Gateway.php:55
+msgid "Página de procesamiento de pago con selección de método (tarjeta/bizum)."
+msgstr ""
+
+#: includes/Block_Gateway.php:67
+msgid "Pago Correcto"
+msgstr ""
+
+#: includes/Block_Gateway.php:70
+msgid "Página de confirmación tras un pago exitoso."
+msgstr ""
+
+#: includes/Block_Gateway.php:82
+msgid "Pago Fallido"
+msgstr ""
+
+#: includes/Block_Gateway.php:85
+msgid "Página de error cuando un pago no se ha podido procesar."
+msgstr ""
+
+#: includes/CPT_Pago.php:99
+msgid "Pago"
+msgstr ""
+
+#: includes/CPT_Pago.php:131
+msgid "El importe debe ser mayor que 0."
+msgstr ""
+
+#: includes/CPT_Pago.php:264
+msgid "El importe mínimo es 0.50€"
+msgstr ""
+
+#: includes/CSV_Exporter.php:41
+msgid "No tienes permisos suficientes para exportar el historial de pagos."
+msgstr ""
+
+#: includes/CSV_Exporter.php:42
+msgid "Acceso Denegado"
+msgstr ""
+
+#: includes/CSV_Exporter.php:75
+msgid "ID"
+msgstr ""
+
+#: includes/CSV_Exporter.php:77
+#: includes/Payment_Handler.php:763
+msgid "Importe (€)"
+msgstr ""
+
+#: includes/CSV_Exporter.php:81
+msgid "Email Usuario"
+msgstr ""
+
+#: includes/CSV_Exporter.php:82
+msgid "Fecha Creación"
+msgstr ""
+
+#: includes/CSV_Exporter.php:83
+msgid "Fecha Pago"
+msgstr ""
+
+#: includes/CSV_Exporter.php:142
+msgid "Inscripción"
+msgstr ""
+
+#: includes/CSV_Exporter.php:143
+msgid "Socio/a"
+msgstr ""
+
+#: includes/Dashboard_Widget.php:69
+msgid "Pagos este mes"
+msgstr ""
+
+#: includes/Dashboard_Widget.php:75
+msgid "Uso de Métodos (Mes)"
+msgstr ""
+
+#: includes/Dashboard_Widget.php:89
+msgid "Evolución (7 días)"
+msgstr ""
+
+#: includes/Dashboard_Widget.php:101
+msgid "Resumen"
+msgstr ""
+
+#: includes/Dashboard_Widget.php:113
+#, php-format
+msgid "%1$d pagos, %2$s"
+msgstr ""
+
+#: includes/Diagnostic.php:210
 msgid "Hay páginas faltantes"
 msgstr ""
 
-#: includes/Diagnostic.php:194
+#: includes/Diagnostic.php:210
 msgid "Páginas OK y error configuradas"
 msgstr ""
 
-#: includes/Diagnostic.php:286
+#: includes/Diagnostic.php:302
 msgid "Hay errores de configuración"
 msgstr ""
 
-#: includes/Diagnostic.php:293
+#: includes/Diagnostic.php:309
 msgid "Hay advertencias"
 msgstr ""
 
-#: includes/Diagnostic.php:299
+#: includes/Diagnostic.php:315
 msgid "Todo correcto"
 msgstr ""
 
-#: includes/Diagnostic.php:313
+#: includes/Diagnostic.php:329
 msgid "Terminal configurado a 001"
 msgstr ""
 
-#: includes/Diagnostic.php:377
+#: includes/Diagnostic.php:393
 msgid "Las páginas ya estaban configuradas"
 msgstr ""
 
-#: includes/Diagnostic.php:383
+#: includes/Diagnostic.php:399
 msgid "Creadas: "
+msgstr ""
+
+#: includes/Email_Notifications.php:76
+msgid "Confirmación de pago: {producto}"
+msgstr ""
+
+#: includes/Email_Notifications.php:77
+msgid "Problema con tu pago: {producto}"
+msgstr ""
+
+#: includes/Email_Notifications.php:82
+msgid "Resumen de tu pago"
+msgstr ""
+
+#: includes/Email_Notifications.php:83
+msgid "Hemos recibido correctamente tu pago. Detalles:"
+msgstr ""
+
+#: includes/Email_Notifications.php:89
+msgid "Error en el pago"
+msgstr ""
+
+#: includes/Email_Notifications.php:90
+msgid "No hemos podido procesar tu pago para {producto}."
+msgstr ""
+
+#: includes/Email_Notifications.php:91
+msgid "Puedes volver a intentarlo aquí:"
+msgstr ""
+
+#: includes/Payment_Handler.php:321
+msgid "Email de notificación"
+msgstr ""
+
+#: includes/Payment_Handler.php:750
+msgid "Emitir Pago Nuevo"
+msgstr ""
+
+#: includes/Payment_Handler.php:751
+msgid "Introduce los datos para realizar un pago seguro."
+msgstr ""
+
+#: includes/Payment_Handler.php:768
+msgid "Concepto o Actividad"
+msgstr ""
+
+#: includes/Payment_Handler.php:769
+msgid "Ej: Inscripción Taller Aves"
+msgstr ""
+
+#: includes/Payment_Handler.php:773
+msgid "Email para el recibo"
+msgstr ""
+
+#: includes/Payment_Handler.php:779
+msgid "Continuar al pago"
+msgstr ""
+
+#: includes/Payment_Handler.php:785
+msgid "Pago seguro gestionado por Redsys. Convoca Gateway no almacena tus datos bancarios."
 msgstr ""

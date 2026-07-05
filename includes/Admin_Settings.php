@@ -1,4 +1,20 @@
 <?php
+
+/**
+ * Convoca Gateway
+ *
+ * @package    Convoca\Gateway
+ * @subpackage Includes
+ *
+ * @copyright  Copyright (C) 2026 Jose Carlos Nieto Ramos
+ * @license    GPL-2.0-or-later
+ *
+ * This program is free software; you can redistribute it and/or modify
+ * it under the terms of the GNU General Public License as published by
+ * the Free Software Foundation; either version 2 of the License, or
+ * (at your option) any later version.
+ */
+
 /**
  * Admin settings page for Redsys gateway credentials.
  *
@@ -162,7 +178,7 @@ class Admin_Settings {
 		add_settings_section(
 			'convoca_gateway_emails',
 			__( 'Notificaciones por Email', 'convoca-gateway' ),
-			fn() => print '<p>' . __( 'Configura los correos automáticos tras un pago con éxito.', 'convoca-gateway' ) . '</p>',
+			fn() => print '<p>' . esc_html__( 'Configura los correos automáticos tras un pago con éxito.', 'convoca-gateway' ) . '</p>',
 			'conv-gateway-settings'
 		);
 
@@ -216,7 +232,7 @@ class Admin_Settings {
 		add_settings_section(
 			'convoca_gateway_email_templates',
 			__( 'Personalización de Plantillas', 'convoca-gateway' ),
-			fn() => print '<p>' . __( 'Usa variables: {importe}, {metodo}, {fecha}, {producto}, {enlace_inscripcion}', 'convoca-gateway' ) . '</p>',
+			fn() => print '<p>' . esc_html__( 'Usa variables: {importe}, {metodo}, {fecha}, {producto}, {enlace_inscripcion}', 'convoca-gateway' ) . '</p>',
 			'conv-gateway-settings-emails'
 		);
 
@@ -389,8 +405,8 @@ class Admin_Settings {
 
 		wp_dropdown_pages(
 			array(
-				'name'              => self::OPTION . '[' . esc_attr( $key ) . ']',
-				'selected'          => $selected,
+				'name'              => esc_attr( self::OPTION . '[' . $key . ']' ),
+				'selected'          => (int) $selected,
 				'show_option_none'  => '— Seleccionar página —',
 				'option_none_value' => 0,
 			)
@@ -481,26 +497,26 @@ class Admin_Settings {
 
 		$settings   = get_option( self::OPTION, array() );
 		$env        = $settings['environment'] ?? 'test';
-		$active_tab = $_GET['tab'] ?? 'general';
+		$active_tab = wp_unslash( $_GET['tab'] ?? 'general' );
 		?>
 		<div class="wrap conv-gateway-settings-wrap">
 			<div class="conv-gateway-admin-header" style="display: flex; align-items: center; gap: 20px; margin-bottom: 20px;">
 				<img src="<?php echo esc_url( CONVOCA_IMAGES_URL . 'logo.png' ); ?>" alt="Convoca Gateway" style="width: 80px; height: 80px; border-radius: 12px; box-shadow: 0 4px 12px rgba(0,0,0,0.1);">
 				<div>
 					<h1 style="margin: 0; padding: 0;"><?php esc_html_e( 'Pasarela de pago — Redsys', 'convoca-gateway' ); ?></h1>
-					<p style="margin: 5px 0 0; color: #666; font-size: 1.1em;"><?php _e( 'Configuración y estado de transacciones', 'convoca-gateway' ); ?></p>
+					<p style="margin: 5px 0 0; color: #666; font-size: 1.1em;"><?php esc_html_e( 'Configuración y estado de transacciones', 'convoca-gateway' ); ?></p>
 				</div>
 			</div>
 
 			<nav class="nav-tab-wrapper">
 				<a href="?page=conv-gateway-settings&tab=general" class="nav-tab <?php echo $active_tab === 'general' ? 'nav-tab-active' : ''; ?>">
-					<?php _e( 'General', 'convoca-gateway' ); ?>
+					<?php esc_html_e( 'General', 'convoca-gateway' ); ?>
 				</a>
 				<a href="?page=conv-gateway-settings&tab=emails" class="nav-tab <?php echo $active_tab === 'emails' ? 'nav-tab-active' : ''; ?>">
-					<?php _e( 'Correos', 'convoca-gateway' ); ?>
+					<?php esc_html_e( 'Correos', 'convoca-gateway' ); ?>
 				</a>
 				<a href="?page=conv-gateway-settings&tab=status" class="nav-tab <?php echo $active_tab === 'status' ? 'nav-tab-active' : ''; ?>">
-					<?php _e( 'Estado', 'convoca-gateway' ); ?>
+					<?php esc_html_e( 'Estado', 'convoca-gateway' ); ?>
 					<?php
 					$badge = Diagnostic::get_menu_badge();
 					if ( $badge['severity'] !== 'ok' ) :
@@ -537,8 +553,8 @@ class Admin_Settings {
 					do_settings_sections( 'conv-gateway-settings-emails' );
 					?>
 					<hr>
-					<button type="button" class="button js-conv-gateway-preview-email" data-type="success"><?php _e( 'Previsualizar Éxito', 'convoca-gateway' ); ?></button>
-					<button type="button" class="button js-conv-gateway-preview-email" data-type="failed"><?php _e( 'Previsualizar Fallo', 'convoca-gateway' ); ?></button>
+					<button type="button" class="button js-conv-gateway-preview-email" data-type="success"><?php esc_html_e( 'Previsualizar Éxito', 'convoca-gateway' ); ?></button>
+					<button type="button" class="button js-conv-gateway-preview-email" data-type="failed"><?php esc_html_e( 'Previsualizar Fallo', 'convoca-gateway' ); ?></button>
 					<?php
 				} else {
 					do_settings_sections( 'conv-gateway-settings' );
@@ -577,8 +593,8 @@ class Admin_Settings {
 					
 					const fd = new FormData();
 					fd.append('action', 'convoca_gateway_diagnostic_run');
-					fd.append('nonce', '<?php echo wp_create_nonce( 'convoca_gateway_diagnostic_nonce' ); ?>');
-					
+					fd.append('nonce', '<?php echo esc_js( wp_create_nonce( 'convoca_gateway_diagnostic_nonce' ) ); ?>');
+
 					fetch(ajaxurl, {
 						method: 'POST',
 						body: fd
@@ -597,21 +613,21 @@ class Admin_Settings {
 						btn.disabled = false;
 						btn.textContent = 'Forzar comprobación';
 					});
-				});
-			}
+					});
+					}
 
-			// Diagnostic Fixes.
-			document.querySelectorAll('.conv-gateway-fix-button').forEach(function(btn) {
-				btn.addEventListener('click', function() {
+					// Diagnostic Fixes.
+					document.querySelectorAll('.conv-gateway-fix-button').forEach(function(btn) {
+					btn.addEventListener('click', function() {
 					const fix = this.dataset.fix;
 					this.disabled = true;
 					this.textContent = 'Aplicando...';
-					
+				
 					const fd = new FormData();
 					fd.append('action', 'convoca_gateway_diagnostic_fix');
-					fd.append('nonce', '<?php echo wp_create_nonce( 'convoca_gateway_diagnostic_nonce' ); ?>');
+					fd.append('nonce', '<?php echo esc_js( wp_create_nonce( 'convoca_gateway_diagnostic_nonce' ) ); ?>');
 					fd.append('fix', fix);
-					
+				
 					fetch(ajaxurl, {
 						method: 'POST',
 						body: fd
@@ -631,9 +647,9 @@ class Admin_Settings {
 						this.disabled = false;
 						this.textContent = 'Reparar';
 					});
-				});
-			});
-		});
+					});
+					});
+					});
 		</script>
 		<style>
 		.conv-gateway-diagnostic-badge { margin-left: 5px; }
@@ -682,7 +698,7 @@ class Admin_Settings {
 		<div class="conv-gateway-diagnostic-wrapper">
 			<div class="conv-gateway-summary">
 				<div class="conv-gateway-summary-icon conv-gateway-badge--<?php echo esc_attr( $summary_class ); ?>">
-					<?php echo $summary_icon; ?>
+					<?php echo esc_html( $summary_icon ); ?>
 				</div>
 				<div class="conv-gateway-summary-text">
 					<h3><?php echo esc_html( $summary_title ); ?></h3>
@@ -702,7 +718,7 @@ class Admin_Settings {
 					<div class="conv-gateway-diagnostic-row">
 						<div class="conv-gateway-diagnostic-header">
 							<span class="conv-gateway-severity-icon conv-gateway-severity-<?php echo esc_attr( $severity ); ?>">
-								<?php echo $icon; ?>
+								<?php echo esc_html( $icon ); ?>
 							</span>
 							<strong><?php echo esc_html( $result['title'] ); ?></strong>
 						</div>
@@ -725,7 +741,7 @@ class Admin_Settings {
 									?>
 									<div class="conv-gateway-diagnostic-row">
 										<span class="conv-gateway-severity-icon conv-gateway-severity-<?php echo esc_attr( $child_severity ); ?>">
-											<?php echo $child_icon; ?>
+											<?php echo esc_html( $child_icon ); ?>
 										</span>
 										<span><?php echo esc_html( $child['title'] ); ?></span>
 										<span class="conv-gateway-message"><?php echo esc_html( $child['message'] ); ?></span>
@@ -766,7 +782,7 @@ class Admin_Settings {
 			wp_send_json_error( array( 'message' => __( 'Sin permisos', 'convoca-gateway' ) ) );
 		}
 
-		$fix = sanitize_text_field( $_POST['fix'] ?? '' );
+		$fix = sanitize_text_field( wp_unslash( $_POST['fix'] ?? '' ) );
 
 		$result = array(
 			'success' => false,

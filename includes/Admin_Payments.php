@@ -1,4 +1,20 @@
 <?php
+
+/**
+ * Convoca Gateway
+ *
+ * @package    Convoca\Gateway
+ * @subpackage Includes
+ *
+ * @copyright  Copyright (C) 2026 Jose Carlos Nieto Ramos
+ * @license    GPL-2.0-or-later
+ *
+ * This program is free software; you can redistribute it and/or modify
+ * it under the terms of the GNU General Public License as published by
+ * the Free Software Foundation; either version 2 of the License, or
+ * (at your option) any later version.
+ */
+
 /**
  * Admin list table and management for payments.
  *
@@ -110,42 +126,39 @@ class Admin_Payments extends \WP_List_Table {
 
 		// Status Filter.
 		echo '<select name="status_filter">';
-		echo '<option value="">— ' . __( 'Todos los estados', 'convoca-gateway' ) . ' —</option>';
+		printf( '<option value="">— %s —</option>', esc_html__( 'Todos los estados', 'convoca-gateway' ) );
 		foreach ( CPT_Pago::STATUS as $key => $label ) {
-			$sel = selected( $status_filter, $key, false );
-			echo "<option value='" . esc_attr( $key ) . "' $sel>" . esc_html( $label ) . '</option>';
+			printf( '<option value="%s"%s>%s</option>', esc_attr( $key ), selected( $status_filter, $key, false ), esc_html( $label ) );
 		}
 		echo '</select>';
 
 		// Method Filter.
 		echo '<select name="method_filter">';
-		echo '<option value="">— ' . __( 'Todos los métodos', 'convoca-gateway' ) . ' —</option>';
+		printf( '<option value="">— %s —</option>', esc_html__( 'Todos los métodos', 'convoca-gateway' ) );
 		foreach ( array(
 			'tarjeta'       => 'Tarjeta',
 			'bizum'         => 'Bizum',
 			'transferencia' => 'Transferencia',
 		) as $key => $label ) {
-			$sel = selected( $method_filter, $key, false );
-			echo "<option value='" . esc_attr( $key ) . "' $sel>" . esc_html( $label ) . '</option>';
+			printf( '<option value="%s"%s>%s</option>', esc_attr( $key ), selected( $method_filter, $key, false ), esc_html( $label ) );
 		}
 		echo '</select>';
 
 		// Origin Filter.
 		echo '<select name="origin_filter">';
-		echo '<option value="">— ' . __( 'Todos los orígenes', 'convoca-gateway' ) . ' —</option>';
+		printf( '<option value="">— %s —</option>', esc_html__( 'Todos los orígenes', 'convoca-gateway' ) );
 		foreach ( array(
 			'enroll'  => 'Actividades',
 			'members' => 'Socio/a',
 		) as $key => $label ) {
-			$sel = selected( $origin_filter, $key, false );
-			echo "<option value='" . esc_attr( $key ) . "' $sel>" . esc_html( $label ) . '</option>';
+			printf( '<option value="%s"%s>%s</option>', esc_attr( $key ), selected( $origin_filter, $key, false ), esc_html( $label ) );
 		}
 		echo '</select>';
 
 		submit_button( __( 'Filtrar', 'convoca-gateway' ), '', 'filter_action', false );
 
 		// Export CSV button.
-		echo ' <a href="' . esc_url( wp_nonce_url( add_query_arg( 'action', 'export_csv' ), 'convoca_gateway_export_csv' ) ) . '" class="button button-secondary">' . __( 'Exportar CSV', 'convoca-gateway' ) . '</a>';
+		echo ' <a href="' . esc_url( wp_nonce_url( add_query_arg( 'action', 'export_csv' ), 'convoca_gateway_export_csv' ) ) . '" class="button button-secondary">' . esc_html__( 'Exportar CSV', 'convoca-gateway' ) . '</a>';
 
 		echo '</div>';
 	}
@@ -274,9 +287,9 @@ class Admin_Payments extends \WP_List_Table {
 		$this->prepare_items();
 		?>
 		<div class="wrap">
-			<h1 class="wp-heading-inline"><?php _e( 'Pagos Convoca', 'convoca-gateway' ); ?></h1>
-			<a href="<?php echo wp_nonce_url( admin_url( 'admin.php?page=conv-gateway-payments&action=export_csv' ), 'convoca_gateway_export_csv' ); ?>" class="page-title-action"><?php _e( 'Exportar a CSV', 'convoca-gateway' ); ?></a>
-			<a href="<?php echo esc_url( wp_nonce_url( admin_url( 'admin-post.php?action=convoca_gateway_export_payments_pdf' ), 'convoca_gateway_export_payments_pdf' ) ); ?>" class="page-title-action"><?php _e( 'Exportar PDF', 'convoca-gateway' ); ?></a>
+			<h1 class="wp-heading-inline"><?php esc_html_e( 'Pagos Convoca', 'convoca-gateway' ); ?></h1>
+			<a href="<?php echo esc_url( wp_nonce_url( admin_url( 'admin.php?page=conv-gateway-payments&action=export_csv' ), 'convoca_gateway_export_csv' ) ); ?>" class="page-title-action"><?php esc_html_e( 'Exportar a CSV', 'convoca-gateway' ); ?></a>
+			<a href="<?php echo esc_url( wp_nonce_url( admin_url( 'admin-post.php?action=convoca_gateway_export_payments_pdf' ), 'convoca_gateway_export_payments_pdf' ) ); ?>" class="page-title-action"><?php esc_html_e( 'Exportar PDF', 'convoca-gateway' ); ?></a>
 			<hr class="wp-header-end">
 
 			<form method="get">
@@ -293,7 +306,7 @@ class Admin_Payments extends \WP_List_Table {
 	/* ── Detail View ───────────────────────────────── */
 
 	public function render_detail(): void {
-		$id = (int) ( $_GET['id'] ?? 0 );
+		$id = (int) ( wp_unslash( $_GET['id'] ?? 0 ) );
 		if ( ! $id || 'pago' !== get_post_type( $id ) ) {
 			wp_die( __( 'Pago no encontrado.', 'convoca-gateway' ) );
 		}
@@ -309,20 +322,20 @@ class Admin_Payments extends \WP_List_Table {
 		// Handle re-send email.
 		if ( isset( $_POST['convoca_gateway_resend_email'] ) && check_admin_referer( 'convoca_gateway_resend_' . $id ) ) {
 			do_action( 'convoca_gateway_resend_email', $id );
-			echo '<div class="updated"><p>' . __( 'Email reenviado a la cola.', 'convoca-gateway' ) . '</p></div>';
+			echo '<div class="updated"><p>' . esc_html__( 'Email reenviado a la cola.', 'convoca-gateway' ) . '</p></div>';
 		}
 
 		// Handle refund.
 		if ( isset( $_POST['convoca_gateway_refund_payment'] ) && check_admin_referer( 'convoca_gateway_refund_' . $id ) ) {
 			$this->handle_refund( $id );
-			echo '<div class="updated"><p>' . __( 'Pago marcado como reembolsado.', 'convoca-gateway' ) . '</p></div>';
+			echo '<div class="updated"><p>' . esc_html__( 'Pago marcado como reembolsado.', 'convoca-gateway' ) . '</p></div>';
 			$meta = CPT_Pago::get_meta( $id ); // Refresh meta.
 		}
 
 		// Handle manual mark as paid.
 		if ( isset( $_POST['convoca_gateway_mark_paid'] ) && check_admin_referer( 'convoca_gateway_mark_paid_' . $id ) ) {
 			$this->handle_manual_paid( $id );
-			echo '<div class="updated"><p>' . __( 'Pago marcado como PAGADO manualmente.', 'convoca-gateway' ) . '</p></div>';
+			echo '<div class="updated"><p>' . esc_html__( 'Pago marcado como PAGADO manualmente.', 'convoca-gateway' ) . '</p></div>';
 			$meta = CPT_Pago::get_meta( $id ); // Refresh meta.
 		}
 
@@ -336,51 +349,51 @@ class Admin_Payments extends \WP_List_Table {
 					<div id="post-body-content">
 						
 						<div class="postbox">
-							<h2 class="hndle"><span><?php _e( 'Información del Pago', 'convoca-gateway' ); ?></span></h2>
+							<h2 class="hndle"><span><?php esc_html_e( 'Información del Pago', 'convoca-gateway' ); ?></span></h2>
 							<div class="inside">
 								<table class="form-table">
 									<tr>
-										<th><?php _e( 'ID Pedido', 'convoca-gateway' ); ?></th>
+										<th><?php esc_html_e( 'ID Pedido', 'convoca-gateway' ); ?></th>
 										<td><code><?php echo esc_html( $meta['order_id'] ); ?></code></td>
 									</tr>
 									<tr>
-										<th><?php _e( 'Estado', 'convoca-gateway' ); ?></th>
-										<td><?php echo CPT_Pago::badge( $meta['status'] ); ?></td>
+										<th><?php esc_html_e( 'Estado', 'convoca-gateway' ); ?></th>
+										<td><?php echo CPT_Pago::badge( $meta['status'] ); // phpcs:ignore WordPress.Security.EscapeOutput.OutputNotEscaped -- badge returns safe HTML ?></td>
 									</tr>
 									<tr>
-										<th><?php _e( 'Importe', 'convoca-gateway' ); ?></th>
-										<td><strong><?php echo CPT_Pago::format_amount( $meta['amount_cents'] ); ?></strong></td>
+										<th><?php esc_html_e( 'Importe', 'convoca-gateway' ); ?></th>
+										<td><strong><?php echo CPT_Pago::format_amount( $meta['amount_cents'] ); // phpcs:ignore WordPress.Security.EscapeOutput.OutputNotEscaped -- format_amount returns escaped output ?></strong></td>
 									</tr>
 									<tr>
-										<th><?php _e( 'Método', 'convoca-gateway' ); ?></th>
-										<td><?php echo ucfirst( $meta['method'] ); ?></td>
+										<th><?php esc_html_e( 'Método', 'convoca-gateway' ); ?></th>
+										<td><?php echo esc_html( ucfirst( $meta['method'] ) ); ?></td>
 									</tr>
 									<tr>
-										<th><?php _e( 'Origen', 'convoca-gateway' ); ?></th>
+										<th><?php esc_html_e( 'Origen', 'convoca-gateway' ); ?></th>
 										<td>
 											<?php echo esc_html( $meta['origin'] ); ?> 
 											(#<?php echo (int) $meta['origin_id']; ?>)
 										</td>
 									</tr>
 									<tr>
-										<th><?php _e( 'Descripción producto', 'convoca-gateway' ); ?></th>
+										<th><?php esc_html_e( 'Descripción producto', 'convoca-gateway' ); ?></th>
 										<td><?php echo esc_html( $meta['product_desc'] ); ?></td>
 									</tr>
 									<tr>
-										<th><?php _e( 'Código Autorización', 'convoca-gateway' ); ?></th>
+										<th><?php esc_html_e( 'Código Autorización', 'convoca-gateway' ); ?></th>
 										<td><?php echo esc_html( $meta['redsys_auth_code'] ?: '—' ); ?></td>
 									</tr>
 									<tr>
-										<th><?php _e( 'Respuesta Redsys', 'convoca-gateway' ); ?></th>
+										<th><?php esc_html_e( 'Respuesta Redsys', 'convoca-gateway' ); ?></th>
 										<td><?php echo esc_html( $meta['redsys_response'] ?: '—' ); ?></td>
 									</tr>
 									<?php if ( ! empty( $meta['proof_file'] ) ) : ?>
 									<tr>
-										<th><?php _e( 'Justificante de pago', 'convoca-gateway' ); ?></th>
+										<th><?php esc_html_e( 'Justificante de pago', 'convoca-gateway' ); ?></th>
 										<td>
 											<a href="<?php echo esc_url( $meta['proof_file'] ); ?>" class="button" target="_blank">
 												<span class="dashicons dashicons-media-document" style="vertical-align: middle;"></span>
-												<?php _e( 'Ver justificante', 'convoca-gateway' ); ?>
+												<?php esc_html_e( 'Ver justificante', 'convoca-gateway' ); ?>
 											</a>
 										</td>
 									</tr>
@@ -390,24 +403,24 @@ class Admin_Payments extends \WP_List_Table {
 						</div>
 
 						<div class="postbox">
-							<h2 class="hndle"><span><?php _e( 'Registro de eventos (Logs)', 'convoca-gateway' ); ?></span></h2>
+							<h2 class="hndle"><span><?php esc_html_e( 'Registro de eventos (Logs)', 'convoca-gateway' ); ?></span></h2>
 							<div class="inside">
 								<table class="widefat striped">
 									<thead>
 										<tr>
-											<th><?php _e( 'Fecha', 'convoca-gateway' ); ?></th>
-											<th><?php _e( 'Nivel', 'convoca-gateway' ); ?></th>
-											<th><?php _e( 'Mensaje', 'convoca-gateway' ); ?></th>
+											<th><?php esc_html_e( 'Fecha', 'convoca-gateway' ); ?></th>
+											<th><?php esc_html_e( 'Nivel', 'convoca-gateway' ); ?></th>
+											<th><?php esc_html_e( 'Mensaje', 'convoca-gateway' ); ?></th>
 										</tr>
 									</thead>
 									<tbody>
 										<?php if ( empty( $logs ) ) : ?>
-											<tr><td colspan="3"><?php _e( 'No hay eventos registrados.', 'convoca-gateway' ); ?></td></tr>
+											<tr><td colspan="3"><?php esc_html_e( 'No hay eventos registrados.', 'convoca-gateway' ); ?></td></tr>
 										<?php else : ?>
 											<?php foreach ( array_reverse( $logs ) as $log ) : ?>
 												<tr>
 													<td><?php echo esc_html( $log['timestamp'] ?? '—' ); ?></td>
-													<td><?php echo CPT_Pago::badge( $log['level'] ); ?></td>
+													<td><?php echo CPT_Pago::badge( $log['level'] ); // phpcs:ignore WordPress.Security.EscapeOutput.OutputNotEscaped -- badge returns safe HTML ?></td>
 													<td><?php echo esc_html( $log['message'] ); ?></td>
 												</tr>
 											<?php endforeach; ?>
@@ -421,28 +434,28 @@ class Admin_Payments extends \WP_List_Table {
 
 					<div id="postbox-container-1" class="postbox-container">
 						<div class="postbox">
-							<h2 class="hndle"><span><?php _e( 'Acciones', 'convoca-gateway' ); ?></span></h2>
+							<h2 class="hndle"><span><?php esc_html_e( 'Acciones', 'convoca-gateway' ); ?></span></h2>
 							<div class="inside">
 								<form method="post">
 									<?php wp_nonce_field( 'convoca_gateway_resend_' . $id ); ?>
 									<button type="submit" name="convoca_gateway_resend_email" class="button button-large" <?php echo $meta['status'] !== 'paid' ? 'disabled' : ''; ?>>
-										<?php _e( 'Reenviar email de confirmación', 'convoca-gateway' ); ?>
+										<?php esc_html_e( 'Reenviar email de confirmación', 'convoca-gateway' ); ?>
 									</button>
-									<p class="description"><?php _e( 'Solo disponible para pagos completados.', 'convoca-gateway' ); ?></p>
+									<p class="description"><?php esc_html_e( 'Solo disponible para pagos completados.', 'convoca-gateway' ); ?></p>
 								</form>
 								<?php if ( $meta['status'] !== 'paid' ) : ?>
 									<hr>
 									<form method="post" onsubmit="return confirm('<?php echo esc_js( __( '¿Confirmas que has recibido el dinero de este pago?', 'convoca-gateway' ) ); ?>');">
 										<?php wp_nonce_field( 'convoca_gateway_mark_paid_' . $id ); ?>
-										<button type="submit" name="convoca_gateway_mark_paid" class="button button-primary full-width"><?php _e( 'Confirmar Pago Manual', 'convoca-gateway' ); ?></button>
-										<p class="description"><?php _e( 'Úsalo para confirmar transferencias recibidas.', 'convoca-gateway' ); ?></p>
+										<button type="submit" name="convoca_gateway_mark_paid" class="button button-primary full-width"><?php esc_html_e( 'Confirmar Pago Manual', 'convoca-gateway' ); ?></button>
+										<p class="description"><?php esc_html_e( 'Úsalo para confirmar transferencias recibidas.', 'convoca-gateway' ); ?></p>
 									</form>
 								<?php endif; ?>
 								<?php if ( $meta['status'] === 'paid' ) : ?>
 									<hr>
 									<form method="post" onsubmit="return confirm('<?php echo esc_js( __( '¿Estás seguro de marcar este pago como reembolsado?', 'convoca-gateway' ) ); ?>');">
 										<?php wp_nonce_field( 'convoca_gateway_refund_' . $id ); ?>
-										<button type="submit" name="convoca_gateway_refund_payment" class="button button-link-delete" style="color: #d63638;"><?php _e( 'Marcar como Reembolsado', 'convoca-gateway' ); ?></button>
+										<button type="submit" name="convoca_gateway_refund_payment" class="button button-link-delete" style="color: #d63638;"><?php esc_html_e( 'Marcar como Reembolsado', 'convoca-gateway' ); ?></button>
 									</form>
 								<?php endif; ?>
 								<hr>

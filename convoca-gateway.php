@@ -1,24 +1,31 @@
 <?php
 /**
- * Plugin Name: Convoca Gateway — Payment Gateway
- * Plugin URI: https://convoca.org.
- * Description: Redsys payment gateway (card + Bizum).
- * Version: 2.6.2
- * Author:      Jose Carlos Nieto Ramos
- * Author URI:  https://josecarlosnietoramos.wordpress.com.
- * Text Domain: convoca-gateway
+ * Plugin Name:       Convoca Gateway — Payment Gateway
+ * Plugin URI:        https://getconvoca.app
+ * Description:       Redsys payment gateway (card + Bizum).
+ * Version:           2.6.2
  * Requires at least: 6.4
- * Requires PHP: 8.1
- * Tested up to: 7.0
- * License: GPL2
- * Requires Plugins: convoca-core
+ * Requires PHP:      8.1
+ * Tested up to:      7.0
+ * Author:            Jose Carlos Nieto Ramos
+ * Author URI:        https://getconvoca.app
+ * License:           GPL-2.0-or-later
+ * License URI:       https://www.gnu.org/licenses/gpl-2.0.html
+ * Text Domain:       convoca-gateway
+ * Domain Path:       /languages
+ * Requires Plugins:  convoca-core
  */
+
+namespace Convoca\Gateway;
+
+if ( ! defined( 'ABSPATH' ) ) {
+    exit;
+}
 
 
 namespace Convoca\Gateway;
 
 if ( ! defined( 'ABSPATH' ) ) {
-
 // Load translations.
 add_action( 'init', function () {
 	wp_set_script_translations( 'convoca-gateway-scripts', 'convoca-gateway', plugin_dir_path( __FILE__ ) . 'languages/' );

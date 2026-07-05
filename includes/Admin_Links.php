@@ -1,4 +1,20 @@
 <?php
+
+/**
+ * Convoca Gateway
+ *
+ * @package    Convoca\Gateway
+ * @subpackage Includes
+ *
+ * @copyright  Copyright (C) 2026 Jose Carlos Nieto Ramos
+ * @license    GPL-2.0-or-later
+ *
+ * This program is free software; you can redistribute it and/or modify
+ * it under the terms of the GNU General Public License as published by
+ * the Free Software Foundation; either version 2 of the License, or
+ * (at your option) any later version.
+ */
+
 /**
  * Admin list table for generated payment links.
  *
@@ -55,8 +71,8 @@ class Admin_Links extends \WP_List_Table {
 	public function prepare_items(): void {
 		$per_page     = 20;
 		$current_page = $this->get_pagenum();
-		$orderby      = $_GET['orderby'] ?? 'date';
-		$order        = $_GET['order'] ?? 'desc';
+		$orderby      = wp_unslash( $_GET['orderby'] ?? 'date' );
+		$order        = wp_unslash( $_GET['order'] ?? 'desc' );
 
 		$args = array(
 			'post_type'      => 'pago',

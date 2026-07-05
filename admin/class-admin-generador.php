@@ -1,4 +1,20 @@
 <?php
+
+/**
+ * Convoca Gateway
+ *
+ * @package    Convoca\Gateway
+ * @subpackage Admin
+ *
+ * @copyright  Copyright (C) 2026 Jose Carlos Nieto Ramos
+ * @license    GPL-2.0-or-later
+ *
+ * This program is free software; you can redistribute it and/or modify
+ * it under the terms of the GNU General Public License as published by
+ * the Free Software Foundation; either version 2 of the License, or
+ * (at your option) any later version.
+ */
+
 /**
  * Admin page: Generador de enlaces de pago.
  *
@@ -79,7 +95,7 @@ class Admin_Generador {
 		<div class="wrap conv-gateway-generador">
 			<h1><?php esc_html_e( 'Generador de Enlaces de Pago', 'convoca-gateway' ); ?></h1>
 			
-			<?php echo $message; ?>
+			<?php echo wp_kses_post( $message ); ?>
 
 			<div class="conv-gateway-generador-card">
 				<form method="post" action="">

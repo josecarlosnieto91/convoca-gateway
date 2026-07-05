@@ -1,4 +1,20 @@
 <?php
+
+/**
+ * Convoca Gateway
+ *
+ * @package    Convoca\Gateway
+ * @subpackage Includes
+ *
+ * @copyright  Copyright (C) 2026 Jose Carlos Nieto Ramos
+ * @license    GPL-2.0-or-later
+ *
+ * This program is free software; you can redistribute it and/or modify
+ * it under the terms of the GNU General Public License as published by
+ * the Free Software Foundation; either version 2 of the License, or
+ * (at your option) any later version.
+ */
+
 /**
  * Payment handler: creates payments, renders payment page, processes Redsys notifications.
  *
@@ -183,8 +199,8 @@ class Payment_Handler {
 			return $this->handle_manual_payment_submission();
 		}
 
-		$pago_id = (int) ( $_GET['convoca_gateway_pago'] ?? 0 );
-		$key     = sanitize_text_field( $_GET['convoca_gateway_key'] ?? '' );
+		$pago_id = (int) ( wp_unslash( $_GET['convoca_gateway_pago'] ?? 0 ) );
+		$key     = sanitize_text_field( wp_unslash( $_GET['convoca_gateway_key'] ?? '' ) );
 
 		// Handle proof of payment upload.
 		if ( isset( $_POST['convoca_gateway_upload_proof'] ) && check_admin_referer( 'convoca_gateway_proof_upload_action', 'convoca_gateway_proof_nonce' ) ) {
@@ -200,8 +216,8 @@ class Payment_Handler {
 			return $this->render_manual_form();
 		}
 
-		$expires_param = $_GET['convoca_gateway_expires'] ?? null;
-		$legacy_ts     = (int) ( $_GET['convoca_gateway_t'] ?? 0 );
+		$expires_param = wp_unslash( $_GET['convoca_gateway_expires'] ?? null );
+		$legacy_ts     = (int) ( wp_unslash( $_GET['convoca_gateway_t'] ?? 0 ) );
 
 		// 1. Check if it is a legacy link (uses conv_t).
 		if ( $legacy_ts > 0 ) {
@@ -247,7 +263,7 @@ class Payment_Handler {
 		$params           = get_post_meta( $pago_id, '_convoca_params', true );
 		$params           = is_array( $params ) ? $params : array();
 
-		$selected_method = sanitize_text_field( $_GET['convoca_gateway_method'] ?? '' );
+		$selected_method = sanitize_text_field( wp_unslash( $_GET['convoca_gateway_method'] ?? '' ) );
 		if ( $selected_method && in_array( $selected_method, array( 'tarjeta', 'bizum' ), true ) ) {
 			update_post_meta( $pago_id, '_convoca_method', $selected_method );
 			return $this->render_redsys_redirect( $pago_id, $meta, $selected_method );
@@ -731,8 +747,8 @@ class Payment_Handler {
 		?>
 		<div class="conv-payment-wrapper convoca-form convoca-card card-glass">
 			<div class="conv-payment-summary">
-				<h3 class="text-gradient"><?php _e( 'Emitir Pago Nuevo', 'convoca-gateway' ); ?></h3>
-				<p><?php _e( 'Introduce los datos para realizar un pago seguro.', 'convoca-gateway' ); ?></p>
+				<h3 class="text-gradient"><?php esc_html_e( 'Emitir Pago Nuevo', 'convoca-gateway' ); ?></h3>
+				<p><?php esc_html_e( 'Introduce los datos para realizar un pago seguro.', 'convoca-gateway' ); ?></p>
 			</div>
 
 			<?php if ( $error ) : ?>
@@ -744,29 +760,29 @@ class Payment_Handler {
 				<input type="hidden" name="convoca_gateway_manual_payment" value="1">
 
 				<div class="form-group">
-					<label for="amount"><?php _e( 'Importe (€)', 'convoca-gateway' ); ?></label>
+					<label for="amount"><?php esc_html_e( 'Importe (€)', 'convoca-gateway' ); ?></label>
 					<input type="number" name="amount" id="amount" step="0.01" min="0.50" placeholder="0.00" required>
 				</div>
 
 				<div class="form-group">
-					<label for="description"><?php _e( 'Concepto o Actividad', 'convoca-gateway' ); ?></label>
+					<label for="description"><?php esc_html_e( 'Concepto o Actividad', 'convoca-gateway' ); ?></label>
 					<input type="text" name="description" id="description" placeholder="<?php esc_attr_e( 'Ej: Inscripción Taller Aves', 'convoca-gateway' ); ?>" required>
 				</div>
 
 				<div class="form-group">
-					<label for="email"><?php _e( 'Email para el recibo', 'convoca-gateway' ); ?></label>
+					<label for="email"><?php esc_html_e( 'Email para el recibo', 'convoca-gateway' ); ?></label>
 					<input type="email" name="email" id="email" placeholder="tu@email.com" required>
 				</div>
 
 				<div class="form-actions">
 					<button type="submit" class="wp-block-button__link">
-						<?php _e( 'Continuar al pago', 'convoca-gateway' ); ?> &rarr;
+						<?php esc_html_e( 'Continuar al pago', 'convoca-gateway' ); ?> &rarr;
 					</button>
 				</div>
 			</form>
 
 			<p class="conv-security-note">
-				🔒 <?php _e( 'Pago seguro gestionado por Redsys. Convoca Gateway no almacena tus datos bancarios.', 'convoca-gateway' ); ?>
+				🔒 <?php esc_html_e( 'Pago seguro gestionado por Redsys. Convoca Gateway no almacena tus datos bancarios.', 'convoca-gateway' ); ?>
 			</p>
 		</div>
 		<?php
@@ -777,9 +793,9 @@ class Payment_Handler {
 	 * Handle the manual form submission.
 	 */
 	private function handle_manual_payment_submission(): string {
-		$amount = (float) str_replace( ',', '.', $_POST['amount'] ?? 0 );
-		$desc   = sanitize_text_field( $_POST['description'] ?? '' );
-		$email  = sanitize_email( $_POST['email'] ?? '' );
+		$amount = (float) str_replace( ',', '.', wp_unslash( $_POST['amount'] ?? 0 ) );
+		$desc   = sanitize_text_field( wp_unslash( $_POST['description'] ?? '' ) );
+		$email  = sanitize_email( wp_unslash( $_POST['email'] ?? '' ) );
 
 		if ( $amount < 0.50 ) {
 			return $this->render_manual_form( 'El importe mínimo es de 0,50€.' );
@@ -830,7 +846,7 @@ class Payment_Handler {
 			return '<div class="convoca-alert convoca-alert--success">✅ Este pago ya ha sido completado.</div>';
 		}
 
-		$selected_method = sanitize_text_field( $_GET['convoca_gateway_method'] ?? '' );
+		$selected_method = sanitize_text_field( wp_unslash( $_GET['convoca_gateway_method'] ?? '' ) );
 
 		if ( $selected_method && in_array( $selected_method, array( 'tarjeta', 'bizum' ), true ) ) {
 			update_post_meta( $pago_id, '_convoca_method', $selected_method );
@@ -1043,7 +1059,7 @@ class Payment_Handler {
 	 */
 	private function is_redsys_ip(): bool {
 		// Allow localhost/local network if in dev or if WP_DEBUG is enabled.
-		$ip = $_SERVER['REMOTE_ADDR'] ?? '';
+		$ip = wp_unslash( $_SERVER['REMOTE_ADDR'] ?? '' );
 
 		if ( empty( $ip ) ) {
 			return false;
@@ -1081,7 +1097,7 @@ class Payment_Handler {
 	 */
 	public function process_notification( array $post_data ): bool|\WP_Error {
 		if ( ! $this->is_redsys_ip() ) {
-			\Convoca\Core\Logger::error( 'Notificación rechazada: IP de origen no autorizada (' . ( $_SERVER['REMOTE_ADDR'] ?? 'unknown' ) . ').', 'Gateway/Notification' );
+			\Convoca\Core\Logger::error( 'Notificación rechazada: IP de origen no autorizada (' . ( wp_unslash( $_SERVER['REMOTE_ADDR'] ?? 'unknown' ) ) . ').', 'Gateway/Notification' );
 			return new \WP_Error( 'unauthorized_ip', 'Unauthorized IP' );
 		}
 
@@ -1176,7 +1192,7 @@ class Payment_Handler {
 	/* ── Return pages ──────────────────────────── */
 
 	public function render_ok_page( $atts ): string {
-		$pago_id = (int) ( $_GET['convoca_gateway_pago'] ?? 0 );
+		$pago_id = (int) ( wp_unslash( $_GET['convoca_gateway_pago'] ?? 0 ) );
 
 		if ( ! $pago_id ) {
 			return '<div class="convoca-alert convoca-alert--danger">ID de pago no especificado.</div>';
@@ -1238,7 +1254,7 @@ class Payment_Handler {
 	}
 
 	public function render_ko_page( $atts ): string {
-		$pago_id = (int) ( $_GET['convoca_gateway_pago'] ?? 0 );
+		$pago_id = (int) ( wp_unslash( $_GET['convoca_gateway_pago'] ?? 0 ) );
 
 		ob_start();
 		?>
@@ -1246,8 +1262,7 @@ class Payment_Handler {
 			<div class="conv-result-icon">&#x1F61E;</div>
 			<h3>Pago no completado</h3>
 			<p>El pago no se ha podido procesar. Puede deberse a una cancelación o un problema con tu banco.</p>
-			<p>Si el problema persiste, contacta con nosotros en
-				<a href="mailto:coordinacion@biodevas.org">coordinacion@biodevas.org</a>.
+			<p>If the problem persists, please contact the site administrator.
 			</p>
 			<?php if ( $pago_id ) : ?>
 				<?php
