@@ -112,6 +112,7 @@ class CSV_Exporter {
 			fputcsv( $output, $row, ';', '"' );
 		}
 
+		// phpcs:ignore WordPress.WP.AlternativeFunctions.file_system_operations_fclose -- Stream to php://output, WP_Filesystem not applicable.
 		fclose( $output );
 		exit;
 	}

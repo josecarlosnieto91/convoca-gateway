@@ -1,0 +1,14 @@
+# Development-only files not included in plugin distribution
+.editorconfig
+.gitattributes
+.gitignore
+.phpcs.xml.dist
+phpunit.xml.dist
+.github/
+tests/
+stubs/
+INSTALL.md
+SUPPORT.md
+CODE_OF_CONDUCT.md
+MANUAL_USUARIO.md
+includes/.htaccess

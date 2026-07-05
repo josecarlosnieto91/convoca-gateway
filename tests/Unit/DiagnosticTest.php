@@ -5,6 +5,10 @@
 
 namespace Convoca\Gateway\Tests;
 
+if ( ! defined( 'ABSPATH' ) ) {
+	exit;
+}
+
 use PHPUnit\Framework\TestCase;
 
 // Mock WordPress functions

@@ -88,7 +88,7 @@ class PaymentHandlerTest extends TestCase
             'Ds_Amount' => '3000',
             'Ds_Order' => '1234',
             'Ds_Currency' => '978',
-            'Ds_Date' => date('d/m/Y'),
+            'Ds_Date' => gmdate('d/m/Y'),
         ];
         $this->assertArrayHasKey('Ds_Response', $notification);
         $this->assertEquals('000', $notification['Ds_Response'], 'Ds_Response 000 = approved');

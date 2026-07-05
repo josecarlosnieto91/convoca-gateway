@@ -308,7 +308,7 @@ class Admin_Payments extends \WP_List_Table {
 	public function render_detail(): void {
 		$id = (int) ( wp_unslash( $_GET['id'] ?? 0 ) );
 		if ( ! $id || 'pago' !== get_post_type( $id ) ) {
-			wp_die( __( 'Pago no encontrado.', 'convoca-gateway' ) );
+			wp_die( esc_html__( 'Pago no encontrado.', 'convoca-gateway' ) );
 		}
 
 		$meta = CPT_Pago::get_meta( $id );
@@ -341,6 +341,7 @@ class Admin_Payments extends \WP_List_Table {
 
 		?>
 		<div class="wrap">
+			<?php /* translators: %s: order ID */ ?>
 			<h1><?php printf( esc_html__( 'Pago #%s', 'convoca-gateway' ), esc_html( $meta['order_id'] ) ); ?></h1>
 			<a href="<?php echo esc_url( admin_url( 'admin.php?page=conv-gateway-payments' ) ); ?>" class="button">&lsaquo; <?php echo esc_html__( 'Volver al listado', 'convoca-gateway' ); ?></a>
 

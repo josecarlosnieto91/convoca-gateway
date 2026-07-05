@@ -1,4 +1,9 @@
 <?php
+
+if ( ! defined( 'ABSPATH' ) ) {
+	exit;
+}
+
 define('WP_DEBUG', true);
 define('ABSPATH', dirname(__DIR__) . '/');
 

@@ -110,6 +110,7 @@ class Dashboard_Widget {
 								<tr>
 									<td><?php echo esc_html( $day['extra_label'] ); ?></td>
 									<td>
+										<?php /* translators: 1: number of payments, 2: formatted total amount */ ?>
 										<div class="conv-gateway-bar-container" title="<?php echo esc_attr( sprintf( __( '%1$d pagos, %2$s', 'convoca-gateway' ), $day['count'], CPT_Pago::format_amount( $day['total'] ) ) ); ?>">
 											<div class="conv-gateway-bar-fill" style="width: <?php echo esc_attr( $height ); ?>%"></div>
 											<span class="conv-gateway-bar-count"><?php echo esc_html( $day['count'] ); ?></span>
