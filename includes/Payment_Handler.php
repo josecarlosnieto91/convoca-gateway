@@ -670,6 +670,7 @@ class Payment_Handler {
 		$max_size = min( 5 * 1024 * 1024, wp_max_upload_size() );
 		if ( $_FILES['convoca_gateway_proof_file']['size'] > $max_size ) {
 			$max_mb = $max_size / 1024 / 1024;
+			/* translators: %s: Maximum file size in megabytes */
 			return new \WP_Error( 'file_too_large', sprintf( esc_html__( 'El archivo es demasiado grande. El límite es de %sMB.', 'convoca-gateway' ), $max_mb ) );
 		}
 
