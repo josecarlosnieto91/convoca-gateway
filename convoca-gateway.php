@@ -58,7 +58,7 @@ if ( ! class_exists( '\\Convoca\\Core\\Utils' ) ) {
 
 /* ── Constants ────────────────────────────────── */
 if ( ! defined( 'CONVOCA_GATEWAY_VERSION' ) ) {
-	define( 'CONVOCA_GATEWAY_VERSION', '2.6.1' );
+	define( 'CONVOCA_GATEWAY_VERSION', '2.6.2' );
 }
 if ( ! defined( 'CONVOCA_GATEWAY_DB_VERSION' ) ) {
 	define( 'CONVOCA_GATEWAY_DB_VERSION', '1.0.2' );
