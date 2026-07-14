@@ -22,17 +22,11 @@ if ( ! defined( 'ABSPATH' ) ) {
     exit;
 }
 
-
-namespace Convoca\Gateway;
-
-if ( ! defined( 'ABSPATH' ) ) {
 // Load translations.
 add_action( 'init', function () {
 	wp_set_script_translations( 'convoca-gateway-scripts', 'convoca-gateway', plugin_dir_path( __FILE__ ) . 'languages/' );
 	load_plugin_textdomain( 'convoca-gateway', false, dirname( plugin_basename( __FILE__ ) ) . '/languages' );
 } );
-	exit;
-}
 
 /* ── Composer autoload ─────────────────────────────── */
 $composer_autoload = __DIR__ . '/vendor/autoload.php';
