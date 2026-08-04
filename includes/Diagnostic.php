@@ -205,7 +205,7 @@ class Diagnostic {
 		return array(
 			'slug'         => 'return_pages',
 			'title'        => 'Páginas de retorno',
-			'description'  => 'Verifica que las páginas de éxito y error existen y tienen los shortcodes',
+			'description'  => __( 'Verifica que las páginas de éxito y error existen y tienen los shortcodes', 'convoca-gateway' ),
 			'severity'     => $has_error ? self::SEVERITY_ERROR : self::SEVERITY_OK,
 						'message'      => $has_error ? __( 'Hay páginas faltantes', 'convoca-gateway' ) : __( 'Páginas OK y error configuradas', 'convoca-gateway' ),
 			'fix'          => $has_error ? 'Haga clic en Reparar para crear las páginas automáticamente' : null,
@@ -347,7 +347,7 @@ class Diagnostic {
 				$new_ok_page_id = wp_insert_post(
 					array(
 						'post_title'   => 'Pago Completado',
-						'post_content' => '<!-- wp:shortcode -->[convoca_pago_ok]<!-- /wp:shortcode -->',
+						'post_content' => __( '<!-- wp:shortcode -->[convoca_pago_ok]<!-- /wp:shortcode -->', 'convoca-gateway' ),
 						'post_status'  => 'publish',
 						'post_type'    => 'page',
 						'post_name'    => 'pago-completado',
@@ -371,7 +371,7 @@ class Diagnostic {
 				$new_ko_page_id = wp_insert_post(
 					array(
 						'post_title'   => 'Pago Error',
-						'post_content' => '<!-- wp:shortcode -->[convoca_pago_ko]<!-- /wp:shortcode -->',
+						'post_content' => __( '<!-- wp:shortcode -->[convoca_pago_ko]<!-- /wp:shortcode -->', 'convoca-gateway' ),
 						'post_status'  => 'publish',
 						'post_type'    => 'page',
 						'post_name'    => 'pago-error',

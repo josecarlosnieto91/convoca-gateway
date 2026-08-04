@@ -92,7 +92,7 @@ class Admin_Settings {
 		add_settings_section(
 			'convoca_gateway_redsys',
 			__( 'Configuración Redsys (Caja Rural de Asturias)', 'convoca-gateway' ),
-			fn() => print '<p>Introduce los datos proporcionados por tu banco para el TPV Virtual.</p>',
+			fn() => print '<p>' . esc_html__( 'Introduce los datos proporcionados por tu banco para el TPV Virtual.', 'convoca-gateway' ) . '</p>',
 			'conv-gateway-settings'
 		);
 
@@ -142,7 +142,7 @@ class Admin_Settings {
 		add_settings_section(
 			'convoca_gateway_transfer',
 			__( 'Configuración Transferencia Bancaria', 'convoca-gateway' ),
-			fn() => print '<p>Datos para mostrar a los usuarios que elijan pagar por transferencia.</p>',
+			fn() => print '<p>' . esc_html__( 'Datos para mostrar a los usuarios que elijan pagar por transferencia.', 'convoca-gateway' ) . '</p>',
 			'conv-gateway-settings'
 		);
 
@@ -250,7 +250,7 @@ class Admin_Settings {
 		add_settings_section(
 			'convoca_gateway_pages',
 			__( 'Páginas de pago', 'convoca-gateway' ),
-			fn() => print '<p>Crea páginas con los shortcodes indicados y selecciónalas aquí.</p>',
+			fn() => print '<p>' . esc_html__( 'Crea páginas con los shortcodes indicados y selecciónalas aquí.', 'convoca-gateway' ) . '</p>',
 			'conv-gateway-settings'
 		);
 
@@ -260,7 +260,7 @@ class Admin_Settings {
 			__( '💳 Pagos Recurrentes', 'convoca-gateway' ),
 			function () {
 				if ( \Convoca\Core\License_Manager::has_pro( 'gateway' ) ) {
-					print '<p>Configura suscripciones y pagos periódicos con tarjeta o domiciliación.</p>';
+					print '<p>' . esc_html__( 'Configura suscripciones y pagos periódicos con tarjeta o domiciliación.', 'convoca-gateway' ) . '</p>';
 				} else {
 					print '<div class="convoca-alert convoca-alert--info" style="display:block;margin-bottom:20px;padding:12px 16px;background:#f0f9ff;border:1px solid #bae6fd;border-radius:8px;"><p style="margin:0;">🔒 <strong>Pagos Recurrentes</strong> es una funcionalidad PRO. <a href="' . esc_url( admin_url( 'admin.php?page=convoca-license' ) ) . '" style="font-weight:600;">Activa tu licencia</a> para desbloquear suscripciones y pagos periódicos.</p></div>';
 				}
@@ -269,9 +269,9 @@ class Admin_Settings {
 		);
 
 		$page_fields = array(
-			'payment_page_id' => 'Página de pago ([convoca_pago])',
-			'ok_page_id'      => 'Página de éxito ([convoca_pago_ok])',
-			'ko_page_id'      => 'Página de error ([convoca_pago_ko])',
+			'payment_page_id' => __( 'Página de pago ([convoca_pago])', 'convoca-gateway' ),
+			'ok_page_id'      => __( 'Página de éxito ([convoca_pago_ok])', 'convoca-gateway' ),
+			'ko_page_id'      => __( 'Página de error ([convoca_pago_ko])', 'convoca-gateway' ),
 		);
 
 		foreach ( $page_fields as $key => $label ) {
@@ -407,7 +407,7 @@ class Admin_Settings {
 			array(
 				'name'              => esc_attr( self::OPTION . '[' . $key . ']' ),
 				'selected'          => (int) $selected,
-				'show_option_none'  => '— Seleccionar página —',
+				'show_option_none'  => __( '— Seleccionar página —', 'convoca-gateway' ),
 				'option_none_value' => 0,
 			)
 		);

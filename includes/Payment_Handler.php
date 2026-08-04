@@ -236,18 +236,18 @@ class Payment_Handler {
 	private function render_link_payment_page( int $pago_id, string $key, int $expires_ts ): string {
 		$post = get_post( $pago_id );
 		if ( ! $post || $post->post_type !== 'pago' ) {
-			return '<div class="convoca-alert convoca-alert--danger">Pago no encontrado.</div>';
+			return '<div class="convoca-alert convoca-alert--danger">' . esc_html__( 'Pago no encontrado.', 'convoca-gateway' ) . '</div>';
 		}
 
 		$stored_key = get_post_meta( $pago_id, '_convoca_link_key', true );
 		if ( ! $stored_key || ! hash_equals( $stored_key, $key ) ) {
 			\Convoca\Core\Logger::warning( "Intento de acceso con token inválido. Pago ID: $pago_id", 'Gateway/LinkPayment', $pago_id );
-			return '<div class="convoca-alert convoca-alert--danger">Enlace de pago inválido.</div>';
+			return '<div class="convoca-alert convoca-alert--danger">' . esc_html__( 'Enlace de pago inválido.', 'convoca-gateway' ) . '</div>';
 		}
 
 		$stored_expires = get_post_meta( $pago_id, '_convoca_expires_at', true );
 		if ( $stored_expires && $stored_expires < time() ) {
-			return '<div class="convoca-alert convoca-alert--warning">El enlace de pago ha caducado. Por favor, contacta con el administrador para solicitar uno nuevo.</div>';
+			return '<div class="convoca-alert convoca-alert--warning">' . esc_html__( 'El enlace de pago ha caducado. Por favor, contacta con el administrador para solicitar uno nuevo.', 'convoca-gateway' ) . '</div>';
 		}
 
 		$meta = CPT_Pago::get_meta( $pago_id );
@@ -835,16 +835,16 @@ class Payment_Handler {
 		$legacy_hash     = wp_hash( $pago_id . '|' . $ts . '_convoca_payment' );
 
 		if ( ! hash_equals( $persistent_hash, $key ) && ! hash_equals( $legacy_hash, $key ) ) {
-			return '<div class="convoca-alert convoca-alert--danger">Enlace de pago inválido o corrupto.</div>';
+			return '<div class="convoca-alert convoca-alert--danger">' . esc_html__( 'Enlace de pago inválido o corrupto.', 'convoca-gateway' ) . '</div>';
 		}
 
 		if ( $ts < ( time() - DAY_IN_SECONDS ) ) {
-			return '<div class="convoca-alert convoca-alert--warning">El enlace de pago ha caducado. Por favor, solicita uno nuevo.</div>';
+			return '<div class="convoca-alert convoca-alert--warning">' . esc_html__( 'El enlace de pago ha caducado. Por favor, solicita uno nuevo.', 'convoca-gateway' ) . '</div>';
 		}
 
 		$meta = CPT_Pago::get_meta( $pago_id );
 		if ( $meta['status'] === 'paid' ) {
-			return '<div class="convoca-alert convoca-alert--success">✅ Este pago ya ha sido completado.</div>';
+			return '<div class="convoca-alert convoca-alert--success">' . esc_html__( '✅ Este pago ya ha sido completado.', 'convoca-gateway' ) . '</div>';
 		}
 
 		$selected_method = sanitize_text_field( wp_unslash( $_GET['convoca_gateway_method'] ?? '' ) );
@@ -1001,14 +1001,14 @@ class Payment_Handler {
 	private function render_redsys_redirect( int $pago_id, array $meta, string $method ): string {
 		// Check if already paid to prevent double payment attempts.
 		if ( ( $meta['status'] ?? '' ) === 'paid' ) {
-			return '<div class="convoca-alert convoca-alert--success">✅ Este pago ya ha sido completado correctamente. No es necesario realizarlo de nuevo.</div>';
+			return '<div class="convoca-alert convoca-alert--success">' . esc_html__( '✅ Este pago ya ha sido completado correctamente. No es necesario realizarlo de nuevo.', 'convoca-gateway' ) . '</div>';
 		}
 
 		$amount_cents = (int) ( $meta['amount_cents'] ?? 0 );
 
 		if ( $amount_cents <= 0 ) {
 			\Convoca\Core\Logger::error( "Intento de pago con importe zero. Pago ID: $pago_id", 'Gateway/Redsys', $pago_id );
-			return '<div class="convoca-alert convoca-alert--danger">Error: El importe del pago no es válido (0.00€).</div>';
+			return '<div class="convoca-alert convoca-alert--danger">' . esc_html__( 'Error: El importe del pago no es válido (0.00€).', 'convoca-gateway' ) . '</div>';
 		}
 
 		$pay_method = ( $method === 'bizum' ) ? Redsys_Client::METHOD_BIZUM : Redsys_Client::METHOD_CARD;
@@ -1196,12 +1196,12 @@ class Payment_Handler {
 		$pago_id = (int) ( wp_unslash( $_GET['convoca_gateway_pago'] ?? 0 ) );
 
 		if ( ! $pago_id ) {
-			return '<div class="convoca-alert convoca-alert--danger">ID de pago no especificado.</div>';
+			return '<div class="convoca-alert convoca-alert--danger">' . esc_html__( 'ID de pago no especificado.', 'convoca-gateway' ) . '</div>';
 		}
 
 		$post = get_post( $pago_id );
 		if ( ! $post || $post->post_type !== 'pago' ) {
-			return '<div class="convoca-alert convoca-alert--danger">Pago no encontrado.</div>';
+			return '<div class="convoca-alert convoca-alert--danger">' . esc_html__( 'Pago no encontrado.', 'convoca-gateway' ) . '</div>';
 		}
 
 		$meta = CPT_Pago::get_meta( $pago_id );

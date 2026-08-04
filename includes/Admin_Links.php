@@ -47,7 +47,7 @@ class Admin_Links extends \WP_List_Table {
 
 	public function get_columns(): array {
 		return array(
-			'cb'       => '<input type="checkbox" />',
+			'cb'       => __( '<input type="checkbox" />', 'convoca-gateway' ),
 			'order_id' => __( 'Pedido', 'convoca-gateway' ),
 			'concepto' => __( 'Concepto', 'convoca-gateway' ),
 			'amount'   => __( 'Importe', 'convoca-gateway' ),
