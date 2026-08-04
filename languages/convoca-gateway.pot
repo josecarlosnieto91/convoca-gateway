@@ -2,14 +2,14 @@
 # This file is distributed under the GPL-2.0-or-later.
 msgid ""
 msgstr ""
-"Project-Id-Version: convoca-gateway 2.6.2\n"
+"Project-Id-Version: Convoca Gateway — Payment Gateway 2.6.2\n"
 "Report-Msgid-Bugs-To: https://wordpress.org/support/plugin/convoca-gateway\n"
 "Last-Translator: FULL NAME <EMAIL@ADDRESS>\n"
 "Language-Team: LANGUAGE <LL@li.org>\n"
 "MIME-Version: 1.0\n"
 "Content-Type: text/plain; charset=UTF-8\n"
 "Content-Transfer-Encoding: 8bit\n"
-"POT-Creation-Date: 2026-07-05T06:52:08+00:00\n"
+"POT-Creation-Date: 2026-08-04T22:40:37+00:00\n"
 "PO-Revision-Date: YEAR-MO-DA HO:MI+ZONE\n"
 "X-Generator: WP-CLI 2.12.0\n"
 "X-Domain: convoca-gateway\n"
@@ -162,13 +162,13 @@ msgid "Total"
 msgstr ""
 
 #: includes/Admin_Dashboard.php:107
-#: includes/Dashboard_Widget.php:127
+#: includes/Dashboard_Widget.php:128
 msgid "Ver todos los pagos"
 msgstr ""
 
 #: includes/Admin_Dashboard.php:108
 #: includes/Admin_Settings.php:66
-#: includes/Dashboard_Widget.php:128
+#: includes/Dashboard_Widget.php:129
 msgid "Configuración"
 msgstr ""
 
@@ -179,21 +179,21 @@ msgstr ""
 
 #: includes/Admin_Links.php:53
 #: includes/Admin_Payments.php:100
-#: includes/Admin_Payments.php:364
+#: includes/Admin_Payments.php:365
 #: includes/Email_Notifications.php:85
 msgid "Importe"
 msgstr ""
 
 #: includes/Admin_Links.php:54
 #: includes/Admin_Payments.php:101
-#: includes/Admin_Payments.php:368
+#: includes/Admin_Payments.php:369
 #: includes/CSV_Exporter.php:78
 msgid "Método"
 msgstr ""
 
 #: includes/Admin_Links.php:55
 #: includes/Admin_Payments.php:103
-#: includes/Admin_Payments.php:372
+#: includes/Admin_Payments.php:373
 #: includes/CSV_Exporter.php:80
 msgid "Origen"
 msgstr ""
@@ -266,14 +266,14 @@ msgid "Todos los Pagos"
 msgstr ""
 
 #: includes/Admin_Payments.php:102
-#: includes/Admin_Payments.php:360
+#: includes/Admin_Payments.php:361
 #: includes/Admin_Settings.php:519
 #: includes/CSV_Exporter.php:79
 msgid "Estado"
 msgstr ""
 
 #: includes/Admin_Payments.php:104
-#: includes/Admin_Payments.php:411
+#: includes/Admin_Payments.php:412
 #: includes/Email_Notifications.php:87
 msgid "Fecha"
 msgstr ""
@@ -339,101 +339,102 @@ msgid "Pago marcado como reembolsado."
 msgstr ""
 
 #: includes/Admin_Payments.php:338
-#: includes/Admin_Payments.php:544
+#: includes/Admin_Payments.php:545
 msgid "Pago marcado como PAGADO manualmente."
 msgstr ""
 
-#: includes/Admin_Payments.php:344
+#. translators: %s: order ID
+#: includes/Admin_Payments.php:345
 #, php-format
 msgid "Pago #%s"
 msgstr ""
 
-#: includes/Admin_Payments.php:345
+#: includes/Admin_Payments.php:346
 msgid "Volver al listado"
 msgstr ""
 
-#: includes/Admin_Payments.php:352
+#: includes/Admin_Payments.php:353
 msgid "Información del Pago"
 msgstr ""
 
-#: includes/Admin_Payments.php:356
+#: includes/Admin_Payments.php:357
 #: includes/CSV_Exporter.php:76
 msgid "ID Pedido"
 msgstr ""
 
-#: includes/Admin_Payments.php:379
+#: includes/Admin_Payments.php:380
 msgid "Descripción producto"
 msgstr ""
 
-#: includes/Admin_Payments.php:383
+#: includes/Admin_Payments.php:384
 msgid "Código Autorización"
 msgstr ""
 
-#: includes/Admin_Payments.php:387
+#: includes/Admin_Payments.php:388
 msgid "Respuesta Redsys"
 msgstr ""
 
-#: includes/Admin_Payments.php:392
+#: includes/Admin_Payments.php:393
 msgid "Justificante de pago"
 msgstr ""
 
-#: includes/Admin_Payments.php:396
+#: includes/Admin_Payments.php:397
 msgid "Ver justificante"
 msgstr ""
 
-#: includes/Admin_Payments.php:406
+#: includes/Admin_Payments.php:407
 msgid "Registro de eventos (Logs)"
 msgstr ""
 
-#: includes/Admin_Payments.php:412
+#: includes/Admin_Payments.php:413
 msgid "Nivel"
 msgstr ""
 
-#: includes/Admin_Payments.php:413
+#: includes/Admin_Payments.php:414
 msgid "Mensaje"
 msgstr ""
 
-#: includes/Admin_Payments.php:418
+#: includes/Admin_Payments.php:419
 msgid "No hay eventos registrados."
 msgstr ""
 
-#: includes/Admin_Payments.php:437
+#: includes/Admin_Payments.php:438
 msgid "Acciones"
 msgstr ""
 
-#: includes/Admin_Payments.php:442
+#: includes/Admin_Payments.php:443
 msgid "Reenviar email de confirmación"
 msgstr ""
 
-#: includes/Admin_Payments.php:444
+#: includes/Admin_Payments.php:445
 msgid "Solo disponible para pagos completados."
 msgstr ""
 
-#: includes/Admin_Payments.php:448
+#: includes/Admin_Payments.php:449
 msgid "¿Confirmas que has recibido el dinero de este pago?"
 msgstr ""
 
-#: includes/Admin_Payments.php:450
+#: includes/Admin_Payments.php:451
 msgid "Confirmar Pago Manual"
 msgstr ""
 
-#: includes/Admin_Payments.php:451
+#: includes/Admin_Payments.php:452
 msgid "Úsalo para confirmar transferencias recibidas."
 msgstr ""
 
-#: includes/Admin_Payments.php:456
+#: includes/Admin_Payments.php:457
 msgid "¿Estás seguro de marcar este pago como reembolsado?"
 msgstr ""
 
-#: includes/Admin_Payments.php:458
+#: includes/Admin_Payments.php:459
 msgid "Marcar como Reembolsado"
 msgstr ""
 
-#: includes/Admin_Payments.php:464
+#: includes/Admin_Payments.php:465
 msgid "Ver inscripción original"
 msgstr ""
 
-#: includes/Admin_Payments.php:527
+#: includes/Admin_Payments.php:528
 msgid "Pago marcado como REEMBOLSADO manualmente."
 msgstr ""
 
@@ -675,7 +676,7 @@ msgid "ID"
 msgstr ""
 
 #: includes/CSV_Exporter.php:77
-#: includes/Payment_Handler.php:763
+#: includes/Payment_Handler.php:764
 msgid "Importe (€)"
 msgstr ""
 
@@ -691,11 +692,11 @@ msgstr ""
 msgid "Fecha Pago"
 msgstr ""
 
-#: includes/CSV_Exporter.php:142
+#: includes/CSV_Exporter.php:143
 msgid "Inscripción"
 msgstr ""
 
-#: includes/CSV_Exporter.php:143
+#: includes/CSV_Exporter.php:144
 msgid "Socio/a"
 msgstr ""
 
@@ -715,7 +716,8 @@ msgstr ""
 msgid "Resumen"
 msgstr ""
 
-#: includes/Dashboard_Widget.php:113
+#. translators: 1: number of payments, 2: formatted total amount
+#: includes/Dashboard_Widget.php:114
 #, php-format
 msgid "%1$d pagos, %2$s"
 msgstr ""
@@ -784,30 +786,36 @@ msgstr ""
 msgid "Email de notificación"
 msgstr ""
 
-#: includes/Payment_Handler.php:750
-msgid "Emitir Pago Nuevo"
+#. translators: %s: Maximum file size in megabytes
+#: includes/Payment_Handler.php:674
+#, php-format
+msgid "El archivo es demasiado grande. El límite es de %sMB."
 msgstr ""
 
 #: includes/Payment_Handler.php:751
+msgid "Emitir Pago Nuevo"
+msgstr ""
+
+#: includes/Payment_Handler.php:752
 msgid "Introduce los datos para realizar un pago seguro."
 msgstr ""
 
-#: includes/Payment_Handler.php:768
+#: includes/Payment_Handler.php:769
 msgid "Concepto o Actividad"
 msgstr ""
 
-#: includes/Payment_Handler.php:769
+#: includes/Payment_Handler.php:770
 msgid "Ej: Inscripción Taller Aves"
 msgstr ""
 
-#: includes/Payment_Handler.php:773
+#: includes/Payment_Handler.php:774
 msgid "Email para el recibo"
 msgstr ""
 
-#: includes/Payment_Handler.php:779
+#: includes/Payment_Handler.php:780
 msgid "Continuar al pago"
 msgstr ""
 
-#: includes/Payment_Handler.php:785
+#: includes/Payment_Handler.php:786
 msgid "Pago seguro gestionado por Redsys. Convoca Gateway no almacena tus datos bancarios."
 msgstr ""
