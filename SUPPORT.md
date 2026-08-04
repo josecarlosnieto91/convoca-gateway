@@ -5,7 +5,7 @@
 ### Documentation
 
 - **User Manuals**: each plugin includes a `MANUAL_USUARIO.md` with step-by-step guides
-- **Integration Guide**: see [docs/INTEGRATION_CONVOCA_BIODEVAS_LUGG.md](docs/) for deployment guidance
+- **Online Docs**: see [docs.getconvoca.app](https://docs.getconvoca.app) for installation and integration guides
 - **API Reference**: inline PHPDoc blocks and REST API endpoints are self-documenting at `/wp-json/convoca/v1/`
 
 ### Community Support

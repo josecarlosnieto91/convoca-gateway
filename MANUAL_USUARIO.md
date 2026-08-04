@@ -8,7 +8,7 @@ Convoca Gateway procesa pagos a través de Redsys (Sermepa), el TPV virtual más
 
 **Requiere:** convoca-core activo.
 
-**Integración con biodevas.org / lugg.biodevas.org:** Útil para cuotas de socios, donaciones, o inscripciones a actividades de pago. El shortcode `[convoca_pago]` puede incrustarse en cualquier página existente.
+**Integración en cualquier sitio:** Útil para cuotas de socios, donaciones, o inscripciones a actividades de pago. El shortcode `[convoca_pago]` puede incrustarse en cualquier página existente.
 
 ## 2. Configuración de Redsys
 
