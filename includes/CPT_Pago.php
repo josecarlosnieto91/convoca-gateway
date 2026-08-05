@@ -56,12 +56,14 @@ class CPT_Pago {
 	);
 
 	/** Status labels. */
-	public const STATUS = array(
-		'pending'  => 'Pendiente',
-		'paid'     => 'Pagado',
-		'failed'   => 'Fallido',
-		'refunded' => 'Reembolsado',
-	);
+	public static function status(): array {
+		return array(
+			'pending'  => __( 'Pendiente', 'convoca-gateway' ),
+			'paid'     => __( 'Pagado', 'convoca-gateway' ),
+			'failed'   => __( 'Fallido', 'convoca-gateway' ),
+			'refunded' => __( 'Reembolsado', 'convoca-gateway' ),
+		);
+	}
 
 	/** Status badge classes. */
 	public const BADGE = array(
@@ -232,7 +234,7 @@ class CPT_Pago {
 	 * Render status badge HTML.
 	 */
 	public static function badge( string $status ): string {
-		$label = self::STATUS[ $status ] ?? $status;
+		$label = self::status()[ $status ] ?? $status;
 		$class = self::BADGE[ $status ] ?? 'convoca-badge';
 		return sprintf( '<span class="%s">%s</span>', esc_attr( $class ), esc_html( $label ) );
 	}

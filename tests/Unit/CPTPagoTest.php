@@ -58,8 +58,8 @@ class CPTPagoTest extends TestCase
 
     public function test_class_has_status_constants(): void
     {
-        $this->assertIsArray(\Convoca\Gateway\CPT_Pago::STATUS);
-        $this->assertNotEmpty(\Convoca\Gateway\CPT_Pago::STATUS);
+        $this->assertIsArray(\Convoca\Gateway\CPT_Pago::status());
+        $this->assertNotEmpty(\Convoca\Gateway\CPT_Pago::status());
     }
 
     public function test_class_has_badge_constants(): void

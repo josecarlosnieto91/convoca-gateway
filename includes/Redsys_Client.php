@@ -448,36 +448,36 @@ class Redsys_Client {
 	public static function get_response_message( string $response_code ): string {
 		$code = (int) $response_code;
 		if ( $code >= 0 && $code <= 99 ) {
-			return 'Transacción autorizada';
+			return __( 'Transacción autorizada', 'convoca-gateway' );
 		}
 
 		$messages = array(
-			101  => 'Tarjeta caducada',
-			102  => 'Tarjeta en excepción transitoria o bajo sospecha de fraude',
-			106  => 'Intentos de PIN excedidos',
-			125  => 'Tarjeta no operativa',
-			129  => 'Código de seguridad (CVV2/CVC2) incorrecto',
-			180  => 'Tarjeta ajena al servicio',
-			184  => 'Error en la autenticación del titular',
-			190  => 'Denegación sin especificar motivo',
-			191  => 'Fecha de caducidad errónea',
-			202  => 'Tarjeta en excepción transitoria o bajo sospecha de fraude con retirada de tarjeta',
-			904  => 'Comercio no registrado en FUC',
-			909  => 'Error de sistema',
-			912  => 'Emisor no disponible',
-			913  => 'Pedido repetido',
-			944  => 'Sesión caducada',
-			950  => 'Operación de devolución no permitida',
-			9912 => 'Emisor no disponible (9912)',
-			9914 => 'Confirmación denegada',
-			9915 => 'Usuario ha cancelado el pago',
-			9928 => 'Anulación de autorización en curso',
-			9929 => 'Anulación después de 15 minutos',
-			9997 => 'Transacción simultánea en curso',
-			9998 => 'Operación en proceso de solicitud de datos de tarjeta',
-			9999 => 'Operación interrumpida o redirigida al emisor para autenticar',
+			101  => __( 'Tarjeta caducada', 'convoca-gateway' ),
+			102  => __( 'Tarjeta en excepción transitoria o bajo sospecha de fraude', 'convoca-gateway' ),
+			106  => __( 'Intentos de PIN excedidos', 'convoca-gateway' ),
+			125  => __( 'Tarjeta no operativa', 'convoca-gateway' ),
+			129  => __( 'Código de seguridad (CVV2/CVC2) incorrecto', 'convoca-gateway' ),
+			180  => __( 'Tarjeta ajena al servicio', 'convoca-gateway' ),
+			184  => __( 'Error en la autenticación del titular', 'convoca-gateway' ),
+			190  => __( 'Denegación sin especificar motivo', 'convoca-gateway' ),
+			191  => __( 'Fecha de caducidad errónea', 'convoca-gateway' ),
+			202  => __( 'Tarjeta en excepción transitoria o bajo sospecha de fraude con retirada de tarjeta', 'convoca-gateway' ),
+			904  => __( 'Comercio no registrado en FUC', 'convoca-gateway' ),
+			909  => __( 'Error de sistema', 'convoca-gateway' ),
+			912  => __( 'Emisor no disponible', 'convoca-gateway' ),
+			913  => __( 'Pedido repetido', 'convoca-gateway' ),
+			944  => __( 'Sesión caducada', 'convoca-gateway' ),
+			950  => __( 'Operación de devolución no permitida', 'convoca-gateway' ),
+			9912 => __( 'Emisor no disponible (9912)', 'convoca-gateway' ),
+			9914 => __( 'Confirmación denegada', 'convoca-gateway' ),
+			9915 => __( 'Usuario ha cancelado el pago', 'convoca-gateway' ),
+			9928 => __( 'Anulación de autorización en curso', 'convoca-gateway' ),
+			9929 => __( 'Anulación después de 15 minutos', 'convoca-gateway' ),
+			9997 => __( 'Transacción simultánea en curso', 'convoca-gateway' ),
+			9998 => __( 'Operación en proceso de solicitud de datos de tarjeta', 'convoca-gateway' ),
+			9999 => __( 'Operación interrumpida o redirigida al emisor para autenticar', 'convoca-gateway' ),
 		);
 
-		return $messages[ $code ] ?? "Denegación o error desconocido (Código: {$response_code})";
+		return $messages[ $code ] ?? sprintf( __( 'Denegación o error desconocido (Código: %s)', 'convoca-gateway' ), $response_code );
 	}
 }

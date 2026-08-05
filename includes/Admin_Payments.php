@@ -127,7 +127,7 @@ class Admin_Payments extends \WP_List_Table {
 		// Status Filter.
 		echo '<select name="status_filter">';
 		printf( '<option value="">— %s —</option>', esc_html__( 'Todos los estados', 'convoca-gateway' ) );
-		foreach ( CPT_Pago::STATUS as $key => $label ) {
+		foreach ( CPT_Pago::status() as $key => $label ) {
 			printf( '<option value="%s"%s>%s</option>', esc_attr( $key ), selected( $status_filter, $key, false ), esc_html( $label ) );
 		}
 		echo '</select>';
@@ -266,8 +266,8 @@ class Admin_Payments extends \WP_List_Table {
 	public function column_origin( $item ): string {
 		$meta = CPT_Pago::get_meta( $item->ID );
 		return match ( $meta['origin'] ) {
-			'enroll' => 'Inscripción',
-			'members' => 'Socio/a',
+			'enroll' => __( 'Inscripción', 'convoca-gateway' ),
+			'members' => __( 'Socio/a', 'convoca-gateway' ),
 			default => $meta['origin'],
 		};
 	}

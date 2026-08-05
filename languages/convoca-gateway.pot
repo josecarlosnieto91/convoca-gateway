@@ -2,17 +2,17 @@
 # This file is distributed under the GPL-2.0-or-later.
 msgid ""
 msgstr ""
-"Project-Id-Version: Convoca Gateway — Payment Gateway 2.6.2\n"
+"Project-Id-Version: convoca-gateway\n"
 "Report-Msgid-Bugs-To: https://wordpress.org/support/plugin/convoca-gateway\n"
 "Last-Translator: FULL NAME <EMAIL@ADDRESS>\n"
 "Language-Team: LANGUAGE <LL@li.org>\n"
 "MIME-Version: 1.0\n"
 "Content-Type: text/plain; charset=UTF-8\n"
 "Content-Transfer-Encoding: 8bit\n"
-"POT-Creation-Date: 2026-08-04T23:00:57+00:00\n"
+"POT-Creation-Date: 2026-08-05T07:14:55+00:00\n"
 "PO-Revision-Date: YEAR-MO-DA HO:MI+ZONE\n"
-"X-Generator: WP-CLI 2.12.0\n"
 "X-Domain: convoca-gateway\n"
+"X-Generator: WP-CLI 2.12.0\n"
 
 #. Plugin Name of the plugin
 #: convoca-gateway.php
@@ -152,7 +152,7 @@ msgstr ""
 
 #: includes/Admin_Dashboard.php:90
 #: includes/Admin_Payments.php:77
-#: includes/CPT_Pago.php:98
+#: includes/CPT_Pago.php:100
 msgid "Pagos"
 msgstr ""
 
@@ -241,7 +241,7 @@ msgid "Enlace de pago"
 msgstr ""
 
 #: includes/Admin_Links.php:165
-#: includes/CPT_Pago.php:349
+#: includes/CPT_Pago.php:351
 msgid "Nunca"
 msgstr ""
 
@@ -315,6 +315,16 @@ msgstr ""
 msgid "Ver miembro"
 msgstr ""
 
+#: includes/Admin_Payments.php:269
+#: includes/CSV_Exporter.php:143
+msgid "Inscripción"
+msgstr ""
+
+#: includes/Admin_Payments.php:270
+#: includes/CSV_Exporter.php:144
+msgid "Socio/a"
+msgstr ""
+
 #: includes/Admin_Payments.php:290
 msgid "Pagos Convoca"
 msgstr ""
@@ -333,7 +343,7 @@ msgstr ""
 
 #: includes/Admin_Payments.php:311
 #: includes/Payment_Handler.php:239
-#: includes/Payment_Handler.php:1204
+#: includes/Payment_Handler.php:1212
 msgid "Pago no encontrado."
 msgstr ""
 
@@ -458,7 +468,7 @@ msgid "Detalle"
 msgstr ""
 
 #: includes/Admin_Settings.php:94
-msgid "Configuración Redsys (Caja Rural de Asturias)"
+msgid "Configuración Redsys"
 msgstr ""
 
 #: includes/Admin_Settings.php:95
@@ -547,6 +557,22 @@ msgstr ""
 
 #: includes/Admin_Settings.php:263
 msgid "Configura suscripciones y pagos periódicos con tarjeta o domiciliación."
+msgstr ""
+
+#: includes/Admin_Settings.php:265
+msgid "Pagos Recurrentes"
+msgstr ""
+
+#: includes/Admin_Settings.php:265
+msgid "es una funcionalidad PRO."
+msgstr ""
+
+#: includes/Admin_Settings.php:265
+msgid "Activa tu licencia"
+msgstr ""
+
+#: includes/Admin_Settings.php:265
+msgid "para desbloquear suscripciones y pagos periódicos."
 msgstr ""
 
 #: includes/Admin_Settings.php:272
@@ -641,6 +667,20 @@ msgstr ""
 msgid "Correos"
 msgstr ""
 
+#: includes/Admin_Settings.php:542
+msgid "Modo PRODUCCIÓN activo."
+msgstr ""
+
+#: includes/Admin_Settings.php:542
+#, php-format
+msgid "Los pagos son reales y van a %s."
+msgstr ""
+
+#: includes/Admin_Settings.php:542
+#: includes/Payment_Handler.php:925
+msgid "tu entidad bancaria"
+msgstr ""
+
 #: includes/Admin_Settings.php:556
 msgid "Previsualizar Éxito"
 msgstr ""
@@ -690,15 +730,31 @@ msgstr ""
 msgid "Página de error cuando un pago no se ha podido procesar."
 msgstr ""
 
-#: includes/CPT_Pago.php:99
+#: includes/CPT_Pago.php:61
+msgid "Pendiente"
+msgstr ""
+
+#: includes/CPT_Pago.php:62
+msgid "Pagado"
+msgstr ""
+
+#: includes/CPT_Pago.php:63
+msgid "Fallido"
+msgstr ""
+
+#: includes/CPT_Pago.php:64
+msgid "Reembolsado"
+msgstr ""
+
+#: includes/CPT_Pago.php:101
 msgid "Pago"
 msgstr ""
 
-#: includes/CPT_Pago.php:131
+#: includes/CPT_Pago.php:133
 msgid "El importe debe ser mayor que 0."
 msgstr ""
 
-#: includes/CPT_Pago.php:264
+#: includes/CPT_Pago.php:266
 msgid "El importe mínimo es 0.50€"
 msgstr ""
 
@@ -729,14 +785,6 @@ msgstr ""
 
 #: includes/CSV_Exporter.php:83
 msgid "Fecha Pago"
-msgstr ""
-
-#: includes/CSV_Exporter.php:143
-msgid "Inscripción"
-msgstr ""
-
-#: includes/CSV_Exporter.php:144
-msgid "Socio/a"
 msgstr ""
 
 #: includes/Dashboard_Widget.php:69
@@ -891,14 +939,128 @@ msgstr ""
 msgid "✅ Este pago ya ha sido completado."
 msgstr ""
 
-#: includes/Payment_Handler.php:1004
+#: includes/Payment_Handler.php:927
+#, php-format
+msgid "Pago seguro gestionado por Redsys (%s)."
+msgstr ""
+
+#: includes/Payment_Handler.php:928
+msgid "Tus datos bancarios nunca pasan por nuestro servidor."
+msgstr ""
+
+#: includes/Payment_Handler.php:1012
 msgid "✅ Este pago ya ha sido completado correctamente. No es necesario realizarlo de nuevo."
 msgstr ""
 
-#: includes/Payment_Handler.php:1011
+#: includes/Payment_Handler.php:1019
 msgid "Error: El importe del pago no es válido (0.00€)."
 msgstr ""
 
-#: includes/Payment_Handler.php:1199
+#: includes/Payment_Handler.php:1207
 msgid "ID de pago no especificado."
+msgstr ""
+
+#: includes/Redsys_Client.php:451
+msgid "Transacción autorizada"
+msgstr ""
+
+#: includes/Redsys_Client.php:455
+msgid "Tarjeta caducada"
+msgstr ""
+
+#: includes/Redsys_Client.php:456
+msgid "Tarjeta en excepción transitoria o bajo sospecha de fraude"
+msgstr ""
+
+#: includes/Redsys_Client.php:457
+msgid "Intentos de PIN excedidos"
+msgstr ""
+
+#: includes/Redsys_Client.php:458
+msgid "Tarjeta no operativa"
+msgstr ""
+
+#: includes/Redsys_Client.php:459
+msgid "Código de seguridad (CVV2/CVC2) incorrecto"
+msgstr ""
+
+#: includes/Redsys_Client.php:460
+msgid "Tarjeta ajena al servicio"
+msgstr ""
+
+#: includes/Redsys_Client.php:461
+msgid "Error en la autenticación del titular"
+msgstr ""
+
+#: includes/Redsys_Client.php:462
+msgid "Denegación sin especificar motivo"
+msgstr ""
+
+#: includes/Redsys_Client.php:463
+msgid "Fecha de caducidad errónea"
+msgstr ""
+
+#: includes/Redsys_Client.php:464
+msgid "Tarjeta en excepción transitoria o bajo sospecha de fraude con retirada de tarjeta"
+msgstr ""
+
+#: includes/Redsys_Client.php:465
+msgid "Comercio no registrado en FUC"
+msgstr ""
+
+#: includes/Redsys_Client.php:466
+msgid "Error de sistema"
+msgstr ""
+
+#: includes/Redsys_Client.php:467
+msgid "Emisor no disponible"
+msgstr ""
+
+#: includes/Redsys_Client.php:468
+msgid "Pedido repetido"
+msgstr ""
+
+#: includes/Redsys_Client.php:469
+msgid "Sesión caducada"
+msgstr ""
+
+#: includes/Redsys_Client.php:470
+msgid "Operación de devolución no permitida"
+msgstr ""
+
+#: includes/Redsys_Client.php:471
+msgid "Emisor no disponible (9912)"
+msgstr ""
+
+#: includes/Redsys_Client.php:472
+msgid "Confirmación denegada"
+msgstr ""
+
+#: includes/Redsys_Client.php:473
+msgid "Usuario ha cancelado el pago"
+msgstr ""
+
+#: includes/Redsys_Client.php:474
+msgid "Anulación de autorización en curso"
+msgstr ""
+
+#: includes/Redsys_Client.php:475
+msgid "Anulación después de 15 minutos"
+msgstr ""
+
+#: includes/Redsys_Client.php:476
+msgid "Transacción simultánea en curso"
+msgstr ""
+
+#: includes/Redsys_Client.php:477
+msgid "Operación en proceso de solicitud de datos de tarjeta"
+msgstr ""
+
+#: includes/Redsys_Client.php:478
+msgid "Operación interrumpida o redirigida al emisor para autenticar"
+msgstr ""
+
+#: includes/Redsys_Client.php:481
+#, php-format
+msgid "Denegación o error desconocido (Código: %s)"
 msgstr ""

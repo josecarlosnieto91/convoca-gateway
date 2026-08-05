@@ -95,7 +95,7 @@ class CSV_Exporter {
 				$meta['order_id'],
 				number_format( $meta['amount_cents'] / 100, 2, ',', '.' ),
 				ucfirst( $meta['method'] ),
-				CPT_Pago::STATUS[ $meta['status'] ] ?? $meta['status'],
+				CPT_Pago::status()[ $meta['status'] ] ?? $meta['status'],
 				self::format_origin( $meta['origin'] ),
 				$email,
 				$meta['created_at'],

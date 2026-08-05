@@ -916,8 +916,16 @@ class Payment_Handler {
 			</div>
 
 			<p class="conv-security-note">
-				🔒 Pago seguro gestionado por Redsys (Caja Rural de Asturias).
-				Tus datos bancarios nunca pasan por nuestro servidor.
+				<?php
+				/**
+				 * Filter the bank/entity name shown in the payment security note.
+				 *
+				 * @param string $entity Translatable entity label.
+				 */
+				$convoca_entity = apply_filters( 'convoca_gateway_bank_entity', __( 'tu entidad bancaria', 'convoca-gateway' ) );
+				?>
+				🔒 <?php echo esc_html( sprintf( __( 'Pago seguro gestionado por Redsys (%s).', 'convoca-gateway' ), $convoca_entity ) ); ?>
+				<?php esc_html_e( 'Tus datos bancarios nunca pasan por nuestro servidor.', 'convoca-gateway' ); ?>
 			</p>
 		</div>
 		<style>

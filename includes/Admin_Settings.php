@@ -91,7 +91,7 @@ class Admin_Settings {
 
 		add_settings_section(
 			'convoca_gateway_redsys',
-			__( 'Configuración Redsys (Caja Rural de Asturias)', 'convoca-gateway' ),
+			__( 'Configuración Redsys', 'convoca-gateway' ),
 			fn() => print '<p>' . esc_html__( 'Introduce los datos proporcionados por tu banco para el TPV Virtual.', 'convoca-gateway' ) . '</p>',
 			'conv-gateway-settings'
 		);
@@ -262,7 +262,7 @@ class Admin_Settings {
 				if ( \Convoca\Core\License_Manager::has_pro( 'gateway' ) ) {
 					print '<p>' . esc_html__( 'Configura suscripciones y pagos periódicos con tarjeta o domiciliación.', 'convoca-gateway' ) . '</p>';
 				} else {
-					print '<div class="convoca-alert convoca-alert--info" style="display:block;margin-bottom:20px;padding:12px 16px;background:#f0f9ff;border:1px solid #bae6fd;border-radius:8px;"><p style="margin:0;">🔒 <strong>Pagos Recurrentes</strong> es una funcionalidad PRO. <a href="' . esc_url( admin_url( 'admin.php?page=convoca-license' ) ) . '" style="font-weight:600;">Activa tu licencia</a> para desbloquear suscripciones y pagos periódicos.</p></div>';
+					print '<div class="convoca-alert convoca-alert--info" style="display:block;margin-bottom:20px;padding:12px 16px;background:#f0f9ff;border:1px solid #bae6fd;border-radius:8px;"><p style="margin:0;">🔒 <strong>' . esc_html__( 'Pagos Recurrentes', 'convoca-gateway' ) . '</strong> ' . esc_html__( 'es una funcionalidad PRO.', 'convoca-gateway' ) . ' <a href="' . esc_url( admin_url( 'admin.php?page=convoca-license' ) ) . '" style="font-weight:600;">' . esc_html__( 'Activa tu licencia', 'convoca-gateway' ) . '</a> ' . esc_html__( 'para desbloquear suscripciones y pagos periódicos.', 'convoca-gateway' ) . '</p></div>';
 				}
 			},
 			'conv-gateway-settings'
@@ -539,7 +539,7 @@ class Admin_Settings {
 					</div>
 				<?php else : ?>
 					<div class="convoca-alert convoca-alert--warning" style="display:block;margin-bottom:20px;">
-						<p>⚡ <strong>Modo PRODUCCIÓN activo.</strong> Los pagos son reales y van a Caja Rural de Asturias.</p>
+						<p>⚡ <strong><?php esc_html_e( 'Modo PRODUCCIÓN activo.', 'convoca-gateway' ); ?></strong> <?php echo esc_html( sprintf( __( 'Los pagos son reales y van a %s.', 'convoca-gateway' ), apply_filters( 'convoca_gateway_bank_entity', __( 'tu entidad bancaria', 'convoca-gateway' ) ) ) ); ?></p>
 					</div>
 				<?php endif; ?>
 			<?php endif; ?>
