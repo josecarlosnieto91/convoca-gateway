@@ -207,7 +207,7 @@ class Diagnostic {
 			'title'        => 'Páginas de retorno',
 			'description'  => __( 'Verifica que las páginas de éxito y error existen y tienen los shortcodes', 'convoca-gateway' ),
 			'severity'     => $has_error ? self::SEVERITY_ERROR : self::SEVERITY_OK,
-						'message'      => $has_error ? __( 'Hay páginas faltantes', 'convoca-gateway' ) : __( 'Páginas OK y error configuradas', 'convoca-gateway' ),
+			'message'      => $has_error ? __( 'Hay páginas faltantes', 'convoca-gateway' ) : __( 'Páginas OK y error configuradas', 'convoca-gateway' ),
 			'fix'          => $has_error ? 'Haga clic en Reparar para crear las páginas automáticamente' : null,
 			'fix_callback' => $has_error ? array( __CLASS__, 'fix_create_pages' ) : null,
 			'children'     => $results,
@@ -299,20 +299,20 @@ class Diagnostic {
 		if ( ! empty( $cached['has_errors'] ) ) {
 			return array(
 				'severity' => 'error',
-								'message'  => __( 'Hay errores de configuración', 'convoca-gateway' ),
+				'message'  => __( 'Hay errores de configuración', 'convoca-gateway' ),
 			);
 		}
 
 		if ( ! empty( $cached['has_warnings'] ) ) {
 			return array(
 				'severity' => 'warning',
-								'message'  => __( 'Hay advertencias', 'convoca-gateway' ),
+				'message'  => __( 'Hay advertencias', 'convoca-gateway' ),
 			);
 		}
 
 		return array(
 			'severity' => 'ok',
-						'message'  => __( 'Todo correcto', 'convoca-gateway' ),
+			'message'  => __( 'Todo correcto', 'convoca-gateway' ),
 		);
 	}
 

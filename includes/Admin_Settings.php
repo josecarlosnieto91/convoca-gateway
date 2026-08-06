@@ -191,7 +191,7 @@ class Admin_Settings {
 			'email_sender_name'  => array(
 				'label' => __( 'Nombre del remitente', 'convoca-gateway' ),
 				'type'  => 'text',
-				'desc'  => 'Ej: ' . get_bloginfo('name'),
+				'desc'  => 'Ej: ' . get_bloginfo( 'name' ),
 			),
 		);
 
@@ -287,27 +287,27 @@ class Admin_Settings {
 		// Recurring payments fields (PRO).
 		if ( \Convoca\Core\License_Manager::has_pro( 'gateway' ) ) {
 			$recurring_fields = array(
-				'recurring_enabled'       => array(
+				'recurring_enabled'      => array(
 					'label' => __( 'Habilitar pagos recurrentes', 'convoca-gateway' ),
 					'type'  => 'checkbox',
 					'desc'  => __( 'Permite configurar suscripciones y domiciliaciones para cuotas periódicas.', 'convoca-gateway' ),
 				),
-				'recurring_period'        => array(
+				'recurring_period'       => array(
 					'label'   => __( 'Periodo por defecto', 'convoca-gateway' ),
 					'type'    => 'select',
 					'options' => array(
-						'monthly'  => 'Mensual',
+						'monthly'   => 'Mensual',
 						'quarterly' => 'Trimestral',
-						'yearly'   => 'Anual',
+						'yearly'    => 'Anual',
 					),
 					'desc'    => __( 'Periodicidad por defecto para nuevas suscripciones.', 'convoca-gateway' ),
 				),
-				'recurring_max_charges'   => array(
+				'recurring_max_charges'  => array(
 					'label' => __( 'Número máximo de cobros', 'convoca-gateway' ),
 					'type'  => 'number',
 					'desc'  => __( '0 = ilimitado (hasta que se cancele).', 'convoca-gateway' ),
 				),
-				'recurring_grace_period'  => array(
+				'recurring_grace_period' => array(
 					'label' => __( 'Días de gracia', 'convoca-gateway' ),
 					'type'  => 'number',
 					'desc'  => __( 'Días de espera antes de marcar un recibo como fallido.', 'convoca-gateway' ),
@@ -461,26 +461,26 @@ class Admin_Settings {
 		}
 
 		return array(
-			'merchant_code'         => sanitize_text_field( $input['merchant_code'] ?? '' ),
-			'bizum_merchant_code'   => sanitize_text_field( $input['bizum_merchant_code'] ?? '' ),
-			'terminal'              => sanitize_text_field( $input['terminal'] ?? '001' ),
-			'secret_key'            => $secret_to_save,
-			'environment'           => in_array( $input['environment'] ?? '', array( 'test', 'production' ) ) ? $input['environment'] : 'test',
-			'iban'                  => sanitize_text_field( $input['iban'] ?? '' ),
-			'beneficiary'           => sanitize_text_field( $input['beneficiary'] ?? '' ),
-			'instructions'          => sanitize_textarea_field( $input['instructions'] ?? '' ),
-			'payment_page_id'       => absint( $input['payment_page_id'] ?? 0 ),
-			'ok_page_id'            => absint( $input['ok_page_id'] ?? 0 ),
-			'ko_page_id'            => absint( $input['ko_page_id'] ?? 0 ),
-			'email_confirmation'    => isset( $input['email_confirmation'] ) ? '1' : '0',
-			'email_sender_name'     => sanitize_text_field( $input['email_sender_name'] ?? '' ),
-			'email_success_subject' => sanitize_text_field( $input['email_success_subject'] ?? '' ),
-			'email_success_body'    => wp_kses_post( $input['email_success_body'] ?? '' ),
-			'email_failed_subject'  => sanitize_text_field( $input['email_failed_subject'] ?? '' ),
-			'email_failed_body'     => wp_kses_post( $input['email_failed_body'] ?? '' ),
-			'recurring_enabled'     => isset( $input['recurring_enabled'] ) ? '1' : '0',
-			'recurring_period'      => in_array( $input['recurring_period'] ?? '', array( 'monthly', 'quarterly', 'yearly' ) ) ? $input['recurring_period'] : 'monthly',
-			'recurring_max_charges' => absint( $input['recurring_max_charges'] ?? 0 ),
+			'merchant_code'          => sanitize_text_field( $input['merchant_code'] ?? '' ),
+			'bizum_merchant_code'    => sanitize_text_field( $input['bizum_merchant_code'] ?? '' ),
+			'terminal'               => sanitize_text_field( $input['terminal'] ?? '001' ),
+			'secret_key'             => $secret_to_save,
+			'environment'            => in_array( $input['environment'] ?? '', array( 'test', 'production' ) ) ? $input['environment'] : 'test',
+			'iban'                   => sanitize_text_field( $input['iban'] ?? '' ),
+			'beneficiary'            => sanitize_text_field( $input['beneficiary'] ?? '' ),
+			'instructions'           => sanitize_textarea_field( $input['instructions'] ?? '' ),
+			'payment_page_id'        => absint( $input['payment_page_id'] ?? 0 ),
+			'ok_page_id'             => absint( $input['ok_page_id'] ?? 0 ),
+			'ko_page_id'             => absint( $input['ko_page_id'] ?? 0 ),
+			'email_confirmation'     => isset( $input['email_confirmation'] ) ? '1' : '0',
+			'email_sender_name'      => sanitize_text_field( $input['email_sender_name'] ?? '' ),
+			'email_success_subject'  => sanitize_text_field( $input['email_success_subject'] ?? '' ),
+			'email_success_body'     => wp_kses_post( $input['email_success_body'] ?? '' ),
+			'email_failed_subject'   => sanitize_text_field( $input['email_failed_subject'] ?? '' ),
+			'email_failed_body'      => wp_kses_post( $input['email_failed_body'] ?? '' ),
+			'recurring_enabled'      => isset( $input['recurring_enabled'] ) ? '1' : '0',
+			'recurring_period'       => in_array( $input['recurring_period'] ?? '', array( 'monthly', 'quarterly', 'yearly' ) ) ? $input['recurring_period'] : 'monthly',
+			'recurring_max_charges'  => absint( $input['recurring_max_charges'] ?? 0 ),
 			'recurring_grace_period' => absint( $input['recurring_grace_period'] ?? 7 ),
 		);
 	}

@@ -19,14 +19,17 @@
 namespace Convoca\Gateway;
 
 if ( ! defined( 'ABSPATH' ) ) {
-    exit;
+	exit;
 }
 
 // Load translations.
-add_action( 'init', function () {
-	wp_set_script_translations( 'convoca-gateway-scripts', 'convoca-gateway', plugin_dir_path( __FILE__ ) . 'languages/' );
-	load_plugin_textdomain( 'convoca-gateway', false, dirname( plugin_basename( __FILE__ ) ) . '/languages' );
-} );
+add_action(
+	'init',
+	function () {
+		wp_set_script_translations( 'convoca-gateway-scripts', 'convoca-gateway', plugin_dir_path( __FILE__ ) . 'languages/' );
+		load_plugin_textdomain( 'convoca-gateway', false, dirname( plugin_basename( __FILE__ ) ) . '/languages' );
+	} 
+);
 
 /* ── Composer autoload ─────────────────────────────── */
 $composer_autoload = __DIR__ . '/vendor/autoload.php';
@@ -34,7 +37,8 @@ if ( file_exists( $composer_autoload ) ) {
 	require_once $composer_autoload;
 }
 
-/* ── Convoca Core fallback ────────────────────────── */
+/*
+── Convoca Core fallback ────────────────────────── */
 // Core classes auto-loaded via Convoca Core's Composer PSR-4
 
 /* ── Startup guard: convoca-common must be active ── */
@@ -67,7 +71,8 @@ if ( ! defined( 'CONVOCA_GATEWAY_BASENAME' ) ) {
 	define( 'CONVOCA_GATEWAY_BASENAME', plugin_basename( __FILE__ ) );
 }
 
-/* ── Autoload ─────────────────────────────────── */
+/*
+── Autoload ─────────────────────────────────── */
 // PSR-4 autoloading handled by Composer (vendor/autoload.php)
 
 /* ── Deactivation cleanup ── */

@@ -180,7 +180,7 @@ class Payment_Handler {
 			$args['convoca_gateway_key'] = $token;
 			// No longer exposing expiration in URL for security/clarity.
 		} else {
-			$ts              = time();
+			$ts                          = time();
 			$args['convoca_gateway_t']   = $ts;
 			$args['convoca_gateway_key'] = hash_hmac( 'sha256', $pago_id . '|' . $ts . '_convoca_payment', self::get_persistent_salt() );
 		}
