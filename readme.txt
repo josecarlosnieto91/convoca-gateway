@@ -1,6 +1,6 @@
 === Convoca Gateway ===
 Contributors: josecarlosnietoramos
-Tags: payments, redsys, TPV, donations, fees, associations
+Tags: payments, redsys, donations, fees, tpv
 Requires at least: 6.4
 Tested up to: 7.0
 Requires PHP: 8.1
@@ -37,3 +37,29 @@ This plugin connects to the Redsys payment gateway to process transactions. Paym
 = 2.6.2 =
 * Improvement: 57 unit tests, 124 assertions
 * New: HMAC signature, amounts and notifications tests
+
+== Screenshots ==
+
+1. Payment panel with filters
+2. Create manual payment
+3. Public payment form (shortcode)
+4. Payment detail with notification log
+
+== Frequently Asked Questions ==
+
+= Does it require Convoca Core? =
+
+Yes. Convoca Gateway requires Convoca Core to be active.
+
+= Which payment gateway does it support? =
+
+Redsys/Sermepa, the most widely used virtual POS in Spain, with SHA-256 signature validation.
+
+= Can I generate payment links? =
+
+Yes. You can create unique payment links for sharing with members.
+
+== Upgrade Notice ==
+
+= 2.6.2 =
+* Compatibility and security improvements. Recommended update.
