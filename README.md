@@ -21,6 +21,13 @@ Pasarela de pago Redsys (tarjeta + Bizum) para la Asociación Convoca.
 - Filtros de exportación por estado, método, origen
 - Protección contra inyección CSV (prefija caracteres peligrosos con comilla)
 
+
+## 📖 Documentación
+
+La documentación completa (manual de usuario, API REST, hooks, instalación) vive en la wiki:
+
+👉 **[Convoca gateway](https://docs.getconvoca.app/plugins/convoca-gateway/)**
+
 ## Dependencies
 
 convoca-core, WordPress 6.4+, PHP 8.1+, Cuenta Redsys activa
