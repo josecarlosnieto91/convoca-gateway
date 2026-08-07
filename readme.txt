@@ -19,6 +19,8 @@ Process payments through Redsys (Sermepa), the most widely used virtual POS in S
 * Payment panel with filters and CSV export
 * Automatic notifications with HMAC validation
 * `[convoca_pago]` shortcode for public form
+* `[convoca_pago_ok]` shortcode for the payment success page
+* `[convoca_pago_ko]` shortcode for the payment failure page
 * Integration with Convoca Members (automatic membership updates)
 
 = External Services =

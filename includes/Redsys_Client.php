@@ -179,16 +179,16 @@ class Redsys_Client {
 	 * }
 	 */
 	public static function build_merchant_params( array $params ): string {
-		$merchant_code = $params['is_bizum'] ? ( self::bizum_merchant_code() ?: self::merchant_code() ) : self::merchant_code();
+		$merchant_code = ! empty( $params['is_bizum'] ) ? ( self::bizum_merchant_code() ?: self::merchant_code() ) : self::merchant_code();
 
 		$data = array(
-			'DS_MERCHANT_AMOUNT'             => (string) $params['amount_cents'],
+			'DS_MERCHANT_AMOUNT'             => (string) ( $params['amount_cents'] ?? 0 ),
 			'DS_MERCHANT_ORDER'              => $params['order_id'],
 			'DS_MERCHANT_MERCHANTCODE'       => $merchant_code,
 			'DS_MERCHANT_CURRENCY'           => self::CURRENCY_EUR,
 			'DS_MERCHANT_TRANSACTIONTYPE'    => self::TXTYPE_AUTH,
 			'DS_MERCHANT_TERMINAL'           => self::terminal(),
-			'DS_MERCHANT_MERCHANTURL'        => $params['url_notify'],
+			'DS_MERCHANT_MERCHANTURL'        => $params['url_notify'] ?? '',
 			'DS_MERCHANT_URLOK'              => $params['url_ok'],
 			'DS_MERCHANT_URLKO'              => $params['url_ko'],
 			'DS_MERCHANT_PRODUCTDESCRIPTION' => mb_substr( $params['product_desc'] ?? '', 0, 125 ),

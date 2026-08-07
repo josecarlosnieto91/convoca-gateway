@@ -57,6 +57,13 @@ Muestra un formulario de pago simple. Atributos opcionales:
 [convoca_pago concepto="Donación" importe="10" sugerido="5,10,20,50"]
 ```
 
+Shortcodes de resultado (páginas de retorno del proveedor):
+
+```
+[convoca_pago_ok]   Página de pago correcto
+[convoca_pago_ko]   Página de pago fallido/cancelado
+```
+
 ## 4. Panel de pagos
 
 En **Convoca → Gateway → Pagos** verás:
