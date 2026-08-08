@@ -36,7 +36,7 @@ class CSV_Exporter {
 	 * @param array $args Filter arguments for WP_Query.
 	 */
 	public static function export( array $args ): void {
-		if ( ! current_user_can( 'convoca_gateway_view_payments' ) ) {
+		if ( ! current_user_can( 'convoca_view_payments' ) ) {
 			wp_die(
 				esc_html__( 'No tienes permisos suficientes para exportar el historial de pagos.', 'convoca-gateway' ),
 				esc_html__( 'Acceso Denegado', 'convoca-gateway' ),

@@ -37,7 +37,7 @@ class Dashboard_Widget {
 	 * Register the dashboard widget.
 	 */
 	public function register_widget(): void {
-		if ( ! current_user_can( 'convoca_gateway_view_payments' ) ) {
+		if ( ! current_user_can( 'convoca_view_payments' ) ) {
 			return;
 		}
 

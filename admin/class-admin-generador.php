@@ -40,7 +40,7 @@ class Admin_Generador {
 			'conv-gateway-payments',
 			__( 'Generador de Enlaces de Pago', 'convoca-gateway' ),
 			__( 'Generar Enlace', 'convoca-gateway' ),
-			'convoca_gateway_manage_payments',
+			'convoca_manage_payments',
 			'conv-gateway-generador',
 			array( $this, 'render_page' )
 		);
@@ -49,7 +49,7 @@ class Admin_Generador {
 			'conv-gateway-payments',
 			__( 'Enlaces de Pago', 'convoca-gateway' ),
 			__( 'Enlaces de Pago', 'convoca-gateway' ),
-			'convoca_gateway_manage_payments',
+			'convoca_manage_payments',
 			'conv-gateway-links',
 			array( new Admin_Links(), 'render_page' )
 		);

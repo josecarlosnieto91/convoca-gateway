@@ -75,7 +75,7 @@ class Admin_Payments extends \WP_List_Table {
 		add_menu_page(
 			__( 'Convoca Pagos', 'convoca-gateway' ),
 			__( 'Pagos', 'convoca-gateway' ),
-			'convoca_gateway_view_payments',
+			'convoca_view_payments',
 			'conv-gateway-payments',
 			array( $this, 'render_page' ),
 			'dashicons-cart',
@@ -87,7 +87,7 @@ class Admin_Payments extends \WP_List_Table {
 			'conv-gateway-payments',
 			__( 'Todos los Pagos', 'convoca-gateway' ),
 			__( 'Todos los Pagos', 'convoca-gateway' ),
-			'convoca_gateway_view_payments',
+			'convoca_view_payments',
 			'conv-gateway-payments',
 			array( $this, 'render_page' )
 		);

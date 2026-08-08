@@ -74,7 +74,7 @@ class Admin_Settings {
 			null, // Hidden.
 			__( 'Detalle de Pago', 'convoca-gateway' ),
 			__( 'Detalle', 'convoca-gateway' ),
-			'convoca_gateway_view_payments',
+			'convoca_view_payments',
 			'conv-gateway-payments-detail',
 			array( new Admin_Payments(), 'render_page' )
 		);
