@@ -4,7 +4,7 @@ Tags: payments, redsys, donations, fees, tpv
 Requires at least: 6.4
 Tested up to: 7.0
 Requires PHP: 8.1
-Stable tag: 2.6.3
+Stable tag: 2.6.4
 License: GPL-2.0-or-later
 License URI: https://www.gnu.org/licenses/gpl-2.0.html
 
@@ -35,6 +35,9 @@ This plugin connects to the Redsys payment gateway to process transactions. Paym
 4. Configure your Redsys account in Settings > Convoca Gateway
 
 == Changelog ==
+
+= 2.6.4 =
+* Fix: capacidades del listado de pagos — usa convoca_view_payments del core (antes exigía convoca_gateway_view_payments no registrada → 403 en el admin).
 
 = 2.6.3 =
 * Fix: build_merchant_params defaults (is_bizum, amount_cents, url_notify)
