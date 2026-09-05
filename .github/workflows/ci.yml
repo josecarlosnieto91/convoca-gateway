@@ -72,7 +72,7 @@ jobs:
       - name: Create build directory
         run: mkdir -p build
       - name: Run unit tests
-        run: vendor/bin/phpunit --testsuite unit --coverage-clover build/clover.xml --log-junit build/junit.xml
+        run: vendor/bin/phpunit --testsuite unit --log-junit build/junit.xml
 
   plugin-check:
     name: Plugin Check (PCP)
@@ -95,12 +95,23 @@ jobs:
         with:
           dependency-versions: highest
           composer-options: '--ignore-platform-req=ext-iconv'
+      - name: Build clean plugin dir (as published)
+        # Replica el paquete de distribución: excluye tooling dev (.distignore)
+        # y archivos ocultos/prohibidos (.htaccess). vendor viaja (wp.org no
+        # ejecuta composer y PCP activa el plugin en wp-env).
+        run: |
+          mkdir -p build-dir
+          rsync -a --exclude-from=.distignore ./ build-dir/convoca-gateway/
+          cp -r vendor build-dir/convoca-gateway/
+          find build-dir/convoca-gateway -name '.htaccess' -delete
+          ls build-dir/convoca-gateway/
       - name: Run Plugin Check (WordPress.org)
         # Ejecuta Plugin Check (PCP) en categorías plugin_repo + security,
         # bloqueantes para publicar en WordPress.org. Los warnings no fallan;
         # cualquier ERROR sí (exit != 0).
         uses: wordpress/plugin-check-action@v1
         with:
+          build-dir: './build-dir/convoca-gateway'
           categories: |
             plugin_repo
             security

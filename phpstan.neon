@@ -36,3 +36,20 @@ parameters:
             message: '#Parameter \#1 \$args of function wp_dropdown_pages#'
             identifier: argument.type
             path: includes/Admin_Settings.php
+        # check_admin_referer() hace wp_die si el nonce falla: stub reciente lo
+        # tipa como siempre-true. Patrón WP estándar en admin handlers.
+        -
+            message: '#Right side of && is always true#'
+            identifier: booleanAnd.rightAlwaysTrue
+        # Admin_Payments:66 — if(check_admin_referer()) siempre true por stub.
+        -
+            message: '#If condition is always true#'
+            identifier: if.alwaysTrue
+            path: includes/Admin_Payments.php
+        # wp_handle_upload() devuelve array|WP_Error en el stub; el chequeo
+        # $movefile && !isset(error) es defensivo correcto en runtime.
+        -
+            message: '#Left side of && is always true#'
+            identifier: booleanAnd.leftAlwaysTrue
+            path: includes/Payment_Handler.php
+
