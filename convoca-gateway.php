@@ -3,7 +3,7 @@
  * Plugin Name:       Convoca Gateway — Payment Gateway
  * Plugin URI:        https://getconvoca.app
  * Description:       Redsys payment gateway (card + Bizum).
- * Version:           2.6.4
+ * Version:           2.6.5
  * Requires at least: 6.4
  * Requires PHP:      8.1
  * Tested up to:      7.0
@@ -114,6 +114,20 @@ add_action(
 			array(
 				'methods'             => 'POST',
 				'callback'            => function ( \WP_REST_Request $request ) {
+					// Rate limit ligero por IP (anti-DoS): 30 notificaciones/min máximo.
+					$ip   = sanitize_text_field( wp_unslash( $_SERVER['REMOTE_ADDR'] ?? 'unknown' ) );
+					$rkey = 'convoca_notify_rt_' . md5( $ip );
+					$rcnt = (int) get_transient( $rkey );
+					if ( $rcnt > 30 ) {
+						return new \WP_REST_Response( array( 'code' => 'too_many_requests', 'message' => 'Too Many Requests' ), 429 );
+					}
+					set_transient( $rkey, $rcnt + 1, 60 );
+
+					// Límite de tamaño del payload.
+					if ( strlen( $request->get_body() ) > 16384 ) {
+						return new \WP_REST_Response( array( 'code' => 'payload_too_large', 'message' => 'Payload too large' ), 413 );
+					}
+
 					$handler = new \Convoca\Gateway\Payment_Handler();
 					$params  = $request->get_params(); // DS_MerchantParameters, DS_Signature, etc.
 					$result  = $handler->process_notification( $params );

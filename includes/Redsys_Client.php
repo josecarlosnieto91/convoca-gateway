@@ -66,6 +66,16 @@ class Redsys_Client {
 	}
 
 	/**
+	 * Get the signature version configured by this plugin (fixed, not client-controlled).
+	 * Soporta HMAC_SHA256_V1 (3DES) y HMAC_SHA256_V2.
+	 */
+	public static function signature_version(): string {
+		$s = self::settings();
+		$v = $s['signature_version'] ?? self::SIG_VERSION;
+		return ( 'HMAC_SHA256_V2' === $v ) ? 'HMAC_SHA256_V2' : 'HMAC_SHA256_V1';
+	}
+
+	/**
 	 * Get the Redsys endpoint URL based on environment.
 	 */
 	public static function endpoint(): string {
@@ -398,8 +408,9 @@ class Redsys_Client {
 			return false;
 		}
 
-		$decoded = json_decode( base64_decode( $mp_b64 ), true );
-		if ( ! $decoded ) {
+		// Decodificar base64url (Redsys puede usar '-' y '_') con modo estricto.
+		$decoded = json_decode( base64_decode( strtr( $mp_b64, '-_', '+/' ), true ), true );
+		if ( ! is_array( $decoded ) ) {
 			return false;
 		}
 
@@ -408,17 +419,21 @@ class Redsys_Client {
 			return false;
 		}
 
-		// Elegir método de firma según la versión.
-		if ( $signature_version === 'HMAC_SHA256_V1' ) {
-			$expected = self::sign( $mp_b64, $order_id );
-		} elseif ( $signature_version === 'HMAC_SHA256_V2' ) {
-			$expected = self::sign_v2( $mp_b64, $order_id );
-		} else {
+		// Versión de firma: NO confiar en el input del atacante para elegir algoritmo.
+		// Solo se acepta la versión configurada por el comercio; lo demás se rechaza.
+		$configured = self::signature_version();
+		if ( $signature_version !== $configured ) {
 			\Convoca\Core\Logger::error(
-				"Invalid signature version: '$signature_version'. Expected HMAC_SHA256_V1 or V2.",
+				"Versión de firma inesperada: '$signature_version' (configurada: '$configured').",
 				'Gateway/Redsys'
 			);
 			return false;
+		}
+
+		if ( 'HMAC_SHA256_V1' === $configured ) {
+			$expected = self::sign( $mp_b64, $order_id );
+		} else {
+			$expected = self::sign_v2( $mp_b64, $order_id );
 		}
 
 		// URL-safe base64 comparison.
@@ -433,13 +448,14 @@ class Redsys_Client {
 	}
 
 	/**
-	 * Check if a Redsys response code indicates success.
+	 * Check if a Redsys response code indicates an approved purchase.
 	 *
-	 * Response codes 0000-0099 mean approved.
+	 * Solo '0000' (autorización de compra) marca el pago como realizado.
+	 * El rango 0-99 incluye códigos de otras operaciones (devoluciones,
+	 * anulaciones) que no deben completar un cobro de cuota.
 	 */
 	public static function is_approved( string $response_code ): bool {
-		$code = (int) $response_code;
-		return $code >= 0 && $code <= 99;
+		return $response_code === '0000';
 	}
 
 	/**

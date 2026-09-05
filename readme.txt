@@ -4,7 +4,7 @@ Tags: payments, redsys, donations, fees, tpv
 Requires at least: 6.4
 Tested up to: 7.0
 Requires PHP: 8.1
-Stable tag: 2.6.4
+Stable tag: 2.6.5
 License: GPL-2.0-or-later
 License URI: https://www.gnu.org/licenses/gpl-2.0.html
 
@@ -35,6 +35,14 @@ This plugin connects to the Redsys payment gateway to process transactions. Paym
 4. Configure your Redsys account in Settings > Convoca Gateway
 
 == Changelog ==
+
+= 2.6.5 =
+* Security: la versión de firma Redsys ya no la decide el input del atacante — solo se acepta la configurada por el comercio.
+* Security: la notificación valida importe (Ds_Amount), moneda (978) y merchant code contra el pago esperado antes de marcar pagado.
+* Security: is_approved exige Ds_Response === '0000' (autorización de compra), no todo el rango 0-99.
+* Security: eliminado bypass de IP por WP_DEBUG en el webhook; loopback solo en entornos no productivos.
+* Security: rate limit (30/min/IP) y límite de payload en /notify (anti-DoS).
+* Fix: decodificación base64url (strtr) de Ds_MerchantParameters — notificaciones legítimas con '-'/'_' ya no se rechazan.
 
 = 2.6.4 =
 * Fix: capacidades del listado de pagos — usa convoca_view_payments del core (antes exigía convoca_gateway_view_payments no registrada → 403 en el admin).

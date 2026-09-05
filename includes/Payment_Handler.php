@@ -1067,15 +1067,15 @@ class Payment_Handler {
 	 * Check if the notification comes from a known Redsys IP.
 	 */
 	private function is_redsys_ip(): bool {
-		// Allow localhost/local network if in dev or if WP_DEBUG is enabled.
 		$ip = wp_unslash( $_SERVER['REMOTE_ADDR'] ?? '' );
 
 		if ( empty( $ip ) ) {
 			return false;
 		}
 
-		// Bypass for local IPs during development/testing.
-		if ( in_array( $ip, array( '127.0.0.1', '::1', 'localhost' ), true ) || defined( 'WP_DEBUG' ) && WP_DEBUG ) {
+		// Loopback SOLO en entornos no productivos (nunca ligado a WP_DEBUG).
+		$is_prod = ( Redsys_Client::settings()['environment'] ?? 'test' ) === 'production';
+		if ( ! $is_prod && in_array( $ip, array( '127.0.0.1', '::1', 'localhost' ), true ) ) {
 			return true;
 		}
 
@@ -1156,6 +1156,36 @@ class Payment_Handler {
 			}
 			\Convoca\Core\Logger::info( "Notificación duplicada para Order {$order_id} ignorada (ya pagado).", 'Gateway/Notification', $pago_id );
 			return true;
+		}
+
+		// 3b. Validación de integridad financiera: importe, moneda y merchant code
+		// deben coincidir con lo esperado para este pago (la firma protege el origen,
+		// pero no que la notificación corresponda al importe real de la cuota).
+		$expected_cents = (int) get_post_meta( $pago_id, '_convoca_amount_cents', true );
+		$notif_cents    = isset( $data['Ds_Amount'] ) ? (int) $data['Ds_Amount'] : -1;
+		if ( $notif_cents !== $expected_cents ) {
+			\Convoca\Core\Logger::error( "Importe de notificación ($notif_cents) no coincide con el pago esperado ($expected_cents) para Order $order_id.", 'Gateway/Notification', $pago_id );
+			--$savepoint_depth;
+			if ( $savepoint_depth === 0 ) {
+				$wpdb->query( 'ROLLBACK' );
+			}
+			return new \WP_Error( 'amount_mismatch', 'Amount mismatch' );
+		}
+		if ( (string) ( $data['Ds_Currency'] ?? '' ) !== Redsys_Client::CURRENCY_EUR ) {
+			\Convoca\Core\Logger::error( "Moneda de notificación inesperada para Order $order_id: " . ( $data['Ds_Currency'] ?? 'N/A' ) . '.', 'Gateway/Notification', $pago_id );
+			--$savepoint_depth;
+			if ( $savepoint_depth === 0 ) {
+				$wpdb->query( 'ROLLBACK' );
+			}
+			return new \WP_Error( 'currency_mismatch', 'Currency mismatch' );
+		}
+		if ( ! in_array( (string) ( $data['Ds_MerchantCode'] ?? '' ), array( Redsys_Client::merchant_code(), Redsys_Client::bizum_merchant_code() ), true ) ) {
+			\Convoca\Core\Logger::error( "Merchant code de notificación no coincide para Order $order_id: " . ( $data['Ds_MerchantCode'] ?? 'N/A' ) . '.', 'Gateway/Notification', $pago_id );
+			--$savepoint_depth;
+			if ( $savepoint_depth === 0 ) {
+				$wpdb->query( 'ROLLBACK' );
+			}
+			return new \WP_Error( 'merchant_mismatch', 'Merchant code mismatch' );
 		}
 
 		$is_approved = Redsys_Client::is_approved( $response_code );
