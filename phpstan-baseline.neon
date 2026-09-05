@@ -1,91 +1,145 @@
 parameters:
 	ignoreErrors:
 		-
-			message: '#^Access to an undefined property Convoca\\Gateway\\Admin_Links\:\:\$items\.$#'
-			identifier: property.notFound
+			message: '#^Constant CONVOCA_COMMON_URL not found\.$#'
+			identifier: constant.notFound
+			count: 1
+			path: admin/class-admin-generador.php
+
+		-
+			message: '#^Constant CONVOCA_COMMON_VERSION not found\.$#'
+			identifier: constant.notFound
+			count: 1
+			path: admin/class-admin-generador.php
+
+		-
+			message: '#^Constant CONVOCA_GATEWAY_URL not found\.$#'
+			identifier: constant.notFound
+			count: 1
+			path: admin/class-admin-generador.php
+
+		-
+			message: '#^If condition is always false\.$#'
+			identifier: if.alwaysFalse
+			count: 1
+			path: admin/class-admin-generador.php
+
+		-
+			message: '#^Cannot access property \$ID on array\|object\.$#'
+			identifier: property.nonObject
 			count: 1
 			path: includes/Admin_Links.php
 
 		-
-			message: '#^Call to an undefined method Convoca\\Gateway\\Admin_Links\:\:display\(\)\.$#'
-			identifier: method.notFound
+			message: '#^Path in require_once\(\) "/tmp/wp/wp\-admin/includes/class\-wp\-list\-table\.php" is not a file or it does not exist\.$#'
+			identifier: requireOnce.fileNotFound
 			count: 1
 			path: includes/Admin_Links.php
 
 		-
-			message: '#^Call to an undefined method Convoca\\Gateway\\Admin_Links\:\:get_pagenum\(\)\.$#'
-			identifier: method.notFound
-			count: 1
-			path: includes/Admin_Links.php
+			message: '#^Cannot access property \$ID on array\|object\.$#'
+			identifier: property.nonObject
+			count: 2
+			path: includes/Admin_Payments.php
 
 		-
-			message: '#^Call to an undefined method Convoca\\Gateway\\Admin_Links\:\:row_actions\(\)\.$#'
-			identifier: method.notFound
-			count: 1
-			path: includes/Admin_Links.php
-
-		-
-			message: '#^Call to an undefined method Convoca\\Gateway\\Admin_Links\:\:set_pagination_args\(\)\.$#'
-			identifier: method.notFound
-			count: 1
-			path: includes/Admin_Links.php
-
-		-
-			message: '#^Call to an undefined static method WP_List_Table\:\:__construct\(\)\.$#'
-			identifier: staticMethod.notFound
-			count: 1
-			path: includes/Admin_Links.php
-
-		-
-			message: '#^Access to an undefined property Convoca\\Gateway\\Admin_Payments\:\:\$_column_headers\.$#'
-			identifier: property.notFound
+			message: '#^Path in require_once\(\) "/tmp/wp/wp\-admin/includes/class\-wp\-list\-table\.php" is not a file or it does not exist\.$#'
+			identifier: requireOnce.fileNotFound
 			count: 1
 			path: includes/Admin_Payments.php
 
 		-
-			message: '#^Access to an undefined property Convoca\\Gateway\\Admin_Payments\:\:\$items\.$#'
-			identifier: property.notFound
+			message: '#^Path in require_once\(\) "/tmp/wp/wp\-admin/includes/screen\.php" is not a file or it does not exist\.$#'
+			identifier: requireOnce.fileNotFound
 			count: 1
 			path: includes/Admin_Payments.php
 
 		-
-			message: '#^Call to an undefined method Convoca\\Gateway\\Admin_Payments\:\:display\(\)\.$#'
-			identifier: method.notFound
+			message: '#^Constant CONVOCA_IMAGES_URL not found\.$#'
+			identifier: constant.notFound
 			count: 1
-			path: includes/Admin_Payments.php
+			path: includes/Admin_Settings.php
 
 		-
-			message: '#^Call to an undefined method Convoca\\Gateway\\Admin_Payments\:\:get_pagenum\(\)\.$#'
-			identifier: method.notFound
+			message: '#^Method Convoca\\Gateway\\Admin_Settings\:\:has_errors\(\) is unused\.$#'
+			identifier: method.unused
 			count: 1
-			path: includes/Admin_Payments.php
+			path: includes/Admin_Settings.php
 
 		-
-			message: '#^Call to an undefined method Convoca\\Gateway\\Admin_Payments\:\:row_actions\(\)\.$#'
-			identifier: method.notFound
+			message: '#^Method Convoca\\Gateway\\Admin_Settings\:\:has_warnings\(\) is unused\.$#'
+			identifier: method.unused
 			count: 1
-			path: includes/Admin_Payments.php
+			path: includes/Admin_Settings.php
 
 		-
-			message: '#^Call to an undefined method Convoca\\Gateway\\Admin_Payments\:\:search_box\(\)\.$#'
-			identifier: method.notFound
+			message: '#^Parameter \#1 \$args of function wp_dropdown_pages expects array\{depth\?\: int, child_of\?\: int, selected\?\: int\|string, echo\?\: bool\|int, name\?\: string, id\?\: string, class\?\: string, show_option_none\?\: string, \.\.\.\}, array\{name\: string, selected\: int, show_option_none\: string, option_none_value\: 0\} given\.$#'
+			identifier: argument.type
 			count: 1
-			path: includes/Admin_Payments.php
+			path: includes/Admin_Settings.php
 
 		-
-			message: '#^Call to an undefined method Convoca\\Gateway\\Admin_Payments\:\:set_pagination_args\(\)\.$#'
-			identifier: method.notFound
+			message: '#^Parameter \#1 \$parent_slug of function add_submenu_page expects string, null given\.$#'
+			identifier: argument.type
 			count: 1
-			path: includes/Admin_Payments.php
+			path: includes/Admin_Settings.php
 
 		-
-			message: '#^Call to an undefined static method WP_List_Table\:\:__construct\(\)\.$#'
-			identifier: staticMethod.notFound
+			message: '#^Constant CONVOCA_GATEWAY_URL not found\.$#'
+			identifier: constant.notFound
 			count: 1
-			path: includes/Admin_Payments.php
+			path: includes/Block_Gateway.php
+
+		-
+			message: '#^Call to function is_wp_error\(\) with int\<0, max\> will always evaluate to false\.$#'
+			identifier: function.impossibleType
+			count: 2
+			path: includes/CPT_Pago.php
+
+		-
+			message: '#^Parameter \#1 \$text of function esc_attr expects string, \(float\|int\) given\.$#'
+			identifier: argument.type
+			count: 1
+			path: includes/Dashboard_Widget.php
+
+		-
+			message: '#^Call to function is_wp_error\(\) with int\<1, max\> will always evaluate to false\.$#'
+			identifier: function.impossibleType
+			count: 2
+			path: includes/Diagnostic.php
 
 		-
 			message: '#^Deprecated in PHP 8\.4\: Parameter \#5 \$fix \(string\) is implicitly nullable via default value null\.$#'
 			identifier: parameter.implicitlyNullable
 			count: 1
 			path: includes/Diagnostic.php
+
+		-
+			message: '#^Call to an undefined method Convoca\\Gateway\\Gateway_Upgrade_Manager\:\:init\(\)\.$#'
+			identifier: method.notFound
+			count: 1
+			path: includes/Gateway_Upgrade_Manager.php
+
+		-
+			message: '#^Constant CONVOCA_GATEWAY_URL not found\.$#'
+			identifier: constant.notFound
+			count: 1
+			path: includes/Payment_Handler.php
+
+		-
+			message: '#^Parameter \#3 \$autoload of function update_option expects bool\|null, string given\.$#'
+			identifier: argument.type
+			count: 1
+			path: includes/Payment_Handler.php
+
+		-
+			message: '#^Path in require_once\(\) "/tmp/wp/wp\-admin/includes/file\.php" is not a file or it does not exist\.$#'
+			identifier: requireOnce.fileNotFound
+			count: 1
+			path: includes/Payment_Handler.php
+
+		-
+			message: '#^Parameter \#3 \$autoload of function update_option expects bool\|null, string given\.$#'
+			identifier: argument.type
+			count: 1
+			path: includes/Redsys_Client.php

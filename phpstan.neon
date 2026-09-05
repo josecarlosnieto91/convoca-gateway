@@ -1,39 +1,20 @@
+includes:
+    - phpstan-baseline.neon
+
 parameters:
-	level: 0
-	paths:
-		- admin
-		- includes
-		- stubs
-		- convoca-gateway.php
-	excludePaths:
-		analyseAndScan:
-			- vendor (?)
-			- tests (?)
-			- dev-tools (?)
-			- node_modules (?)
-	scanFiles:
-		- /home/josecnr91/.openclaw/workspace/convoca-core/includes/Admin_Analytics.php
-		- /home/josecnr91/.openclaw/workspace/convoca-core/includes/admin-appearance.php
-		- /home/josecnr91/.openclaw/workspace/convoca-core/includes/Admin_Backup.php
-		- /home/josecnr91/.openclaw/workspace/convoca-core/includes/admin-global-menu.php
-		- /home/josecnr91/.openclaw/workspace/convoca-core/includes/Admin_Logs_List.php
-		- /home/josecnr91/.openclaw/workspace/convoca-core/includes/Admin_Setup_Wizard.php
-		- /home/josecnr91/.openclaw/workspace/convoca-core/includes/Admin_Templates.php
-		- /home/josecnr91/.openclaw/workspace/convoca-core/includes/Blocks_Common.php
-		- /home/josecnr91/.openclaw/workspace/convoca-core/includes/Capabilities.php
-		- /home/josecnr91/.openclaw/workspace/convoca-core/includes/Common_Upgrade_Manager.php
-		- /home/josecnr91/.openclaw/workspace/convoca-core/includes/Email_Layout.php
-		- /home/josecnr91/.openclaw/workspace/convoca-core/includes/Features.php
-		- /home/josecnr91/.openclaw/workspace/convoca-core/includes/Installer.php
-		- /home/josecnr91/.openclaw/workspace/convoca-core/includes/License_Manager.php
-		- /home/josecnr91/.openclaw/workspace/convoca-core/includes/Logger.php
-		- /home/josecnr91/.openclaw/workspace/convoca-core/includes/Memory_Report.php
-		- /home/josecnr91/.openclaw/workspace/convoca-core/includes/Notifications.php
-		- /home/josecnr91/.openclaw/workspace/convoca-core/includes/Push_Notifier.php
-		- /home/josecnr91/.openclaw/workspace/convoca-core/includes/Signature.php
-		- /home/josecnr91/.openclaw/workspace/convoca-core/includes/Upgrade_Manager.php
-		- /home/josecnr91/.openclaw/workspace/convoca-core/includes/Utils.php
-		- /home/josecnr91/.openclaw/workspace/convoca-core/includes/Webhook_Manager.php
-	bootstrapFiles:
-		- vendor/php-stubs/wordpress-stubs/wordpress-stubs.php
-		- phpstan-bootstrap.php
+    level: 5
+    paths:
+        - admin
+        - includes
+        - convoca-gateway.php
+    excludePaths:
+        analyseAndScan:
+            - vendor
+            - tests
+            - dev-tools
+            - node_modules (?)
+    bootstrapFiles:
+        - vendor/php-stubs/wordpress-stubs/wordpress-stubs.php
+        - phpstan-bootstrap.php
+    scanFiles:
+        - stubs/convoca-core.stub

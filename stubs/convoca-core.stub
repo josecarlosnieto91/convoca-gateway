@@ -1,0 +1,33 @@
+<?php
+/**
+ * PHPStan stubs for Convoca\Core symbols used by convoca-gateway.
+ *
+ * convoca-core is a separate plugin that is NOT present in an isolated CI
+ * checkout, so PHPStan resolves those symbols against these local stubs
+ * instead of scanning ../convoca-core (autosuficiente config).
+ */
+
+namespace Convoca\Core;
+
+class Upgrade_Manager
+{
+}
+
+class Logger
+{
+    public static function info( mixed ...$args ): void {}
+    public static function error( mixed ...$args ): void {}
+    public static function warning( mixed ...$args ): void {}
+    public static function log( mixed ...$args ): void {}
+    public static function get_logs( mixed ...$args ): mixed { return null; }
+}
+
+class Utils
+{
+    public static function do_action( mixed ...$args ): void {}
+}
+
+class License_Manager
+{
+    public static function has_pro( mixed ...$args ): mixed { return null; }
+}

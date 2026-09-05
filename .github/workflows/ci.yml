@@ -23,7 +23,7 @@ jobs:
         with:
           dependency-versions: highest
           composer-options: '--ignore-platform-req=ext-iconv'
-      - run: vendor/bin/phpcs --standard=.phpcs.xml.dist --runtime-set ignore_warnings_on_exit 1 || true
+      - run: vendor/bin/phpcs --standard=.phpcs.xml.dist --runtime-set ignore_warnings_on_exit 1
 
   phpstan:
     name: PHPStan
@@ -41,7 +41,7 @@ jobs:
         with:
           dependency-versions: highest
           composer-options: '--ignore-platform-req=ext-iconv'
-      - run: vendor/bin/phpstan analyse --configuration=phpstan.neon.dist --memory-limit=4G || true
+      - run: vendor/bin/phpstan analyse --configuration=phpstan.neon --memory-limit=4G
 
   test:
     name: PHPUnit ${{ matrix.php }}
@@ -72,7 +72,7 @@ jobs:
       - name: Create build directory
         run: mkdir -p build
       - name: Run unit tests
-        run: vendor/bin/phpunit --testsuite unit --coverage-clover build/clover.xml --log-junit build/junit.xml || true
+        run: vendor/bin/phpunit --testsuite unit --coverage-clover build/clover.xml --log-junit build/junit.xml
 
   phpunit-summary:
     name: PHPUnit Summary
