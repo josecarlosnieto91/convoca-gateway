@@ -283,7 +283,7 @@ class RedsysClientTest extends TestCase
         $result = $this->invokeStatic(
             'Convoca\\Gateway\\Redsys_Client',
             'decrypt_key',
-            ['not-valid-base64!!!']
+            [ base64_encode( str_repeat( "\x00", 48 ) ) ]
         );
 
         $this->assertFalse($result);
@@ -382,5 +382,128 @@ class RedsysClientTest extends TestCase
 
         $this->assertIsString($json['DS_MERCHANT_AMOUNT']);
         $this->assertSame('100', $json['DS_MERCHANT_AMOUNT']);
+    }
+
+    /* ── verify_notification ───────────────────────── */
+
+    /**
+     * Define la clave secreta Redsys usada por sign()/verify_notification().
+     * Se usa la constante recomendada CONVOCA_GATEWAY_SECRET_KEY.
+     */
+    private function ensureSecretKey(): void
+    {
+        if (!defined('CONVOCA_GATEWAY_SECRET_KEY')) {
+            // 24 bytes (clave 3DES) codificados en Base64.
+            define('CONVOCA_GATEWAY_SECRET_KEY', base64_encode(str_repeat('A', 24)));
+        }
+    }
+
+    /**
+     * Construye una notificación válida (parámetros Base64 JSON + firma HMAC).
+     */
+    private function signedNotification(string $version = 'HMAC_SHA256_V1'): array
+    {
+        $params = [
+            'Ds_Order'    => '250601ABC123',
+            'Ds_Amount'   => '3000',
+            'Ds_Response' => '0000',
+        ];
+        $mp_b64 = base64_encode(json_encode($params));
+        $sig    = \Convoca\Gateway\Redsys_Client::sign($mp_b64, '250601ABC123');
+
+        return [
+            'version' => $version,
+            'mp'      => $mp_b64,
+            'sig'     => $sig,
+        ];
+    }
+
+    /**
+     * verify_notification acepta una firma correcta y devuelve los parámetros.
+     */
+    public function test_verify_notification_valid_signature(): void
+    {
+        $this->ensureSecretKey();
+        $n = $this->signedNotification();
+
+        $result = \Convoca\Gateway\Redsys_Client::verify_notification([
+            'Ds_SignatureVersion'   => $n['version'],
+            'Ds_MerchantParameters' => $n['mp'],
+            'Ds_Signature'          => $n['sig'],
+        ]);
+
+        $this->assertIsArray($result);
+        $this->assertSame('250601ABC123', $result['Ds_Order']);
+    }
+
+    /**
+     * verify_notification rechaza una firma incorrecta (hash_equals).
+     */
+    public function test_verify_notification_rejects_invalid_signature(): void
+    {
+        $this->ensureSecretKey();
+        $n = $this->signedNotification();
+
+        $result = \Convoca\Gateway\Redsys_Client::verify_notification([
+            'Ds_SignatureVersion'   => $n['version'],
+            'Ds_MerchantParameters' => $n['mp'],
+            'Ds_Signature'          => base64_encode(str_repeat("\x00", 32)),
+        ]);
+
+        $this->assertFalse($result);
+    }
+
+    /**
+     * verify_notification rechaza una versión de firma distinta a la configurada
+     * (el atacante no puede elegir el algoritmo).
+     */
+    public function test_verify_notification_rejects_wrong_signature_version(): void
+    {
+        $this->ensureSecretKey();
+        $n = $this->signedNotification();
+
+        $result = \Convoca\Gateway\Redsys_Client::verify_notification([
+            'Ds_SignatureVersion'   => 'HMAC_SHA256_V2',
+            'Ds_MerchantParameters' => $n['mp'],
+            'Ds_Signature'          => $n['sig'],
+        ]);
+
+        $this->assertFalse($result);
+    }
+
+    /**
+     * verify_notification acepta parámetros y firma en base64url ('-' y '_'),
+     * normalizados vía strtr.
+     */
+    public function test_verify_notification_accepts_base64url(): void
+    {
+        $this->ensureSecretKey();
+
+        $params  = [
+            'Ds_Order'  => '250601ABC123',
+            'Ds_Amount' => '3000',
+        ];
+        $mp_url  = strtr(base64_encode(json_encode($params)), '+/', '-_');
+        // La firma se calcula sobre la cadena tal cual la envía Redsys (base64url).
+        $sig_url = strtr(\Convoca\Gateway\Redsys_Client::sign($mp_url, '250601ABC123'), '+/', '-_');
+
+        $result = \Convoca\Gateway\Redsys_Client::verify_notification([
+            'Ds_SignatureVersion'   => 'HMAC_SHA256_V1',
+            'Ds_MerchantParameters' => $mp_url,
+            'Ds_Signature'          => $sig_url,
+        ]);
+
+        $this->assertIsArray($result);
+        $this->assertSame('250601ABC123', $result['Ds_Order']);
+    }
+
+    /**
+     * verify_notification rechaza una notificación vacía.
+     */
+    public function test_verify_notification_rejects_empty_payload(): void
+    {
+        $this->ensureSecretKey();
+
+        $this->assertFalse(\Convoca\Gateway\Redsys_Client::verify_notification([]));
     }
 }

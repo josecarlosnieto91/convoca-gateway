@@ -1,11 +1,12 @@
 <?php
 
 if ( ! defined( 'ABSPATH' ) ) {
-	exit;
+	define( 'ABSPATH', dirname( __DIR__ ) . '/' );
 }
 
-define('WP_DEBUG', true);
-define('ABSPATH', dirname(__DIR__) . '/');
+if ( ! defined( 'WP_DEBUG' ) ) {
+	define( 'WP_DEBUG', true );
+}
 
 // WordPress function stubs for unit tests
 // Mock $wpdb global
