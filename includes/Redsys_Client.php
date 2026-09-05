@@ -494,6 +494,7 @@ class Redsys_Client {
 			9999 => __( 'Operación interrumpida o redirigida al emisor para autenticar', 'convoca-gateway' ),
 		);
 
+		/* translators: %s: numeric Redsys response code. */
 		return $messages[ $code ] ?? sprintf( __( 'Denegación o error desconocido (Código: %s)', 'convoca-gateway' ), $response_code );
 	}
 }

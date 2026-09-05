@@ -74,6 +74,39 @@ jobs:
       - name: Run unit tests
         run: vendor/bin/phpunit --testsuite unit --coverage-clover build/clover.xml --log-junit build/junit.xml
 
+  plugin-check:
+    name: Plugin Check (PCP)
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v4
+      - name: Setup PHP
+        uses: shivammathur/setup-php@v2
+        with:
+          php-version: '8.3'
+          tools: composer:v2
+      - name: Cache Composer dependencies
+        uses: actions/cache@v4
+        with:
+          path: vendor/
+          key: ${{ runner.os }}-composer-${{ hashFiles('**/composer.json') }}
+          restore-keys: |
+            ${{ runner.os }}-composer-
+      - uses: ramsey/composer-install@v3
+        with:
+          dependency-versions: highest
+          composer-options: '--ignore-platform-req=ext-iconv'
+      - name: Run Plugin Check (WordPress.org)
+        # Ejecuta Plugin Check (PCP) en categorías plugin_repo + security,
+        # bloqueantes para publicar en WordPress.org. Los warnings no fallan;
+        # cualquier ERROR sí (exit != 0).
+        uses: wordpress/plugin-check-action@v1
+        with:
+          categories: |
+            plugin_repo
+            security
+          ignore-warnings: 'true'
+          wp-version: latest
+
   phpunit-summary:
     name: PHPUnit Summary
     runs-on: ubuntu-latest

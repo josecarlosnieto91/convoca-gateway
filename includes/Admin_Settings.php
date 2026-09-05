@@ -407,7 +407,7 @@ class Admin_Settings {
 			array(
 				'name'              => esc_attr( self::OPTION . '[' . $key . ']' ),
 				'selected'          => (int) $selected,
-				'show_option_none'  => __( '— Seleccionar página —', 'convoca-gateway' ),
+				'show_option_none'  => __( '— Seleccionar página —', 'convoca-gateway' ), // phpcs:ignore WordPress.Security.EscapeOutput.OutputNotEscaped -- wp_dropdown_pages() escapes show_option_none internally.
 				'option_none_value' => 0,
 			)
 		);
@@ -539,7 +539,10 @@ class Admin_Settings {
 					</div>
 				<?php else : ?>
 					<div class="convoca-alert convoca-alert--warning" style="display:block;margin-bottom:20px;">
-						<p>⚡ <strong><?php esc_html_e( 'Modo PRODUCCIÓN activo.', 'convoca-gateway' ); ?></strong> <?php echo esc_html( sprintf( __( 'Los pagos son reales y van a %s.', 'convoca-gateway' ), apply_filters( 'convoca_gateway_bank_entity', __( 'tu entidad bancaria', 'convoca-gateway' ) ) ) ); ?></p>
+						<p>⚡ <strong><?php esc_html_e( 'Modo PRODUCCIÓN activo.', 'convoca-gateway' ); ?></strong> <?php
+						/* translators: %s: name of the user's bank entity (filterable). */
+						echo esc_html( sprintf( __( 'Los pagos son reales y van a %s.', 'convoca-gateway' ), apply_filters( 'convoca_gateway_bank_entity', __( 'tu entidad bancaria', 'convoca-gateway' ) ) ) );
+					?></p>
 					</div>
 				<?php endif; ?>
 			<?php endif; ?>

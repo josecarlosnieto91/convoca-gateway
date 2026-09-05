@@ -2,7 +2,7 @@
 Contributors: josecarlosnietoramos
 Tags: payments, redsys, donations, fees, tpv
 Requires at least: 6.4
-Tested up to: 7.0
+Tested up to: 7.1
 Requires PHP: 8.1
 Stable tag: 2.6.6
 License: GPL-2.0-or-later
