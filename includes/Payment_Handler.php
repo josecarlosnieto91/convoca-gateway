@@ -1113,6 +1113,19 @@ class Payment_Handler {
 		$data = Redsys_Client::verify_notification( $post_data );
 
 		if ( $data === false ) {
+			$order_ref = $post_data['Ds_MerchantParameters'] ?? '';
+			// Decodificar Ds_Order si es posible para trazabilidad sin romper el flujo.
+			$order_id_trace = '';
+			if ( is_string( $order_ref ) && '' !== $order_ref ) {
+				$raw = base64_decode( strtr( $order_ref, '-_', '+/' ), true );
+				if ( false !== $raw ) {
+					$decoded = json_decode( $raw, true );
+					if ( is_array( $decoded ) && ! empty( $decoded['Ds_Order'] ) ) {
+						$order_id_trace = ' Order ' . sanitize_text_field( $decoded['Ds_Order'] );
+					}
+				}
+			}
+			\Convoca\Core\Logger::error( 'Notificación rechazada: firma Ds_Signature no válida.' . $order_id_trace, 'Gateway/Notification' );
 			return new \WP_Error( 'invalid_signature', 'Invalid signature' );
 		}
 
