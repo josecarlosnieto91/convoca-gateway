@@ -219,15 +219,31 @@ class Admin_Payments extends \WP_List_Table {
 		);
 	}
 
+	/**
+	 * Default column renderer.
+	 *
+	 * @param \WP_Post $item Row item (WP_Post from WP_Query).
+	 * @param string   $column_name Column slug.
+	 */
 	public function column_default( $item, $column_name ): string {
 		$meta = CPT_Pago::get_meta( $item->ID );
 		return $meta[ $column_name ] ?? '—';
 	}
 
+	/**
+	 * Column renderer.
+	 *
+	 * @param \WP_Post $item Row item (WP_Post from WP_Query).
+	 */
 	public function column_cb( $item ): string {
 		return sprintf( '<input type="checkbox" name="pago[]" value="%s" />', $item->ID );
 	}
 
+	/**
+	 * Column renderer.
+	 *
+	 * @param \WP_Post $item Row item (WP_Post from WP_Query).
+	 */
 	public function column_order_id( $item ): string {
 		$meta = CPT_Pago::get_meta( $item->ID );
 		$url  = admin_url( 'admin.php?page=conv-gateway-payments-detail&id=' . $item->ID );
@@ -248,21 +264,41 @@ class Admin_Payments extends \WP_List_Table {
 		return sprintf( '<strong><a href="%s">%s</a></strong> %s', esc_url( $url ), esc_html( $meta['order_id'] ), $this->row_actions( $actions ) );
 	}
 
+	/**
+	 * Column renderer.
+	 *
+	 * @param \WP_Post $item Row item (WP_Post from WP_Query).
+	 */
 	public function column_amount( $item ): string {
 		$meta = CPT_Pago::get_meta( $item->ID );
 		return CPT_Pago::format_amount( $meta['amount_cents'] );
 	}
 
+	/**
+	 * Column renderer.
+	 *
+	 * @param \WP_Post $item Row item (WP_Post from WP_Query).
+	 */
 	public function column_method( $item ): string {
 		$meta = CPT_Pago::get_meta( $item->ID );
 		return ucfirst( $meta['method'] );
 	}
 
+	/**
+	 * Column renderer.
+	 *
+	 * @param \WP_Post $item Row item (WP_Post from WP_Query).
+	 */
 	public function column_status( $item ): string {
 		$meta = CPT_Pago::get_meta( $item->ID );
 		return CPT_Pago::badge( $meta['status'] );
 	}
 
+	/**
+	 * Column renderer.
+	 *
+	 * @param \WP_Post $item Row item (WP_Post from WP_Query).
+	 */
 	public function column_origin( $item ): string {
 		$meta = CPT_Pago::get_meta( $item->ID );
 		return match ( $meta['origin'] ) {
@@ -272,6 +308,11 @@ class Admin_Payments extends \WP_List_Table {
 		};
 	}
 
+	/**
+	 * Column renderer.
+	 *
+	 * @param \WP_Post $item Row item (WP_Post from WP_Query).
+	 */
 	public function column_date( $item ): string {
 		$meta = CPT_Pago::get_meta( $item->ID );
 		return esc_html( $meta['created_at'] );

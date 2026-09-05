@@ -807,36 +807,4 @@ class Admin_Settings {
 			wp_send_json_error( $result );
 		}
 	}
-
-	private function has_errors( array $results ): bool {
-		foreach ( $results as $result ) {
-			if ( isset( $result['children'] ) ) {
-				foreach ( $result['children'] as $child ) {
-					if ( $child['severity'] === 'error' ) {
-						return true;
-					}
-				}
-			}
-			if ( ( $result['severity'] ?? '' ) === 'error' ) {
-				return true;
-			}
-		}
-		return false;
-	}
-
-	private function has_warnings( array $results ): bool {
-		foreach ( $results as $result ) {
-			if ( isset( $result['children'] ) ) {
-				foreach ( $result['children'] as $child ) {
-					if ( $child['severity'] === 'warning' ) {
-						return true;
-					}
-				}
-			}
-			if ( ( $result['severity'] ?? '' ) === 'warning' ) {
-				return true;
-			}
-		}
-		return false;
-	}
 }

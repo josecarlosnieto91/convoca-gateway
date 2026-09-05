@@ -37,7 +37,7 @@ class Payment_Handler {
 		$salt = get_option( 'convoca_gateway_persistent_salt' );
 		if ( ! $salt ) {
 			$salt = wp_generate_password( 64, true, true );
-			update_option( 'convoca_gateway_persistent_salt', $salt, 'no' );
+			update_option( 'convoca_gateway_persistent_salt', $salt, false );
 		}
 		return $salt;
 	}

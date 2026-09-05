@@ -305,7 +305,7 @@ class Redsys_Client {
 		if ( $decrypted === false ) {
 			\Convoca\Core\Logger::error( 'Error crítico: No se pudo descifrar la clave secreta de Redsys (openssl_decrypt falló).', 'Gateway/Redsys' );
 			// Mark settings as needing re-entry.
-			update_option( 'convoca_gateway_secret_needs_reentry', current_time( 'mysql' ), 'no' );
+			update_option( 'convoca_gateway_secret_needs_reentry', current_time( 'mysql' ), false );
 			return false;
 		}
 

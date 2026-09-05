@@ -38,7 +38,8 @@ if ( file_exists( $composer_autoload ) ) {
 }
 
 /*
-── Convoca Core fallback ────────────────────────── */
+── Convoca Core fallback ──────────────────────────
+*/
 // Core classes auto-loaded via Convoca Core's Composer PSR-4
 
 /* ── Startup guard: convoca-common must be active ── */
@@ -72,7 +73,8 @@ if ( ! defined( 'CONVOCA_GATEWAY_BASENAME' ) ) {
 }
 
 /*
-── Autoload ─────────────────────────────────── */
+── Autoload ───────────────────────────────────
+*/
 // PSR-4 autoloading handled by Composer (vendor/autoload.php)
 
 /* ── Deactivation cleanup ── */
@@ -119,13 +121,25 @@ add_action(
 					$rkey = 'convoca_notify_rt_' . md5( $ip );
 					$rcnt = (int) get_transient( $rkey );
 					if ( $rcnt > 30 ) {
-						return new \WP_REST_Response( array( 'code' => 'too_many_requests', 'message' => 'Too Many Requests' ), 429 );
+						return new \WP_REST_Response(
+							array(
+								'code'    => 'too_many_requests',
+								'message' => 'Too Many Requests',
+							),
+							429
+						);
 					}
 					set_transient( $rkey, $rcnt + 1, 60 );
 
 					// Límite de tamaño del payload.
 					if ( strlen( $request->get_body() ) > 16384 ) {
-						return new \WP_REST_Response( array( 'code' => 'payload_too_large', 'message' => 'Payload too large' ), 413 );
+						return new \WP_REST_Response(
+							array(
+								'code'    => 'payload_too_large',
+								'message' => 'Payload too large',
+							),
+							413
+						);
 					}
 
 					$handler = new \Convoca\Gateway\Payment_Handler();

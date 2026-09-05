@@ -1,5 +1,5 @@
 includes:
-    - phpstan-baseline.neon
+    # - phpstan-baseline.neon (temporal)
 
 parameters:
     level: 5
@@ -18,3 +18,21 @@ parameters:
         - phpstan-bootstrap.php
     scanFiles:
         - stubs/convoca-core.stub
+    ignoreErrors:
+        # ── Falsos positivos del harness de análisis (NO deuda de código) ──
+        # ABSPATH=/tmp/wp/ no existe fuera de un WP real; los require_once de
+        # wp-admin son legítimos en runtime (WP_List_Table, screen, file).
+        -
+            message: '#Path in require_once\(\) "/tmp/wp/wp-admin/#'
+            identifier: requireOnce.fileNotFound
+        # add_submenu_page(null) es el patrón WP documentado para páginas
+        # standalone accesibles vía admin.php?page=.
+        -
+            message: '#Parameter \#1 \$parent_slug of function add_submenu_page expects string, null given#'
+            identifier: argument.type
+        # wp_dropdown_pages: option_none_value=0 es válido (el stub no lista
+        # la key como opcional con int; WP lo acepta).
+        -
+            message: '#Parameter \#1 \$args of function wp_dropdown_pages#'
+            identifier: argument.type
+            path: includes/Admin_Settings.php

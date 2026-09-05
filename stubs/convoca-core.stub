@@ -11,6 +11,16 @@ namespace Convoca\Core;
 
 class Upgrade_Manager
 {
+    public function init(): void {}
+    public function maybe_upgrade(): void {}
+    public function force_version_check(): void {}
+    protected function run_upgrades( string $from, string $to ): void {}
+    protected function run_data_migration( callable $callback, string $description ): void {}
+    protected function update_db_version( string $version ): void {}
+    protected function get_saved_version(): string { return '0.0.0'; }
+    protected function is_cached(): bool { return false; }
+    protected function set_cache(): void {}
+    protected function clear_cache(): void {}
 }
 
 class Logger

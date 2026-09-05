@@ -86,7 +86,8 @@ class Admin_Generador {
 			if ( is_wp_error( $result ) ) {
 				$message = '<div class="convoca-alert convoca-alert--danger" style="display:block;margin-bottom:20px;"><p>' . esc_html( $result->get_error_message() ) . '</p></div>';
 			} else {
-				$message = '<div class="convoca-alert convoca-alert--success" style="display:block;margin-bottom:20px;"><p>Enlace generado correctamente. Copia el enlace y envíaselo al cliente.</p></div>';
+				$message        = '<div class="convoca-alert convoca-alert--success" style="display:block;margin-bottom:20px;"><p>Enlace generado correctamente. Copia el enlace y envíaselo al cliente.</p></div>';
+				$generated_link = ! empty( $result['url'] ) ? $result['url'] : '';
 			}
 		}
 

@@ -101,10 +101,20 @@ class Admin_Links extends \WP_List_Table {
 		);
 	}
 
+	/**
+	 * Column renderer.
+	 *
+	 * @param \WP_Post $item Row item (WP_Post from WP_Query).
+	 */
 	public function column_cb( $item ): string {
 		return sprintf( '<input type="checkbox" name="enlace[]" value="%s" />', $item->ID );
 	}
 
+	/**
+	 * Column renderer.
+	 *
+	 * @param \WP_Post $item Row item (WP_Post from WP_Query).
+	 */
 	public function column_order_id( $item ): string {
 		$meta     = CPT_Pago::get_meta( $item->ID );
 		$url      = admin_url( 'admin.php?page=conv-gateway-payments-detail&id=' . $item->ID );
@@ -112,6 +122,11 @@ class Admin_Links extends \WP_List_Table {
 		return '<a href="' . esc_url( $url ) . '"><strong>' . esc_html( $order_id ) . '</strong></a>';
 	}
 
+	/**
+	 * Column renderer.
+	 *
+	 * @param \WP_Post $item Row item (WP_Post from WP_Query).
+	 */
 	public function column_concepto( $item ): string {
 		$meta = CPT_Pago::get_meta( $item->ID );
 		$url  = admin_url( 'admin.php?page=conv-gateway-payments-detail&id=' . $item->ID );
@@ -129,6 +144,11 @@ class Admin_Links extends \WP_List_Table {
 		return sprintf( '<strong>%s</strong> %s', esc_html( $meta['product_desc'] ), $this->row_actions( $actions ) );
 	}
 
+	/**
+	 * Column renderer.
+	 *
+	 * @param \WP_Post $item Row item (WP_Post from WP_Query).
+	 */
 	public function column_method( $item ): string {
 		$meta    = CPT_Pago::get_meta( $item->ID );
 		$methods = array(
@@ -140,25 +160,50 @@ class Admin_Links extends \WP_List_Table {
 		return esc_html( $methods[ $meta['method'] ] ?? $meta['method'] );
 	}
 
+	/**
+	 * Column renderer.
+	 *
+	 * @param \WP_Post $item Row item (WP_Post from WP_Query).
+	 */
 	public function column_origin( $item ): string {
 		return '<span class="convoca-badge convoca-badge--info">' . __( 'Enlace de pago', 'convoca-gateway' ) . '</span>';
 	}
 
+	/**
+	 * Column renderer.
+	 *
+	 * @param \WP_Post $item Row item (WP_Post from WP_Query).
+	 */
 	public function column_amount( $item ): string {
 		$meta = CPT_Pago::get_meta( $item->ID );
 		return CPT_Pago::format_amount( $meta['amount_cents'] );
 	}
 
+	/**
+	 * Column renderer.
+	 *
+	 * @param \WP_Post $item Row item (WP_Post from WP_Query).
+	 */
 	public function column_email( $item ): string {
 		$meta = CPT_Pago::get_meta( $item->ID );
 		return esc_html( $meta['recipient_email'] ?: '—' );
 	}
 
+	/**
+	 * Column renderer.
+	 *
+	 * @param \WP_Post $item Row item (WP_Post from WP_Query).
+	 */
 	public function column_status( $item ): string {
 		$meta = CPT_Pago::get_meta( $item->ID );
 		return CPT_Pago::badge( $meta['status'] );
 	}
 
+	/**
+	 * Column renderer.
+	 *
+	 * @param \WP_Post $item Row item (WP_Post from WP_Query).
+	 */
 	public function column_expires( $item ): string {
 		$meta = CPT_Pago::get_meta( $item->ID );
 		if ( ! $meta['expires_at'] ) {
@@ -171,6 +216,11 @@ class Admin_Links extends \WP_List_Table {
 		return sprintf( '<span style="color:%s">%s</span>', $color, wp_date( 'd/m/Y H:i', $meta['expires_at'] ) );
 	}
 
+	/**
+	 * Column renderer.
+	 *
+	 * @param \WP_Post $item Row item (WP_Post from WP_Query).
+	 */
 	public function column_active( $item ): string {
 		$meta = CPT_Pago::get_meta( $item->ID );
 
@@ -188,6 +238,11 @@ class Admin_Links extends \WP_List_Table {
 		return '<span class="convoca-badge convoca-badge--success">' . __( 'Activo', 'convoca-gateway' ) . '</span>';
 	}
 
+	/**
+	 * Column renderer.
+	 *
+	 * @param \WP_Post $item Row item (WP_Post from WP_Query).
+	 */
 	public function column_created( $item ): string {
 		$meta = CPT_Pago::get_meta( $item->ID );
 		return esc_html( $meta['created_at'] );

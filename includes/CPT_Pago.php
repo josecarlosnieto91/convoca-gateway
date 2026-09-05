@@ -148,8 +148,9 @@ class CPT_Pago {
 			)
 		);
 
-		if ( is_wp_error( $post_id ) ) {
-			return $post_id;
+		if ( ! $post_id ) {
+			// wp_insert_post devuelve 0 en error (no WP_Error en WP moderno).
+			return new \WP_Error( 'insert_failed', __( 'No se pudo crear el registro de pago.', 'convoca-gateway' ) );
 		}
 
 		$meta = array(
@@ -282,8 +283,9 @@ class CPT_Pago {
 			)
 		);
 
-		if ( is_wp_error( $post_id ) ) {
-			return $post_id;
+		if ( ! $post_id ) {
+			// wp_insert_post devuelve 0 en error (no WP_Error en WP moderno).
+			return new \WP_Error( 'insert_failed', __( 'No se pudo crear el registro de pago.', 'convoca-gateway' ) );
 		}
 
 		$meta = array(

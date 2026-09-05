@@ -354,7 +354,7 @@ class Diagnostic {
 					)
 				);
 
-				if ( $new_ok_page_id && ! is_wp_error( $new_ok_page_id ) ) {
+				if ( $new_ok_page_id ) {
 					$settings['ok_page_id'] = $new_ok_page_id;
 					$created[]              = 'Página de pago OK';
 				}
@@ -378,7 +378,7 @@ class Diagnostic {
 					)
 				);
 
-				if ( $new_ko_page_id && ! is_wp_error( $new_ko_page_id ) ) {
+				if ( $new_ko_page_id ) {
 					$settings['ko_page_id'] = $new_ko_page_id;
 					$created[]              = 'Página de pago error';
 				}
@@ -402,7 +402,7 @@ class Diagnostic {
 
 	// Helper methods.
 
-	private static function result( string $slug, string $title, string $message, string $severity, string $fix = null, $fix_callback = null ): array {
+	private static function result( string $slug, string $title, string $message, string $severity, ?string $fix = null, $fix_callback = null ): array {
 		return array(
 			'slug'         => $slug,
 			'title'        => $title,
