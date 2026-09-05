@@ -104,6 +104,11 @@ jobs:
           rsync -a --exclude-from=.distignore ./ build-dir/convoca-gateway/
           cp -r vendor build-dir/convoca-gateway/
           find build-dir/convoca-gateway -name '.htaccess' -delete
+          # Quitar 'Requires Plugins' SOLO en el build-dir: la action de PCP
+          # ejecuta 'wp plugin install <dep>' contra wp.org, y convoca-core aún
+          # no está publicado. El header real del repo se mantiene (wp.org lo
+          # auditará cuando core esté publicado también).
+          sed -i '/Requires Plugins:/d' build-dir/convoca-gateway/convoca-gateway.php
           ls build-dir/convoca-gateway/
       - name: Run Plugin Check (WordPress.org)
         # Ejecuta Plugin Check (PCP) en categorías plugin_repo + security,
