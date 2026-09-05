@@ -4,7 +4,7 @@ Tags: payments, redsys, donations, fees, tpv
 Requires at least: 6.4
 Tested up to: 7.0
 Requires PHP: 8.1
-Stable tag: 2.6.5
+Stable tag: 2.6.6
 License: GPL-2.0-or-later
 License URI: https://www.gnu.org/licenses/gpl-2.0.html
 
@@ -35,6 +35,10 @@ This plugin connects to the Redsys payment gateway to process transactions. Paym
 4. Configure your Redsys account in Settings > Convoca Gateway
 
 == Changelog ==
+
+= 2.6.6 =
+* Fix: la notificación con firma Ds_Signature inválida ahora se registra en el log (antes retornaba error sin rastro) — el Security Monitor puede alertar de intentos de firma falsificada.
+* Observabilidad: contexto Gateway/Notification + Ds_Order decodificado del payload para trazabilidad.
 
 = 2.6.5 =
 * Security: la versión de firma Redsys ya no la decide el input del atacante — solo se acepta la configurada por el comercio.
