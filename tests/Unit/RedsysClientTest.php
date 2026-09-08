@@ -619,4 +619,40 @@ class RedsysClientTest extends TestCase
         $this->assertInstanceOf(\WP_Error::class, $result);
         $this->assertSame('empty_merchant_id', $result->get_error_code());
     }
+
+    /**
+     * HMAC_SHA512_V2: derivación AES validada contra el vector oficial de
+     * Redsys (clave de pruebas pública sq7Hjr…, order 1234567890 →
+     * clave derivada RWt3/IPTzYRMXsQtkiGRKg==).
+     *
+     * @see https://pagosonline.redsys.es/desarrolladores-inicio/documentacion-operativa/firmar-una-operacion/
+     */
+    public function test_sha512_v2_aes_derivation_matches_official_vector(): void
+    {
+        $key   = 'sq7HjrUOBfKmC576ILgskD5srU870gJ7';
+        $order = '1234567890';
+
+        // Replicar la derivación interna (16 primeros chars + AES-128-CBC PKCS7, IV ceros).
+        $key16    = substr($key, 0, 16);
+        $derived  = openssl_encrypt($order, 'aes-128-cbc', $key16, OPENSSL_RAW_DATA, str_repeat("\0", 16));
+
+        $this->assertIsString($derived);
+        $this->assertSame('RWt3/IPTzYRMXsQtkiGRKg==', base64_encode($derived));
+    }
+
+    public function test_sha512_v2_is_deterministic_and_differs_from_v1(): void
+    {
+        $this->ensureSecretKey();
+
+        $mp    = \Convoca\Gateway\Redsys_Client::base64url_encode(wp_json_encode(['Ds_Order' => '260901ABCDEF']));
+        $order = '260901ABCDEF';
+
+        $sig512a = \Convoca\Gateway\Redsys_Client::sign_sha512_v2($mp, $order);
+        $sig512b = \Convoca\Gateway\Redsys_Client::sign_sha512_v2($mp, $order);
+        $sig256  = \Convoca\Gateway\Redsys_Client::sign($mp, $order);
+
+        $this->assertNotEmpty($sig512a);
+        $this->assertSame($sig512a, $sig512b);
+        $this->assertNotSame($sig512a, $sig256);
+    }
 }

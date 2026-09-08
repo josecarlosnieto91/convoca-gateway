@@ -408,6 +408,43 @@ class Redsys_Client {
 	}
 
 	/**
+	 * Redsys HMAC_SHA512_V2 signature (current REST / redirect scheme).
+	 *
+	 * Documentado en pagosonline.redsys.es «Firmar una operación»:
+	 * 1. Clave de operación: AES-128-CBC del Order ID (PKCS7) usando los
+	 *    primeros 16 caracteres de la clave de comercio como clave y un IV
+	 *    de ceros.
+	 * 2. HMAC-SHA512 de los merchant params (en Base64, tal cual llegan) con
+	 *    la clave de operación derivada.
+	 * 3. Ds_Signature = Base64 del HMAC.
+	 *
+	 * @param string $merchant_params_b64 Base64/Base64URL merchant parameters.
+	 * @param string $order_id            Order ID (Ds_Order).
+	 * @return string Ds_Signature (standard Base64).
+	 */
+	public static function sign_sha512_v2( string $merchant_params_b64, string $order_id ): string {
+		$secret = self::secret_key();
+		if ( empty( $secret ) ) {
+			\Convoca\Core\Logger::error( 'Falta la clave secreta de Redsys para la firma SHA512.', 'Gateway/Redsys' );
+			return '';
+		}
+
+		// La doc oficial usa los primeros 16 chars de la clave de comercio.
+		$key16 = substr( $secret, 0, 16 );
+		$iv    = str_repeat( "\0", 16 );
+
+		$derived = openssl_encrypt( $order_id, 'aes-128-cbc', $key16, OPENSSL_RAW_DATA, $iv );
+		if ( false === $derived ) {
+			\Convoca\Core\Logger::error( 'Fallo AES en derivación de clave SHA512: ' . openssl_error_string(), 'Gateway/Redsys' );
+			return '';
+		}
+
+		$hmac = hash_hmac( 'sha512', $merchant_params_b64, $derived, true );
+
+		return base64_encode( $hmac );
+	}
+
+	/**
 	 * Verify and decode a Redsys notification.
 	 * Soporta HMAC_SHA256_V1 y HMAC_SHA256_V2.
 	 *
@@ -579,10 +616,11 @@ class Redsys_Client {
 		$mp_b64 = self::build_rest_charge_params( $params );
 		$order  = $params['order_id'];
 
-		// REST usa la misma firma HMAC_SHA256_V1/V2 que la redirección (configurada por el comercio).
-		$signature = ( self::signature_version() === 'HMAC_SHA256_V2' )
-			? self::sign_v2( $mp_b64, $order )
-			: self::sign( $mp_b64, $order );
+		// REST (trataPeticionREST) usa el esquema de firma actual de Redsys
+		// HMAC_SHA512_V2 (AES-CBC derivación + HMAC-SHA512), documentado en
+		// pagosonline.redsys.es «Firmar una operación». El canal de redirección
+		// sigue soportando HMAC_SHA256_V1/V2; el canal REST exige SHA512_V2.
+		$signature = self::sign_sha512_v2( $mp_b64, $order );
 
 		if ( empty( $signature ) ) {
 			return new \WP_Error( 'sign_failed', 'No se pudo firmar la petición de cobro.' );
@@ -590,9 +628,9 @@ class Redsys_Client {
 
 		$body = wp_json_encode(
 			array(
-				'Ds_SignatureVersion' => self::signature_version(),
+				'Ds_SignatureVersion'   => 'HMAC_SHA512_V2',
 				'Ds_MerchantParameters' => $mp_b64,
-				'Ds_Signature'           => $signature,
+				'Ds_Signature'          => $signature,
 			)
 		);
 
@@ -676,18 +714,22 @@ class Redsys_Client {
 			return false;
 		}
 
-		$configured = self::signature_version();
-		if ( $signature_version !== $configured ) {
+		// REST responde con HMAC_SHA512_V2 (esquema actual); aceptamos también
+		// V1/V2 SHA256 por compatibilidad con terminales antiguos.
+		$expected = '';
+		if ( 'HMAC_SHA512_V2' === $signature_version ) {
+			$expected = self::sign_sha512_v2( $mp_b64, $order_id );
+		} elseif ( 'HMAC_SHA256_V2' === $signature_version ) {
+			$expected = self::sign_v2( $mp_b64, $order_id );
+		} elseif ( 'HMAC_SHA256_V1' === $signature_version ) {
+			$expected = self::sign( $mp_b64, $order_id );
+		} else {
 			\Convoca\Core\Logger::error(
-				"Versión de firma REST inesperada: '$signature_version' (configurada: '$configured').",
+				"Versión de firma REST inesperada: '$signature_version'.",
 				'Gateway/Redsys'
 			);
 			return false;
 		}
-
-		$expected = ( 'HMAC_SHA256_V2' === $configured )
-			? self::sign_v2( $mp_b64, $order_id )
-			: self::sign( $mp_b64, $order_id );
 
 		$sig_clean = strtr( $signature, '-_', '+/' );
 		$exp_clean = strtr( $expected, '-_', '+/' );
