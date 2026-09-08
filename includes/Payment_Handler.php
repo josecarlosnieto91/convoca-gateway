@@ -1416,6 +1416,15 @@ class Payment_Handler {
 		update_post_meta( $pago_id, '_convoca_redsys_auth_code', $auth_code );
 		update_post_meta( $pago_id, '_convoca_redsys_full_log', wp_json_encode( $data ) );
 
+		// Capturar la referencia de tarjeta (COF/tokenización) cuando Redsys la
+		// devuelve en el retorno síncrono. El TPV la manda como
+		// Ds_Merchant_Identifier; toleramos también la variante camelCase.
+		if ( ! empty( $data['Ds_Merchant_Identifier'] ) ) {
+			update_post_meta( $pago_id, '_convoca_redsys_merchant_id', sanitize_text_field( $data['Ds_Merchant_Identifier'] ) );
+		} elseif ( ! empty( $data['Ds_MerchantIdentifier'] ) ) {
+			update_post_meta( $pago_id, '_convoca_redsys_merchant_id', sanitize_text_field( $data['Ds_MerchantIdentifier'] ) );
+		}
+
 		if ( $is_approved ) {
 			update_post_meta( $pago_id, '_convoca_paid_at', current_time( 'mysql' ) );
 
