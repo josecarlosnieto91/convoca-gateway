@@ -221,8 +221,12 @@ class Redsys_Client {
 		}
 
 		if ( ! empty( $params['tokenize'] ) ) {
-			$data['DS_MERCHANT_IDENTIFIER']    = 'REQUIRED';
-			$data['DS_MERCHANT_DIRECTPAYMENT'] = 'true';
+			// First COF operation (customer present, CIT): request Redsys-managed
+			// reference. DIRECTPAYMENT must NOT be set here — it is only valid
+			// for MIT charges against an already-stored reference.
+			$data['DS_MERCHANT_IDENTIFIER'] = 'REQUIRED';
+			$data['DS_MERCHANT_COF_INI']    = 'S';
+			$data['DS_MERCHANT_COF_TYPE']   = 'R';
 		}
 
 		return base64_encode( json_encode( $data, JSON_UNESCAPED_UNICODE ) );

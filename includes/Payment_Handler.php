@@ -186,7 +186,9 @@ class Payment_Handler {
 		update_post_meta( $pago_id, '_convoca_redsys_auth_code', $auth_code );
 		update_post_meta( $pago_id, '_convoca_redsys_full_log', wp_json_encode( $decoded ) );
 
-		if ( ! empty( $decoded['Ds_MerchantIdentifier'] ) ) {
+		if ( ! empty( $decoded['Ds_Merchant_Identifier'] ) ) {
+			update_post_meta( $pago_id, '_convoca_redsys_merchant_id', sanitize_text_field( $decoded['Ds_Merchant_Identifier'] ) );
+		} elseif ( ! empty( $decoded['Ds_MerchantIdentifier'] ) ) {
 			update_post_meta( $pago_id, '_convoca_redsys_merchant_id', sanitize_text_field( $decoded['Ds_MerchantIdentifier'] ) );
 		}
 
@@ -1328,7 +1330,9 @@ class Payment_Handler {
 			update_post_meta( $pago_id, '_convoca_redsys_auth_code', $auth_code );
 			update_post_meta( $pago_id, '_convoca_redsys_full_log', wp_json_encode( $data ) );
 
-			if ( ! empty( $data['Ds_MerchantIdentifier'] ) ) {
+			if ( ! empty( $data['Ds_Merchant_Identifier'] ) ) {
+				update_post_meta( $pago_id, '_convoca_redsys_merchant_id', sanitize_text_field( $data['Ds_Merchant_Identifier'] ) );
+			} elseif ( ! empty( $data['Ds_MerchantIdentifier'] ) ) {
 				update_post_meta( $pago_id, '_convoca_redsys_merchant_id', sanitize_text_field( $data['Ds_MerchantIdentifier'] ) );
 			}
 

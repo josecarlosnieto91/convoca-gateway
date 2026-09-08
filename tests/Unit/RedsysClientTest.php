@@ -362,10 +362,14 @@ class RedsysClientTest extends TestCase
 
     public function test_build_merchant_params_tokenize_adds_extra_fields(): void
     {
+        // CIT tokenización (primera operación, cliente presente): REQUIRED + COF_INI=S,
+        // SIN DIRECTPAYMENT (solo válido para MIT con referencia ya almacenada).
         $json = $this->decodeParams(['tokenize' => true, 'pay_methods' => 'T']);
 
         $this->assertSame('REQUIRED', $json['DS_MERCHANT_IDENTIFIER']);
-        $this->assertSame('true', $json['DS_MERCHANT_DIRECTPAYMENT']);
+        $this->assertSame('S', $json['DS_MERCHANT_COF_INI']);
+        $this->assertSame('R', $json['DS_MERCHANT_COF_TYPE']);
+        $this->assertArrayNotHasKey('DS_MERCHANT_DIRECTPAYMENT', $json);
     }
 
     public function test_build_merchant_params_omits_tokenize_fields_when_false(): void
