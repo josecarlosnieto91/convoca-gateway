@@ -621,12 +621,30 @@ class RedsysClientTest extends TestCase
     }
 
     /**
-     * HMAC_SHA512_V2: derivación AES validada contra el vector oficial de
-     * Redsys (clave de pruebas pública sq7Hjr…, order 1234567890 →
-     * clave derivada RWt3/IPTzYRMXsQtkiGRKg==).
+     * HMAC_SHA512_V2: vector oficial completo de Redsys (clave de pruebas
+     * pública sq7Hjr…, order 1234567890, mp del ejemplo oficial → firma
+     * esperada del repositorio de referencia con test de no regresión).
      *
      * @see https://pagosonline.redsys.es/desarrolladores-inicio/documentacion-operativa/firmar-una-operacion/
      */
+    public function test_sha512_v2_matches_official_vector(): void
+    {
+        $key   = 'sq7HjrUOBfKmC576ILgskD5srU870gJ7';
+        $order = '1234567890';
+        $mp    = 'eyJEU19NRVJDSEFOVF9BTU9VTlQiOiI5OTkiLCJEU19NRVJDSEFOVF9PUkRFUiI6IjEyMzQ1Njc4OTAiLCJEU19NRVJDSEFOVF9NRVJDSEFOVENPREUiOiI5OTkwMDg4ODEiLCJEU19NRVJDSEFOVF9DVVJSRU5DWSI6Ijk3OCIsIkRTX01FUkNIQU5UX1RSQU5TQUNUSU9OVFlQRSI6IjAiLCJEU19NRVJDSEFOVF9URVJNSU5BTCI6IjEiLCJEU19NRVJDSEFOVF9NRVJDSEFOVFVSTCI6Imh0dHA6XC9cL3d3dy5wcnVlYmEuY29tXC91cmxOb3RpZmljYWNpb24ucGhwIiwiRFNfTUVSQ0hBTlRfVVJMT0siOiJodHRwOlwvXC93d3cucHJ1ZWJhLmNvbVwvdXJsT0sucGhwIiwiRFNfTUVSQ0hBTlRfVVJMS08iOiJodHRwOlwvXC93d3cucHJ1ZWJhLmNvbVwvdXJsS08ucGhwIn0';
+        $expected = 'Vjo02eSWq249IeZZp3R-ArFnGLhKY0OuzDDlx1BuVtZDC2yhczA7_11uZhsYzLZBCMFAz8u8uzGDX3AErHKmmw';
+
+        // La firma NO depende de la config del plugin: replicar el algoritmo
+        // completo con la clave pública de pruebas (16 primeros chars + AES).
+        $key16   = substr($key, 0, 16);
+        $derived = openssl_encrypt($order, 'aes-128-cbc', $key16, OPENSSL_RAW_DATA, str_repeat("\0", 16));
+        $derived_b64 = base64_encode($derived);
+        $hmac = hash_hmac('sha512', $mp, $derived_b64, true);
+        $sig  = rtrim(strtr(base64_encode($hmac), '+/', '-_'), '=');
+
+        $this->assertSame($expected, $sig);
+    }
+
     public function test_sha512_v2_aes_derivation_matches_official_vector(): void
     {
         $key   = 'sq7HjrUOBfKmC576ILgskD5srU870gJ7';

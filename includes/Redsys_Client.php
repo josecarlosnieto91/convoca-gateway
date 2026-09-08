@@ -420,7 +420,7 @@ class Redsys_Client {
 	 *
 	 * @param string $merchant_params_b64 Base64/Base64URL merchant parameters.
 	 * @param string $order_id            Order ID (Ds_Order).
-	 * @return string Ds_Signature (standard Base64).
+	 * @return string Ds_Signature (Base64URL, como exige Redsys).
 	 */
 	public static function sign_sha512_v2( string $merchant_params_b64, string $order_id ): string {
 		$secret = self::secret_key();
@@ -439,9 +439,14 @@ class Redsys_Client {
 			return '';
 		}
 
-		$hmac = hash_hmac( 'sha512', $merchant_params_b64, $derived, true );
+		// La clave del HMAC es el resultado AES codificado en Base64 (la doc
+		// oficial codifica la derivación en Base64 antes del paso 2).
+		$derived_b64 = base64_encode( $derived );
 
-		return base64_encode( $hmac );
+		$hmac = hash_hmac( 'sha512', $merchant_params_b64, $derived_b64, true );
+
+		// Paso 3 de la doc: codificar el resultado en Base64URL (sin padding).
+		return self::base64url_encode( $hmac );
 	}
 
 	/**
@@ -578,6 +583,8 @@ class Redsys_Client {
 			'DS_MERCHANT_TERMINAL'        => self::terminal(),
 			'DS_MERCHANT_IDENTIFIER'      => $params['merchant_id'],
 			'DS_MERCHANT_DIRECTPAYMENT'   => 'true',
+			'DS_MERCHANT_COF_INI'         => 'N',
+			'DS_MERCHANT_EXCEP_SCA'       => 'MIT',
 		);
 
 		$desc = mb_substr( $params['product_desc'] ?? '', 0, 125 );
