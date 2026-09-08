@@ -1245,6 +1245,73 @@ class Payment_Handler {
 		return true;
 	}
 
+	/**
+	 * Process the synchronous browser return from Redsys (GET /pago-ok).
+	 *
+	 * The notification server-to-server (process_notification) is the source of
+	 * truth in production, but in sandbox/test environments it often never
+	 * arrives — only the browser redirect with Ds_* params does. This method
+	 * validates the HMAC signature of the return (same as a notification, but
+	 * without IP restrictions since the user's browser IP is arbitrary) and, if
+	 * the payment is approved and not yet paid, applies the confirmation.
+	 *
+	 * @param array $get_data Unsanitized $_GET.
+	 */
+	public function process_return( array $get_data ): true|\WP_Error {
+		$data = Redsys_Client::verify_notification( $get_data );
+
+		if ( $data === false ) {
+			return new \WP_Error( 'invalid_signature', 'Invalid signature in payment return' );
+		}
+
+		$order_id      = $data['Ds_Order'] ?? '';
+		$response_code = $data['Ds_Response'] ?? '9999';
+		$auth_code     = $data['Ds_AuthorisationCode'] ?? '';
+		$pago_id       = CPT_Pago::find_by_order( $order_id );
+
+		if ( ! $pago_id ) {
+			return new \WP_Error( 'order_not_found', 'Order not found in payment return' );
+		}
+
+		// Idempotente: si ya está pagado no re-procesar (evita duplicar hooks).
+		if ( get_post_meta( $pago_id, '_convoca_status', true ) === 'paid' ) {
+			return true;
+		}
+
+		// Validación de integridad financiera (importe y merchant), como en la notificación.
+		$expected_cents = (int) get_post_meta( $pago_id, '_convoca_amount_cents', true );
+		$notif_cents    = isset( $data['Ds_Amount'] ) ? (int) $data['Ds_Amount'] : -1;
+		if ( $notif_cents !== $expected_cents ) {
+			\Convoca\Core\Logger::error( "Importe del retorno ($notif_cents) no coincide con el pago esperado ($expected_cents) para Order $order_id.", 'Gateway/Return', $pago_id );
+			return new \WP_Error( 'amount_mismatch', 'Amount mismatch in payment return' );
+		}
+		if ( ! in_array( (string) ( $data['Ds_MerchantCode'] ?? '' ), array( Redsys_Client::merchant_code(), Redsys_Client::bizum_merchant_code() ), true ) ) {
+			\Convoca\Core\Logger::error( "Merchant code del retorno no coincide para Order $order_id.", 'Gateway/Return', $pago_id );
+			return new \WP_Error( 'merchant_mismatch', 'Merchant code mismatch in payment return' );
+		}
+
+		$is_approved = Redsys_Client::is_approved( $response_code );
+		$new_status  = $is_approved ? 'paid' : 'failed';
+
+		update_post_meta( $pago_id, '_convoca_status', $new_status );
+		update_post_meta( $pago_id, '_convoca_redsys_response', $response_code );
+		update_post_meta( $pago_id, '_convoca_redsys_auth_code', $auth_code );
+		update_post_meta( $pago_id, '_convoca_redsys_full_log', wp_json_encode( $data ) );
+
+		if ( $is_approved ) {
+			update_post_meta( $pago_id, '_convoca_paid_at', current_time( 'mysql' ) );
+
+			// Get fresh meta for the hooks.
+			$meta = CPT_Pago::get_meta( $pago_id );
+			\Convoca\Core\Utils::do_action( 'convoca_gateway_payment_completed', 'convoca_payment_completed', $pago_id, $meta['origin'], (int) $meta['origin_id'], $meta );
+			\Convoca\Core\Logger::info( "Pago confirmado por retorno síncrono (Order $order_id).", 'Gateway/Return', $pago_id );
+		} else {
+			\Convoca\Core\Utils::do_action( 'convoca_gateway_payment_failed', 'convoca_payment_failed', $pago_id, $response_code );
+		}
+
+		return true;
+	}
+
 	/* ── Return pages ──────────────────────────── */
 
 	public function render_ok_page( $atts ): string {
@@ -1261,11 +1328,26 @@ class Payment_Handler {
 
 		$meta = CPT_Pago::get_meta( $pago_id );
 
+		// E2E-5: si el pago aún no está confirmado pero el navegador vuelve con
+		// parámetros Ds_* de Redsys (retorno síncrono tras el TPV/3DS), procesar
+		// la confirmación verificando la firma HMAC — no depende de que la
+		// notificación server-to-server haya llegado (no llega en sandbox/test).
+		if ( ( $meta['status'] ?? '' ) !== 'paid' && ! empty( $_GET['Ds_MerchantParameters'] ) ) {
+			$return_result = $this->process_return( wp_unslash( $_GET ) );
+			if ( is_wp_error( $return_result ) ) {
+				\Convoca\Core\Logger::warning( 'Retorno de pago no procesado en pago-ok: ' . $return_result->get_error_message(), 'Gateway/Return', $pago_id );
+			}
+			// Releer meta por si la confirmación acaba de aplicarse.
+			$meta = CPT_Pago::get_meta( $pago_id );
+		}
+
 		// Safety check: if the payment is not paid, show an error and a link to retry.
 		if ( ( $meta['status'] ?? '' ) !== 'paid' ) {
-			$token   = get_post_meta( $pago_id, '_convoca_link_key', true );
-			$expires = get_post_meta( $pago_id, '_convoca_expires_at', true );
-			$url     = self::get_payment_link( $pago_id, $token, $expires );
+			$token = get_post_meta( $pago_id, '_convoca_link_key', true );
+			// E2E-4: $expires puede ser string vacío; la firma exige ?int|null.
+			$expires_raw = get_post_meta( $pago_id, '_convoca_expires_at', true );
+			$expires     = is_numeric( $expires_raw ) ? (int) $expires_raw : null;
+			$url         = self::get_payment_link( $pago_id, is_string( $token ) ? $token : '', $expires );
 
 			return '<div class="convoca-alert convoca-alert--warning">
                 <h4>⚠️ Pago aún no confirmado</h4>
