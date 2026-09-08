@@ -91,6 +91,120 @@ class Payment_Handler {
 	}
 
 	/**
+	 * Execute a server-to-server token charge for a member's automatic renewal.
+	 *
+	 * Estrategia de renovación automática por tarjeta (decisión funcional 2026-09):
+	 * cuando el miembro tiene pago_recurrente Y un merchant id almacenado, el cron
+	 * de Members DEBE intentar el cargo real con el token (REST Redsys), no solo
+	 * crear un enlace de pago. Si el cargo se aprueba, el pago se marca 'paid' y se
+	 * dispara convoca_gateway_payment_completed (el listener de Members reactiva la
+	 * cuota). Si no hay token o el cargo falla, devuelve WP_Error para que el cron
+	 * decida reintentos / enlace manual.
+	 *
+	 * @param int    $member_id     Miembro a renovar.
+	 * @param int    $amount_cents  Importe en céntimos.
+	 * @param string $product_desc  Descripción para el extracto.
+	 * @return array{pago_id:int, payment_url:string, status:string, response:string}|\WP_Error
+	 */
+	public static function auto_renew_charge( int $member_id, int $amount_cents, string $product_desc ): array|\WP_Error {
+		$token = self::get_member_token( $member_id );
+		if ( empty( $token ) ) {
+			return new \WP_Error( 'no_token', 'El socio no tiene token de tarjeta almacenado.' );
+		}
+
+		// 1. Create the payment (same as manual renewal).
+		$payment = self::create_payment(
+			array(
+				'origin'       => 'members',
+				'origin_id'    => $member_id,
+				'amount_cents' => $amount_cents,
+				'product_desc' => mb_substr( $product_desc, 0, 125 ),
+				'method'       => 'tarjeta',
+				'tokenize'     => false,
+			)
+		);
+		if ( is_wp_error( $payment ) ) {
+			return $payment;
+		}
+
+		$pago_id  = $payment['pago_id'];
+		$order_id = (string) get_post_meta( $pago_id, '_convoca_order_id', true );
+
+		// 2. Charge the stored card via Redsys REST.
+		$charge = Redsys_Client::charge_token(
+			array(
+				'order_id'     => $order_id,
+				'amount_cents' => $amount_cents,
+				'product_desc' => $product_desc,
+				'merchant_id'  => $token,
+			)
+		);
+
+		if ( is_wp_error( $charge ) ) {
+			\Convoca\Core\Logger::warning(
+				sprintf( 'Cargo automático por token fallido (miembro #%d, pago #%d): %s', $member_id, $pago_id, $charge->get_error_message() ),
+				'Gateway/Recurring',
+				$pago_id
+			);
+			return $charge;
+		}
+
+		// 3. Apply the charge result (same semantics as a Redsys notification).
+		self::apply_charge_result( $pago_id, $order_id, $charge );
+
+		return array(
+			'pago_id'     => $pago_id,
+			'payment_url' => $payment['payment_url'],
+			'status'      => $charge['approved'] ? 'paid' : 'failed',
+			'response'    => $charge['response'],
+		);
+	}
+
+	/**
+	 * Apply an approved/failed REST charge to a payment post, firing the same
+	 * hooks a Redsys notification would (so Members' Payment_Listener reacts).
+	 *
+	 * @param int    $pago_id  Payment ID.
+	 * @param string $order_id Redsys order ID.
+	 * @param array  $charge   Result of Redsys_Client::charge_token().
+	 * @return true
+	 */
+	private static function apply_charge_result( int $pago_id, string $order_id, array $charge ): true {
+		$is_approved = ! empty( $charge['approved'] );
+		$new_status  = $is_approved ? 'paid' : 'failed';
+		$response    = (string) ( $charge['response'] ?? '9999' );
+		$auth_code   = (string) ( $charge['auth_code'] ?? '' );
+		$decoded     = $charge['decoded'] ?? array();
+
+		// Idempotence: if already paid, do not re-fire hooks.
+		if ( get_post_meta( $pago_id, '_convoca_status', true ) === 'paid' ) {
+			return true;
+		}
+
+		update_post_meta( $pago_id, '_convoca_status', $new_status );
+		update_post_meta( $pago_id, '_convoca_redsys_response', $response );
+		update_post_meta( $pago_id, '_convoca_redsys_auth_code', $auth_code );
+		update_post_meta( $pago_id, '_convoca_redsys_full_log', wp_json_encode( $decoded ) );
+
+		if ( ! empty( $decoded['Ds_MerchantIdentifier'] ) ) {
+			update_post_meta( $pago_id, '_convoca_redsys_merchant_id', sanitize_text_field( $decoded['Ds_MerchantIdentifier'] ) );
+		}
+
+		if ( $is_approved ) {
+			update_post_meta( $pago_id, '_convoca_paid_at', current_time( 'mysql' ) );
+
+			$meta = CPT_Pago::get_meta( $pago_id );
+			\Convoca\Core\Utils::do_action( 'convoca_gateway_payment_completed', 'convoca_payment_completed', $pago_id, $meta['origin'], (int) $meta['origin_id'], $meta );
+			\Convoca\Core\Logger::info( "Cargo automático por token aprobado (Order $order_id).", 'Gateway/Recurring', $pago_id );
+		} else {
+			\Convoca\Core\Utils::do_action( 'convoca_gateway_payment_failed', 'convoca_payment_failed', $pago_id, $response );
+			\Convoca\Core\Logger::warning( "Cargo automático por token rechazado (Order $order_id): código $response.", 'Gateway/Recurring', $pago_id );
+		}
+
+		return true;
+	}
+
+	/**
 	 * Create a payment and return the URL to the payment page.
 	 *
 	 * @param array $data {

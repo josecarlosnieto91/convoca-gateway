@@ -37,6 +37,10 @@ class Redsys_Client {
 	private const URL_TEST = 'https://sis-t.redsys.es:25443/sis/realizarPago';
 	private const URL_PROD = 'https://sis.redsys.es/sis/realizarPago';
 
+	/** Redsys REST (server-to-server) endpoint URLs — used for token charges. */
+	private const URL_REST_TEST = 'https://sis-t.redsys.es:25443/sis/rest/trataPeticionREST';
+	private const URL_REST_PROD = 'https://sis.redsys.es/sis/rest/trataPeticionREST';
+
 	/** Signature version. */
 	private const SIG_VERSION = 'HMAC_SHA256_V1';
 
@@ -81,6 +85,14 @@ class Redsys_Client {
 	public static function endpoint(): string {
 		$s = self::settings();
 		return ( $s['environment'] ?? 'test' ) === 'production' ? self::URL_PROD : self::URL_TEST;
+	}
+
+	/**
+	 * Get the Redsys REST endpoint URL (server-to-server, token charges).
+	 */
+	public static function rest_endpoint(): string {
+		$s = self::settings();
+		return ( $s['environment'] ?? 'test' ) === 'production' ? self::URL_REST_PROD : self::URL_REST_TEST;
 	}
 
 	/**
@@ -496,5 +508,190 @@ class Redsys_Client {
 
 		/* translators: %s: numeric Redsys response code. */
 		return $messages[ $code ] ?? sprintf( __( 'Denegación o error desconocido (Código: %s)', 'convoca-gateway' ), $response_code );
+	}
+
+	/* ── REST token charge (server-to-server) ──────────── */
+
+	/**
+	 * Build merchant parameters for a REST token charge (card stored / recurring).
+	 *
+	 * Uses the stored DS_MERCHANT_IDENTIFIER (merchant id from a previous payment
+	 * where tokenize was requested) with DIRECTPAYMENT so Redsys charges the
+	 * stored card without the cardholder being present.
+	 *
+	 * @param array $params {
+	 *     @type string $order_id      Unique order ID (12 chars).
+	 *     @type int    $amount_cents  Amount in cents.
+	 *     @type string $product_desc  Product description.
+	 *     @type string $merchant_id   Stored token (Ds_MerchantIdentifier).
+	 * }
+	 * @return string base64url-encoded JSON merchant parameters.
+	 */
+	public static function build_rest_charge_params( array $params ): string {
+		$data = array(
+			'DS_MERCHANT_AMOUNT'          => (string) ( $params['amount_cents'] ?? 0 ),
+			'DS_MERCHANT_ORDER'           => $params['order_id'],
+			'DS_MERCHANT_MERCHANTCODE'    => self::merchant_code(),
+			'DS_MERCHANT_CURRENCY'        => self::CURRENCY_EUR,
+			'DS_MERCHANT_TRANSACTIONTYPE' => self::TXTYPE_AUTH,
+			'DS_MERCHANT_TERMINAL'        => self::terminal(),
+			'DS_MERCHANT_IDENTIFIER'      => $params['merchant_id'],
+			'DS_MERCHANT_DIRECTPAYMENT'   => 'true',
+		);
+
+		$desc = mb_substr( $params['product_desc'] ?? '', 0, 125 );
+		if ( '' !== $desc ) {
+			$data['DS_MERCHANT_PRODUCTDESCRIPTION'] = $desc;
+		}
+
+		return self::base64url_encode( wp_json_encode( $data ) );
+	}
+
+	/**
+	 * Base64URL-encode a string (Redsys REST uses base64url, not plain base64).
+	 */
+	public static function base64url_encode( string $data ): string {
+		return rtrim( strtr( base64_encode( $data ), '+/', '-_' ), '=' );
+	}
+
+	/**
+	 * Execute a server-to-server token charge against Redsys REST.
+	 *
+	 * @param array $params See build_rest_charge_params().
+	 * @return array|\WP_Error {
+	 *     @type bool   $approved    Whether Redsys approved the charge.
+	 *     @type string $response    Redsys response code (Ds_Response).
+	 *     @type string $auth_code   Authorisation code.
+	 *     @type string $order_id    Order id.
+	 *     @type array  $decoded     Full decoded response payload.
+	 * }
+	 */
+	public static function charge_token( array $params ): array|\WP_Error {
+		$merchant_id = $params['merchant_id'] ?? '';
+		if ( empty( $merchant_id ) ) {
+			return new \WP_Error( 'empty_merchant_id', 'No se dispone de token de tarjeta para el cobro.' );
+		}
+
+		$mp_b64 = self::build_rest_charge_params( $params );
+		$order  = $params['order_id'];
+
+		// REST usa la misma firma HMAC_SHA256_V1/V2 que la redirección (configurada por el comercio).
+		$signature = ( self::signature_version() === 'HMAC_SHA256_V2' )
+			? self::sign_v2( $mp_b64, $order )
+			: self::sign( $mp_b64, $order );
+
+		if ( empty( $signature ) ) {
+			return new \WP_Error( 'sign_failed', 'No se pudo firmar la petición de cobro.' );
+		}
+
+		$body = wp_json_encode(
+			array(
+				'Ds_SignatureVersion' => self::signature_version(),
+				'Ds_MerchantParameters' => $mp_b64,
+				'Ds_Signature'           => $signature,
+			)
+		);
+
+		$response = wp_remote_post(
+			self::rest_endpoint(),
+			array(
+				'timeout' => 30,
+				'headers' => array(
+					'Content-Type'   => 'application/json',
+					'Content-Length' => strlen( $body ),
+				),
+				'body'    => $body,
+			)
+		);
+
+		if ( is_wp_error( $response ) ) {
+			\Convoca\Core\Logger::error( 'Error de red en cobro por token: ' . $response->get_error_message(), 'Gateway/Redsys' );
+			return $response;
+		}
+
+		$status = (int) wp_remote_retrieve_response_code( $response );
+		if ( $status < 200 || $status >= 300 ) {
+			\Convoca\Core\Logger::error( "HTTP $status del TPV en cobro por token (order $order).", 'Gateway/Redsys' );
+			return new \WP_Error( 'http_' . $status, 'El TPV respondió con HTTP ' . $status );
+		}
+
+		$payload = json_decode( wp_remote_retrieve_body( $response ), true );
+		if ( ! is_array( $payload ) ) {
+			\Convoca\Core\Logger::error( "Respuesta REST no JSON en cobro por token (order $order).", 'Gateway/Redsys' );
+			return new \WP_Error( 'invalid_json', 'Respuesta no JSON del TPV' );
+		}
+
+		$decoded = self::verify_rest_response( $payload );
+		if ( $decoded === false ) {
+			\Convoca\Core\Logger::error( "Firma REST no válida en cobro por token (order $order).", 'Gateway/Redsys' );
+			return new \WP_Error( 'invalid_signature', 'Firma no válida en la respuesta REST' );
+		}
+
+		$response_code = (string) ( $decoded['Ds_Response'] ?? '9999' );
+		$auth_code     = (string) ( $decoded['Ds_AuthorisationCode'] ?? '' );
+
+		\Convoca\Core\Logger::info(
+			sprintf( 'Cobro por token (order %s): respuesta %s (auth %s).', $order, $response_code, $auth_code ),
+			'Gateway/Redsys'
+		);
+
+		return array(
+			'approved'  => self::is_approved( $response_code ),
+			'response'  => $response_code,
+			'auth_code' => $auth_code,
+			'order_id'  => $order,
+			'decoded'   => $decoded,
+		);
+	}
+
+	/**
+	 * Verify a Redsys REST response signature and decode merchant parameters.
+	 *
+	 * REST devuelve el mismo triple (Ds_SignatureVersion, Ds_MerchantParameters,
+	 * Ds_Signature) con la firma calculada por Redsys sobre los parámetros de salida.
+	 *
+	 * @param array $payload REST JSON response body.
+	 * @return array|false Decoded params or false.
+	 */
+	public static function verify_rest_response( array $payload ): array|false {
+		$signature_version = $payload['Ds_SignatureVersion'] ?? '';
+		$mp_b64            = $payload['Ds_MerchantParameters'] ?? '';
+		$signature         = $payload['Ds_Signature'] ?? '';
+
+		if ( empty( $mp_b64 ) || empty( $signature ) ) {
+			return false;
+		}
+
+		$decoded = json_decode( base64_decode( strtr( $mp_b64, '-_', '+/' ), true ), true );
+		if ( ! is_array( $decoded ) ) {
+			return false;
+		}
+
+		$order_id = (string) ( $decoded['Ds_Order'] ?? '' );
+		if ( '' === $order_id ) {
+			return false;
+		}
+
+		$configured = self::signature_version();
+		if ( $signature_version !== $configured ) {
+			\Convoca\Core\Logger::error(
+				"Versión de firma REST inesperada: '$signature_version' (configurada: '$configured').",
+				'Gateway/Redsys'
+			);
+			return false;
+		}
+
+		$expected = ( 'HMAC_SHA256_V2' === $configured )
+			? self::sign_v2( $mp_b64, $order_id )
+			: self::sign( $mp_b64, $order_id );
+
+		$sig_clean = strtr( $signature, '-_', '+/' );
+		$exp_clean = strtr( $expected, '-_', '+/' );
+
+		if ( ! hash_equals( $exp_clean, $sig_clean ) ) {
+			return false;
+		}
+
+		return $decoded;
 	}
 }

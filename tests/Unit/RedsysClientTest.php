@@ -506,4 +506,113 @@ class RedsysClientTest extends TestCase
 
         $this->assertFalse(\Convoca\Gateway\Redsys_Client::verify_notification([]));
     }
+
+    /* ── REST token charge (2026-09 policy) ──────────── */
+
+    public function test_base64url_encode_roundtrip(): void
+    {
+        $raw = '{"a":"b+c/d=é"}';
+        $enc = \Convoca\Gateway\Redsys_Client::base64url_encode($raw);
+
+        $this->assertStringNotContainsString('+', $enc);
+        $this->assertStringNotContainsString('/', $enc);
+        $this->assertStringNotContainsString('=', $enc);
+
+        $decoded = base64_decode(strtr($enc, '-_', '+/'), true);
+        $this->assertSame($raw, $decoded);
+    }
+
+    public function test_build_rest_charge_params_contains_identifier_and_directpayment(): void
+    {
+        $this->ensureSecretKey();
+
+        $params = \Convoca\Gateway\Redsys_Client::build_rest_charge_params([
+            'order_id'     => '260901ABCDEF',
+            'amount_cents' => 3000,
+            'product_desc' => 'RENOVACIÓN TEST',
+            'merchant_id'  => 'tok_abc123',
+        ]);
+
+        $decoded = json_decode(base64_decode(strtr($params, '-_', '+/'), true), true);
+        $this->assertIsArray($decoded);
+        $this->assertSame('3000', $decoded['DS_MERCHANT_AMOUNT']);
+        $this->assertSame('260901ABCDEF', $decoded['DS_MERCHANT_ORDER']);
+        $this->assertSame('tok_abc123', $decoded['DS_MERCHANT_IDENTIFIER']);
+        $this->assertSame('true', $decoded['DS_MERCHANT_DIRECTPAYMENT']);
+        $this->assertSame('0', $decoded['DS_MERCHANT_TRANSACTIONTYPE']);
+        $this->assertSame('978', $decoded['DS_MERCHANT_CURRENCY']);
+    }
+
+    public function test_verify_rest_response_accepts_valid_signature(): void
+    {
+        $this->ensureSecretKey();
+
+        $payload = [
+            'Ds_Order'      => '260901ABCDEF',
+            'Ds_Response'   => '0000',
+            'Ds_Amount'     => '3000',
+            'Ds_MerchantCode' => '999008881',
+        ];
+        $mp  = \Convoca\Gateway\Redsys_Client::base64url_encode(wp_json_encode($payload));
+        $sig = strtr(\Convoca\Gateway\Redsys_Client::sign($mp, '260901ABCDEF'), '+/', '-_');
+
+        $result = \Convoca\Gateway\Redsys_Client::verify_rest_response([
+            'Ds_SignatureVersion'   => 'HMAC_SHA256_V1',
+            'Ds_MerchantParameters' => $mp,
+            'Ds_Signature'          => $sig,
+        ]);
+
+        $this->assertIsArray($result);
+        $this->assertSame('0000', $result['Ds_Response']);
+    }
+
+    public function test_verify_rest_response_rejects_bad_signature(): void
+    {
+        $this->ensureSecretKey();
+
+        $payload = [
+            'Ds_Order'    => '260901ABCDEF',
+            'Ds_Response' => '0180',
+        ];
+        $mp = \Convoca\Gateway\Redsys_Client::base64url_encode(wp_json_encode($payload));
+
+        $result = \Convoca\Gateway\Redsys_Client::verify_rest_response([
+            'Ds_SignatureVersion'   => 'HMAC_SHA256_V1',
+            'Ds_MerchantParameters' => $mp,
+            'Ds_Signature'          => 'invalid_signature_value',
+        ]);
+
+        $this->assertFalse($result);
+    }
+
+    public function test_verify_rest_response_rejects_wrong_version(): void
+    {
+        $this->ensureSecretKey();
+
+        $payload = ['Ds_Order' => '260901ABCDEF', 'Ds_Response' => '0000'];
+        $mp      = \Convoca\Gateway\Redsys_Client::base64url_encode(wp_json_encode($payload));
+        $sig     = strtr(\Convoca\Gateway\Redsys_Client::sign($mp, '260901ABCDEF'), '+/', '-_');
+
+        $result = \Convoca\Gateway\Redsys_Client::verify_rest_response([
+            'Ds_SignatureVersion'   => 'HMAC_SHA256_V2', // versión distinta a la configurada (V1)
+            'Ds_MerchantParameters' => $mp,
+            'Ds_Signature'          => $sig,
+        ]);
+
+        $this->assertFalse($result);
+    }
+
+    public function test_charge_token_rejects_empty_merchant_id(): void
+    {
+        $this->ensureSecretKey();
+
+        $result = \Convoca\Gateway\Redsys_Client::charge_token([
+            'order_id'     => '260901ABCDEF',
+            'amount_cents' => 3000,
+            'merchant_id'  => '',
+        ]);
+
+        $this->assertInstanceOf(\WP_Error::class, $result);
+        $this->assertSame('empty_merchant_id', $result->get_error_code());
+    }
 }
