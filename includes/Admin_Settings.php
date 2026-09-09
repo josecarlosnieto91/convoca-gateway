@@ -37,7 +37,7 @@ class Admin_Settings {
 		add_action( 'admin_menu', array( $this, 'add_menu' ) );
 		add_action( 'admin_init', array( $this, 'register_settings' ) );
 		add_action( 'wp_ajax_convoca_diagnostic_run', array( $this, 'ajax_diagnostic_run' ) );
-		add_action( 'wp_ajax_convoca_diagnostic_fix', array( $this, 'ajax_diagnostic_fix' ) );
+		add_action( 'wp_ajax_convoca_gateway_diagnostic_fix', array( $this, 'ajax_diagnostic_fix' ) );
 		add_action( 'admin_notices', array( $this, 'secret_key_warning' ) );
 	}
 
