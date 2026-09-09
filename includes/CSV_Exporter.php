@@ -120,7 +120,7 @@ class CSV_Exporter {
 	/**
 	 * Get user email based on origin.
 	 */
-	private static function get_user_email( string $origin, int $origin_id ): string {
+	public static function get_user_email( string $origin, int $origin_id ): string {
 		if ( ! $origin_id ) {
 			return '—';
 		}
@@ -138,7 +138,7 @@ class CSV_Exporter {
 	/**
 	 * Format origin label.
 	 */
-	private static function format_origin( string $origin ): string {
+	public static function format_origin( string $origin ): string {
 		return match ( $origin ) {
 			'enroll' => __( 'Inscripción', 'convoca-gateway' ),
 			'members' => __( 'Socio/a', 'convoca-gateway' ),

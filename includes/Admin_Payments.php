@@ -37,6 +37,7 @@ class Admin_Payments extends \WP_List_Table {
 	public function __construct() {
 		add_action( 'admin_menu', array( $this, 'add_menu' ) );
 		add_action( 'admin_init', array( $this, 'handle_csv_export_early' ) );
+		add_action( 'admin_post_convoca_gateway_export_payments_pdf', array( $this, 'handle_pdf_export_request' ) );
 		add_action( 'admin_init', array( $this, 'init_list_table' ) );
 	}
 
@@ -66,6 +67,15 @@ class Admin_Payments extends \WP_List_Table {
 			if ( check_admin_referer( 'convoca_gateway_export_csv' ) ) {
 				$this->handle_export_csv();
 			}
+		}
+	}
+
+	/**
+	 * Handle PDF export request (admin-post.php?action=convoca_gateway_export_payments_pdf).
+	 */
+	public function handle_pdf_export_request(): void {
+		if ( check_admin_referer( 'convoca_gateway_export_payments_pdf' ) ) {
+			$this->handle_export_pdf();
 		}
 	}
 
@@ -557,6 +567,22 @@ class Admin_Payments extends \WP_List_Table {
 	 * Handle CSV export request.
 	 */
 	private function handle_export_csv(): void {
+		CSV_Exporter::export( $this->build_export_query_args() );
+	}
+
+	/**
+	 * Handle PDF export request.
+	 */
+	private function handle_export_pdf(): void {
+		PDF_Exporter::export( $this->build_export_query_args() );
+	}
+
+	/**
+	 * Build WP_Query args for export (CSV/PDF), respecting list filters.
+	 *
+	 * @return array
+	 */
+	private function build_export_query_args(): array {
 		$get_data = wp_unslash( $_GET );
 		$orderby  = $get_data['orderby'] ?? 'date';
 		$order    = $get_data['order'] ?? 'desc';
@@ -589,7 +615,7 @@ class Admin_Payments extends \WP_List_Table {
 			}
 		}
 
-		CSV_Exporter::export( $args );
+		return $args;
 	}
 
 	/**
