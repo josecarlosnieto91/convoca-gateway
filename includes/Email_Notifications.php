@@ -181,8 +181,8 @@ class Email_Notifications {
 
 		$motivo = __( 'Tu banco rechazó la operación.', 'convoca-gateway' );
 		if ( '' !== $response ) {
-			/* translators: 1: human-readable reason, 2: numeric code. */
 			$motivo = sprintf(
+				/* translators: 1: human-readable reason, 2: numeric code. */
 				__( '%1$s (código %2$s)', 'convoca-gateway' ),
 				Redsys_Client::get_response_message( $response ),
 				$response
