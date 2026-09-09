@@ -117,6 +117,30 @@ class Email_Notifications {
 	}
 
 	/**
+	 * Default email templates (used when the setting is empty).
+	 *
+	 * @return array{email_success_subject:string,email_success_body:string,email_failed_subject:string,email_failed_body:string}
+	 */
+	public static function default_templates(): array {
+		return array(
+			'email_success_subject' => __( 'Confirmación de pago: {producto}', 'convoca-gateway' ),
+			'email_success_body'    => '<h2>' . __( 'Resumen de tu pago', 'convoca-gateway' ) . '</h2>
+                   <p>' . __( 'Hemos recibido correctamente tu pago. Detalles:', 'convoca-gateway' ) . '</p>
+                   <ul>
+                       <li><strong>' . __( 'Importe', 'convoca-gateway' ) . ':</strong> {importe}</li>
+                       <li><strong>' . __( 'Concepto', 'convoca-gateway' ) . ':</strong> {producto}</li>
+                       <li><strong>' . __( 'Fecha', 'convoca-gateway' ) . ':</strong> {fecha}</li>
+                   </ul>
+                   <p>' . __( 'Puedes descargar tu recibo aquí:', 'convoca-gateway' ) . ' <a href="{recibo_url}">{recibo_url}</a></p>',
+			'email_failed_subject'  => __( 'Problema con tu pago: {producto}', 'convoca-gateway' ),
+			'email_failed_body'     => '<h2>' . __( 'Error en el pago', 'convoca-gateway' ) . '</h2>
+                   <p>' . __( 'No hemos podido procesar tu pago para {producto}.', 'convoca-gateway' ) . '</p>
+                   <p>' . __( 'Motivo', 'convoca-gateway' ) . ': {motivo}</p>
+                   <p>' . __( 'Puedes volver a intentarlo aquí:', 'convoca-gateway' ) . ' <a href="{enlace_pago}">{enlace_pago}</a></p>',
+		);
+	}
+
+	/**
 	 * Generic sender logic.
 	 */
 	private function maybe_send( int $payment_id, string $type, array $extra = array() ): void {
@@ -135,27 +159,15 @@ class Email_Notifications {
 		$subject = $settings[ "email_{$type}_subject" ] ?? '';
 		$body    = $settings[ "email_{$type}_body" ] ?? '';
 
+		$defaults = self::default_templates();
+
 		// Fallbacks if empty.
 		if ( empty( $subject ) ) {
-			$subject = ( $type === 'success' )
-				? __( 'Confirmación de pago: {producto}', 'convoca-gateway' )
-				: __( 'Problema con tu pago: {producto}', 'convoca-gateway' );
+			$subject = $defaults[ "email_{$type}_subject" ];
 		}
 
 		if ( empty( $body ) ) {
-			$body = ( $type === 'success' )
-				? '<h2>' . __( 'Resumen de tu pago', 'convoca-gateway' ) . '</h2>
-                   <p>' . __( 'Hemos recibido correctamente tu pago. Detalles:', 'convoca-gateway' ) . '</p>
-                   <ul>
-                       <li><strong>' . __( 'Importe', 'convoca-gateway' ) . ':</strong> {importe}</li>
-                       <li><strong>' . __( 'Concepto', 'convoca-gateway' ) . ':</strong> {producto}</li>
-                       <li><strong>' . __( 'Fecha', 'convoca-gateway' ) . ':</strong> {fecha}</li>
-                   </ul>
-                   <p>' . __( 'Puedes descargar tu recibo aquí:', 'convoca-gateway' ) . ' <a href="{recibo_url}">{recibo_url}</a></p>'
-				: '<h2>' . __( 'Error en el pago', 'convoca-gateway' ) . '</h2>
-                   <p>' . __( 'No hemos podido procesar tu pago para {producto}.', 'convoca-gateway' ) . '</p>
-                   <p>' . __( 'Motivo', 'convoca-gateway' ) . ': {motivo}</p>
-                   <p>' . __( 'Puedes volver a intentarlo aquí:', 'convoca-gateway' ) . ' <a href="{enlace_pago}">{enlace_pago}</a></p>';
+			$body = $defaults[ "email_{$type}_body" ];
 		}
 
 		// Replace variables.

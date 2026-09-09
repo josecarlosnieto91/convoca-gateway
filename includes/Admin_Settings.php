@@ -105,7 +105,7 @@ class Admin_Settings {
 			'bizum_merchant_code' => array(
 				'label' => 'FUC Bizum',
 				'type'  => 'text',
-				'desc'  => 'Si se rellena, se habilitará el pago por Bizum',
+				'desc'  => 'Opcional. Solo si tu banco asigna un código de comercio DISTINTO para operaciones Bizum. Vacío = Bizum usa el FUC principal (lo habitual; el botón de pago de Biodevas funciona así).',
 			),
 			'terminal'            => array(
 				'label' => 'Terminal',
@@ -215,7 +215,7 @@ class Admin_Settings {
 			'email_success_body'    => array(
 				'label' => __( 'Cuerpo (Éxito)', 'convoca-gateway' ),
 				'type'  => 'textarea',
-				'desc'  => __( 'Contenido del correo tras un pago exitoso.', 'convoca-gateway' ),
+				'desc'  => __( 'Contenido del correo tras un pago exitoso. Se envía como HTML: puedes usar <p>, <a>, <strong>, etc. Si lo dejas vacío se usará la plantilla por defecto.', 'convoca-gateway' ),
 			),
 			'email_failed_subject'  => array(
 				'label' => __( 'Asunto (Fallo)', 'convoca-gateway' ),
@@ -225,7 +225,7 @@ class Admin_Settings {
 			'email_failed_body'     => array(
 				'label' => __( 'Cuerpo (Fallo)', 'convoca-gateway' ),
 				'type'  => 'textarea',
-				'desc'  => __( 'Contenido del correo tras un pago fallido.', 'convoca-gateway' ),
+				'desc'  => __( 'Contenido del correo tras un pago fallido. Se envía como HTML: puedes usar <p>, <a>, <strong>, etc. Si lo dejas vacío se usará la plantilla por defecto.', 'convoca-gateway' ),
 			),
 		);
 
@@ -420,6 +420,13 @@ class Admin_Settings {
 
 		$settings = get_option( self::OPTION, array() );
 		$value    = $settings[ $key ] ?? '';
+
+		// Email template fields: show the built-in default when empty so the
+		// admin always sees what would be sent (editable, HTML allowed in body).
+		$template_defaults = \Convoca\Gateway\Email_Notifications::default_templates();
+		if ( array_key_exists( $key, $template_defaults ) && '' === $value ) {
+			$value = $template_defaults[ $key ];
+		}
 		$type     = $field['type'] ?? 'text';
 
 		// Don't show encrypted secret key value.
@@ -441,10 +448,16 @@ class Admin_Settings {
 				checked( $value, '1', false )
 			);
 		} elseif ( $type === 'textarea' ) {
+			// Email bodies are HTML templates: give a code-style editor area.
+			$is_html_body = in_array( $key, array( 'email_success_body', 'email_failed_body' ), true );
+			$classes      = $is_html_body ? 'large-text code' : 'regular-text';
+			$rows         = $is_html_body ? 10 : 4;
 			printf(
-				'<textarea name="%s[%s]" class="regular-text" rows="4">%s</textarea>',
+				'<textarea name="%s[%s]" class="%s" rows="%d">%s</textarea>',
 				esc_attr( self::OPTION ),
 				esc_attr( $key ),
+				esc_attr( $classes ),
+				(int) $rows,
 				esc_textarea( $value )
 			);
 		} else {
