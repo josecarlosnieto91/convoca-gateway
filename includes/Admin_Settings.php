@@ -102,11 +102,6 @@ class Admin_Settings {
 				'type'  => 'text',
 				'desc'  => 'Ejemplo: 999008881 (test)',
 			),
-			'bizum_merchant_code' => array(
-				'label' => 'FUC Bizum',
-				'type'  => 'text',
-				'desc'  => 'Opcional. Solo si tu banco asigna un código de comercio DISTINTO para operaciones Bizum. Vacío = Bizum usa el FUC principal (lo habitual; el botón de pago de Biodevas funciona así).',
-			),
 			'terminal'            => array(
 				'label' => 'Terminal',
 				'type'  => 'text',
@@ -405,9 +400,6 @@ class Admin_Settings {
 		if ( $key === 'merchant_code' && defined( 'CONVOCA_GATEWAY_MERCHANT_CODE' ) ) {
 			$is_constant = true;
 		}
-		if ( $key === 'bizum_merchant_code' && defined( 'CONVOCA_GATEWAY_BIZUM_MERCHANT_CODE' ) ) {
-			$is_constant = true;
-		}
 
 		if ( $is_constant ) {
 			printf(
@@ -542,7 +534,6 @@ class Admin_Settings {
 
 		return array(
 			'merchant_code'            => sanitize_text_field( $input['merchant_code'] ?? '' ),
-			'bizum_merchant_code'      => sanitize_text_field( $input['bizum_merchant_code'] ?? '' ),
 			'terminal'                 => sanitize_text_field( $input['terminal'] ?? '001' ),
 			'secret_key'               => $secret_to_save,
 			'environment'              => in_array( $input['environment'] ?? '', array( 'test', 'production' ) ) ? $input['environment'] : 'test',

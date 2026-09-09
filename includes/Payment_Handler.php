@@ -418,7 +418,7 @@ class Payment_Handler {
 
 		$settings         = get_option( 'convoca_gateway_settings', array() );
 		$transfer_enabled = ! empty( $settings['iban'] );
-		$bizum_enabled    = ! empty( Redsys_Client::bizum_merchant_code() ) || ! empty( Redsys_Client::merchant_code() );
+		$bizum_enabled    = ! empty( Redsys_Client::merchant_code() );
 
 		$suggested = ( $suggested_method === 'any' ) ? '' : $suggested_method;
 
@@ -1003,7 +1003,7 @@ class Payment_Handler {
 
 		$settings         = get_option( 'convoca_gateway_settings', array() );
 		$transfer_enabled = ! empty( $settings['iban'] );
-		$bizum_enabled    = ! empty( Redsys_Client::bizum_merchant_code() ) || ! empty( Redsys_Client::merchant_code() );
+		$bizum_enabled    = ! empty( Redsys_Client::merchant_code() );
 
 		ob_start();
 		?>
@@ -1324,7 +1324,7 @@ class Payment_Handler {
 			}
 			return new \WP_Error( 'currency_mismatch', 'Currency mismatch' );
 		}
-		if ( ! in_array( (string) ( $data['Ds_MerchantCode'] ?? '' ), array( Redsys_Client::merchant_code(), Redsys_Client::bizum_merchant_code() ), true ) ) {
+		if ( ! in_array( (string) ( $data['Ds_MerchantCode'] ?? '' ), array( Redsys_Client::merchant_code() ), true ) ) {
 			\Convoca\Core\Logger::error( "Merchant code de notificación no coincide para Order $order_id: " . ( $data['Ds_MerchantCode'] ?? 'N/A' ) . '.', 'Gateway/Notification', $pago_id );
 			--$savepoint_depth;
 			if ( $savepoint_depth === 0 ) {
@@ -1415,7 +1415,7 @@ class Payment_Handler {
 			\Convoca\Core\Logger::error( "Importe del retorno ($notif_cents) no coincide con el pago esperado ($expected_cents) para Order $order_id.", 'Gateway/Return', $pago_id );
 			return new \WP_Error( 'amount_mismatch', 'Amount mismatch in payment return' );
 		}
-		if ( ! in_array( (string) ( $data['Ds_MerchantCode'] ?? '' ), array( Redsys_Client::merchant_code(), Redsys_Client::bizum_merchant_code() ), true ) ) {
+		if ( ! in_array( (string) ( $data['Ds_MerchantCode'] ?? '' ), array( Redsys_Client::merchant_code() ), true ) ) {
 			\Convoca\Core\Logger::error( "Merchant code del retorno no coincide para Order $order_id.", 'Gateway/Return', $pago_id );
 			return new \WP_Error( 'merchant_mismatch', 'Merchant code mismatch in payment return' );
 		}

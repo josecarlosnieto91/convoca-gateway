@@ -152,18 +152,6 @@ class Redsys_Client {
 	}
 
 	/**
-	 * Get the Bizum merchant code.
-	 */
-	public static function bizum_merchant_code(): string {
-		if ( defined( 'CONVOCA_GATEWAY_BIZUM_MERCHANT_CODE' ) ) {
-			return CONVOCA_GATEWAY_BIZUM_MERCHANT_CODE;
-		}
-
-		$s = self::settings();
-		return $s['bizum_merchant_code'] ?? '';
-	}
-
-	/**
 	 * Get the terminal number.
 	 */
 	public static function terminal(): string {
@@ -201,7 +189,7 @@ class Redsys_Client {
 	 * }
 	 */
 	public static function build_merchant_params( array $params ): string {
-		$merchant_code = ! empty( $params['is_bizum'] ) ? ( self::bizum_merchant_code() ?: self::merchant_code() ) : self::merchant_code();
+		$merchant_code = self::merchant_code();
 
 		$data = array(
 			'DS_MERCHANT_AMOUNT'             => (string) ( $params['amount_cents'] ?? 0 ),
