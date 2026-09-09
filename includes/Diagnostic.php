@@ -145,7 +145,9 @@ class Diagnostic {
 		$terminal = $settings['terminal'] ?? '';
 
 		if ( empty( $terminal ) ) {
-			return self::result( 'terminal', 'Terminal', 'No configurado', self::SEVERITY_WARNING, 'Configura el terminal (por defecto 001)', array( __CLASS__, 'fix_default_terminal' ) );
+			$r = self::result( 'terminal', 'Terminal', 'No configurado', self::SEVERITY_WARNING, 'Configura el terminal (por defecto 001)', array( __CLASS__, 'fix_default_terminal' ) );
+			$r['fix_url'] = admin_url( 'admin.php?page=conv-gateway-settings&tab=status' );
+			return $r;
 		}
 
 		return self::result( 'terminal', 'Terminal', "Terminal: $terminal", self::SEVERITY_OK );
@@ -210,6 +212,7 @@ class Diagnostic {
 			'message'      => $has_error ? __( 'Hay páginas faltantes', 'convoca-gateway' ) : __( 'Páginas OK y error configuradas', 'convoca-gateway' ),
 			'fix'          => $has_error ? 'Haga clic en Reparar para crear las páginas automáticamente' : null,
 			'fix_callback' => $has_error ? array( __CLASS__, 'fix_create_pages' ) : null,
+			'fix_url'      => $has_error ? admin_url( 'admin.php?page=conv-gateway-settings&tab=status' ) : '',
 			'children'     => $results,
 		);
 	}
