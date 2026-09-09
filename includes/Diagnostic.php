@@ -204,10 +204,30 @@ class Diagnostic {
 			$has_error          = true;
 		}
 
+		// Check the main payment page ([convoca_pago]).
+		$payment_page_id = (int) ( $settings['payment_page_id'] ?? 0 );
+		if ( $payment_page_id > 0 ) {
+			$payment_page = get_post( $payment_page_id );
+			if ( $payment_page && 'publish' === $payment_page->post_status ) {
+				$has_payment_shortcode = has_shortcode( $payment_page->post_content, 'convoca_pago' );
+				if ( $has_payment_shortcode ) {
+					$results['payment_page'] = self::result( 'payment_page', 'Página de pago', 'Configurada y con shortcode [convoca_pago]', self::SEVERITY_OK );
+				} else {
+					$results['payment_page'] = self::result( 'payment_page', 'Página de pago', 'Existe pero sin shortcode [convoca_pago]', self::SEVERITY_WARNING, null, array( __CLASS__, 'fix_create_pages' ) );
+				}
+			} else {
+				$results['payment_page'] = self::result( 'payment_page', 'Página de pago', 'No existe o no publicada', self::SEVERITY_ERROR, 'La página configurada no existe o no está publicada', array( __CLASS__, 'fix_create_pages' ) );
+				$has_error               = true;
+			}
+		} else {
+			$results['payment_page'] = self::result( 'payment_page', 'Página de pago', 'No configurada', self::SEVERITY_ERROR, 'Crea una página con el shortcode [convoca_pago]', array( __CLASS__, 'fix_create_pages' ) );
+			$has_error               = true;
+		}
+
 		return array(
 			'slug'         => 'return_pages',
 			'title'        => 'Páginas de retorno',
-			'description'  => __( 'Verifica que las páginas de éxito y error existen y tienen los shortcodes', 'convoca-gateway' ),
+			'description'  => __( 'Verifica que la página de pago y las de éxito/error existen y tienen los shortcodes', 'convoca-gateway' ),
 			'severity'     => $has_error ? self::SEVERITY_ERROR : self::SEVERITY_OK,
 			'message'      => $has_error ? __( 'Hay páginas faltantes', 'convoca-gateway' ) : __( 'Páginas OK y error configuradas', 'convoca-gateway' ),
 			'fix'          => $has_error ? 'Haga clic en Reparar para crear las páginas automáticamente' : null,
@@ -336,6 +356,31 @@ class Diagnostic {
 	public static function fix_create_pages(): array {
 		$settings = get_option( 'convoca_gateway_settings', array() );
 		$created  = array();
+
+		// Check if the main payment page ([convoca_pago]) exists and is published.
+		$payment_page_id = (int) ( $settings['payment_page_id'] ?? 0 );
+		if ( $payment_page_id <= 0 || ! get_post( $payment_page_id ) || 'publish' !== get_post( $payment_page_id )->post_status ) {
+			// Look for an existing page with the slug, or create it.
+			$existing = get_page_by_path( 'pago' );
+			if ( $existing && 'publish' === $existing->post_status ) {
+				$settings['payment_page_id'] = $existing->ID;
+			} else {
+				$new_payment_page_id = wp_insert_post(
+					array(
+						'post_title'   => 'Pago',
+						'post_content' => '<!-- wp:shortcode -->[convoca_pago]<!-- /wp:shortcode -->',
+						'post_status'  => 'publish',
+						'post_type'    => 'page',
+						'post_name'    => 'pago',
+					)
+				);
+
+				if ( $new_payment_page_id ) {
+					$settings['payment_page_id'] = $new_payment_page_id;
+					$created[]                   = 'Página de pago';
+				}
+			}
+		}
 
 		$ok_page_id = (int) ( $settings['ok_page_id'] ?? 0 );
 		$ko_page_id = (int) ( $settings['ko_page_id'] ?? 0 );

@@ -874,6 +874,7 @@ class Admin_Settings {
 			case 'terminal':
 				$result = Diagnostic::fix_default_terminal();
 				break;
+			case 'payment_page':
 			case 'ok_page':
 			case 'ko_page':
 			case 'return_pages':
