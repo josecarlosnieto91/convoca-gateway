@@ -81,8 +81,7 @@ if ( ! defined( 'CONVOCA_GATEWAY_BASENAME' ) ) {
 register_deactivation_hook(
 	__FILE__,
 	function () {
-		// Gateway does not schedule cron events currently.
-		// Placeholder for future cron cleanup.
+		Link_Expiry::unschedule();
 	}
 );
 
@@ -172,8 +171,15 @@ register_activation_hook(
 		CPT_Pago::register();
 		flush_rewrite_rules();
 		add_option( 'convoca_gateway_db_version', CONVOCA_GATEWAY_DB_VERSION, '', false );
+		Link_Expiry::schedule();
 	}
 );
+
+/* ── Cron: aviso de caducidad de enlaces (D21b) ── */
+add_action( 'convoca_gateway_expiry_notice', array( \Convoca\Gateway\Link_Expiry::class, 'run_expiry_notices' ) );
+
+/* ── Recibos/justificantes: numeración anual al completar pago (D23/D24) ── */
+add_action( 'convoca_gateway_payment_completed', array( \Convoca\Gateway\Receipt_Generator::class, 'maybe_generate' ), 5, 1 );
 
 /* ── Public API Functions ─────────────────────── */
 

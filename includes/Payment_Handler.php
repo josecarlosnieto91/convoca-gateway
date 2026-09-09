@@ -310,6 +310,18 @@ class Payment_Handler {
 	 * Render the payment method selection + Redsys redirect.
 	 */
 	public function render_payment_page( $atts ): string {
+		// Receipt / donation justification print page (D23/D24).
+		if ( isset( $_GET['convoca_gateway_recibo'] ) ) {
+			$pago_id = (int) ( wp_unslash( $_GET['convoca_gateway_pago'] ?? 0 ) );
+			$key     = sanitize_text_field( wp_unslash( $_GET['convoca_gateway_receipt_key'] ?? '' ) );
+			return $this->render_receipt( $pago_id, $key );
+		}
+
+		// Regenerate an expired/failed link keeping the same payment (D21c/D22c).
+		if ( isset( $_POST['convoca_gateway_regenerate'] ) && check_admin_referer( 'convoca_gateway_regenerate_action', 'convoca_gateway_regenerate_nonce' ) ) {
+			return $this->handle_regenerate_link();
+		}
+
 		// Handle manual form submission first.
 		if ( isset( $_POST['convoca_gateway_manual_payment'] ) && check_admin_referer( 'convoca_gateway_manual_payment_action', 'convoca_gateway_manual_nonce' ) ) {
 			return $this->handle_manual_payment_submission();
@@ -363,7 +375,7 @@ class Payment_Handler {
 
 		$stored_expires = get_post_meta( $pago_id, '_convoca_expires_at', true );
 		if ( $stored_expires && $stored_expires < time() ) {
-			return '<div class="convoca-alert convoca-alert--warning">' . esc_html__( 'El enlace de pago ha caducado. Por favor, contacta con el administrador para solicitar uno nuevo.', 'convoca-gateway' ) . '</div>';
+			return $this->render_expired_notice( $pago_id );
 		}
 
 		$meta = CPT_Pago::get_meta( $pago_id );
@@ -1521,20 +1533,25 @@ class Payment_Handler {
 	public function render_ko_page( $atts ): string {
 		$pago_id = (int) ( wp_unslash( $_GET['convoca_gateway_pago'] ?? 0 ) );
 
+		$reason = '';
+		if ( $pago_id ) {
+			$response = (string) get_post_meta( $pago_id, '_convoca_redsys_response', true );
+			if ( '' !== $response ) {
+				$reason = Redsys_Client::get_response_message( $response );
+			}
+		}
+
 		ob_start();
 		?>
 		<div class="conv-result convoca-form" role="alert">
 			<div class="conv-result-icon">&#x1F61E;</div>
 			<h3>Pago no completado</h3>
 			<p>El pago no se ha podido procesar. Puede deberse a una cancelación o un problema con tu banco.</p>
-			<p>If the problem persists, please contact the site administrator.
-			</p>
+			<?php if ( '' !== $reason ) : ?>
+				<p class="conv-desc"><?php echo esc_html( $reason ); ?></p>
+			<?php endif; ?>
 			<?php if ( $pago_id ) : ?>
-				<?php
-				$meta      = CPT_Pago::get_meta( $pago_id );
-				$retry_url = self::get_payment_link( $pago_id );
-				?>
-				<p><a href="<?php echo esc_url( $retry_url ); ?>" class="convoca-btn convoca-btn-primary">🔄 Reintentar pago</a></p>
+				<?php echo $this->render_regenerate_form( $pago_id, '🔄 Reintentar pago' ); // phpcs:ignore WordPress.Security.EscapeOutput.OutputNotEscaped -- form HTML already escaped internally ?>
 			<?php endif; ?>
 			<p><a href="<?php echo esc_url( home_url( '/' ) ); ?>" class="convoca-btn convoca-btn-outline">&larr; Volver al inicio</a></p>
 		</div>
@@ -1549,6 +1566,139 @@ class Payment_Handler {
 				font-size: 4rem;
 				margin-bottom: 1rem;
 			}
+		</style>
+		<?php
+		return ob_get_clean();
+	}
+
+	/**
+	 * Render the expired-link notice with a "request a new link" action (D21c).
+	 */
+	private function render_expired_notice( int $pago_id ): string {
+		$form = $this->render_regenerate_form( $pago_id, __( 'Solicitar nuevo enlace', 'convoca-gateway' ) );
+
+		return '<div class="convoca-alert convoca-alert--warning">'
+			. esc_html__( 'El enlace de pago ha caducado. Solicita un enlace nuevo para completar el pago.', 'convoca-gateway' )
+			. $form
+			. '</div>';
+	}
+
+	/**
+	 * Build the form used to regenerate a payment link (D21c/D22c).
+	 */
+	private function render_regenerate_form( int $pago_id, string $label ): string {
+		ob_start();
+		?>
+		<form method="post" action="<?php echo esc_url( self::get_payment_page_url() ); ?>" style="margin-top:1rem;">
+			<?php wp_nonce_field( 'convoca_gateway_regenerate_action', 'convoca_gateway_regenerate_nonce' ); ?>
+			<input type="hidden" name="convoca_gateway_pago" value="<?php echo esc_attr( (string) $pago_id ); ?>">
+			<button type="submit" name="convoca_gateway_regenerate" class="wp-block-button__link"><?php echo esc_html( $label ); ?></button>
+		</form>
+		<?php
+		return ob_get_clean();
+	}
+
+	/**
+	 * Handle a link regeneration request (keeps the same payment/order).
+	 */
+	private function handle_regenerate_link(): string {
+		$pago_id = (int) ( wp_unslash( $_POST['convoca_gateway_pago'] ?? 0 ) );
+		if ( ! $pago_id ) {
+			return '<div class="convoca-alert convoca-alert--danger">' . esc_html__( 'Pago no especificado.', 'convoca-gateway' ) . '</div>';
+		}
+
+		$url = Link_Expiry::regenerate_link( $pago_id );
+		if ( is_wp_error( $url ) ) {
+			return '<div class="convoca-alert convoca-alert--danger">' . esc_html( $url->get_error_message() ) . '</div>';
+		}
+
+		// Re-send the link to the recipient, if any.
+		( new Email_Notifications() )->send_link_email( $pago_id );
+
+		return '<script>window.location.href="' . esc_url_raw( $url ) . '";</script>'
+			. '<div class="convoca-alert convoca-alert--info">' . esc_html__( 'Generando nuevo enlace… Si no eres redirigido, haz clic aquí.', 'convoca-gateway' ) . ' <a href="' . esc_url( $url ) . '">' . esc_html__( 'Continuar', 'convoca-gateway' ) . '</a></div>';
+	}
+
+	/**
+	 * Render the receipt / donation justification print page (D23/D24).
+	 *
+	 * @param int    $pago_id Payment post ID.
+	 * @param string $key     Unguessable receipt access key.
+	 */
+	private function render_receipt( int $pago_id, string $key ): string {
+		if ( ! $pago_id || ! $key ) {
+			return '<div class="convoca-alert convoca-alert--danger">' . esc_html__( 'Recibo no encontrado.', 'convoca-gateway' ) . '</div>';
+		}
+
+		$post = get_post( $pago_id );
+		if ( ! $post || 'pago' !== $post->post_type ) {
+			return '<div class="convoca-alert convoca-alert--danger">' . esc_html__( 'Recibo no encontrado.', 'convoca-gateway' ) . '</div>';
+		}
+
+		$stored_key = get_post_meta( $pago_id, '_convoca_receipt_key', true );
+		if ( empty( $stored_key ) || ! hash_equals( (string) $stored_key, $key ) ) {
+			return '<div class="convoca-alert convoca-alert--danger">' . esc_html__( 'Enlace de recibo no válido.', 'convoca-gateway' ) . '</div>';
+		}
+
+		if ( 'paid' !== get_post_meta( $pago_id, '_convoca_status', true ) ) {
+			return '<div class="convoca-alert convoca-alert--warning">' . esc_html__( 'El recibo estará disponible una vez confirmado el pago.', 'convoca-gateway' ) . '</div>';
+		}
+
+		$meta           = CPT_Pago::get_meta( $pago_id );
+		$is_donation    = Receipt_Generator::is_donation( $pago_id );
+		$number         = Receipt_Generator::assign_number( $pago_id );
+		$org            = Receipt_Generator::org_data();
+		$amount_display = CPT_Pago::format_amount( (int) $meta['amount_cents'] );
+		$paid_at        = ! empty( $meta['paid_at'] ) ? wp_date( 'd/m/Y H:i', strtotime( $meta['paid_at'] ) ) : '';
+		$title          = $is_donation ? __( 'Justificante de donación', 'convoca-gateway' ) : __( 'Recibo de pago', 'convoca-gateway' );
+
+		ob_start();
+		?>
+		<div class="conv-receipt">
+			<div class="conv-receipt__header">
+				<h2><?php echo esc_html( $title ); ?></h2>
+				<div class="conv-receipt__number"><?php echo esc_html( $number ); ?></div>
+			</div>
+
+			<div class="conv-receipt__org">
+				<strong><?php echo esc_html( $org['name'] ); ?></strong>
+				<?php if ( '' !== $org['cif'] ) : ?>
+					<div><?php esc_html_e( 'CIF/NIF', 'convoca-gateway' ); ?>: <?php echo esc_html( $org['cif'] ); ?></div>
+				<?php endif; ?>
+				<?php if ( '' !== $org['address'] ) : ?>
+					<div><?php echo esc_html( $org['address'] ); ?></div>
+				<?php endif; ?>
+			</div>
+
+			<table class="conv-receipt__details">
+				<tr><th><?php esc_html_e( 'Concepto', 'convoca-gateway' ); ?></th><td><?php echo esc_html( (string) $meta['product_desc'] ); ?></td></tr>
+				<tr><th><?php esc_html_e( 'Importe', 'convoca-gateway' ); ?></th><td><?php echo esc_html( $amount_display ); ?></td></tr>
+				<tr><th><?php esc_html_e( 'Referencia', 'convoca-gateway' ); ?></th><td><?php echo esc_html( (string) $meta['order_id'] ); ?></td></tr>
+				<?php if ( '' !== $paid_at ) : ?>
+					<tr><th><?php esc_html_e( 'Fecha', 'convoca-gateway' ); ?></th><td><?php echo esc_html( $paid_at ); ?></td></tr>
+				<?php endif; ?>
+			</table>
+
+			<?php if ( $is_donation ) : ?>
+				<p class="conv-receipt__legal"><?php echo esc_html( Receipt_Generator::donation_legal_text() ); ?></p>
+			<?php endif; ?>
+
+			<div class="conv-receipt__actions">
+				<button type="button" class="wp-block-button__link" onclick="window.print()"><?php esc_html_e( 'Imprimir / Guardar PDF', 'convoca-gateway' ); ?></button>
+			</div>
+		</div>
+		<style>
+			.conv-receipt { max-width: 640px; margin: 2rem auto; background: #fff; border: 1px solid #eee; border-radius: 12px; padding: 2rem; color: #333; }
+			.conv-receipt__header { display: flex; justify-content: space-between; align-items: center; border-bottom: 2px solid #f0f0f0; padding-bottom: 1rem; }
+			.conv-receipt__header h2 { margin: 0; }
+			.conv-receipt__number { font-family: monospace; font-size: 1.1rem; font-weight: 700; }
+			.conv-receipt__org { margin: 1.25rem 0; line-height: 1.5; }
+			.conv-receipt__details { width: 100%; border-collapse: collapse; margin: 1rem 0; }
+			.conv-receipt__details th, .conv-receipt__details td { text-align: left; padding: 0.6rem 0.75rem; border-bottom: 1px solid #f0f0f0; }
+			.conv-receipt__details th { width: 35%; color: #666; font-weight: 600; }
+			.conv-receipt__legal { font-size: 0.85rem; color: #666; background: #fafafa; border-left: 3px solid #ff8700; padding: 0.75rem 1rem; border-radius: 4px; }
+			.conv-receipt__actions { margin-top: 1.5rem; text-align: right; }
+			@media print { .conv-receipt__actions { display: none; } body * { visibility: hidden; } .conv-receipt, .conv-receipt * { visibility: visible; } .conv-receipt { position: absolute; left: 0; top: 0; border: none; } }
 		</style>
 		<?php
 		return ob_get_clean();

@@ -254,6 +254,73 @@ class Admin_Settings {
 			'conv-gateway-settings'
 		);
 
+		// Links section (D21).
+		add_settings_section(
+			'convoca_gateway_links',
+			__( 'Enlaces de pago', 'convoca-gateway' ),
+			fn() => print '<p>' . esc_html__( 'Caducidad por defecto de los enlaces de pago y aviso previo.', 'convoca-gateway' ) . '</p>',
+			'conv-gateway-settings'
+		);
+
+		$link_fields = array(
+			'link_expiry_days'         => array(
+				'label' => __( 'Caducidad por defecto (días)', 'convoca-gateway' ),
+				'type'  => 'number',
+				'desc'  => __( 'Días de validez de un enlace de pago si no se indica otra fecha. Por defecto 7.', 'convoca-gateway' ),
+			),
+			'link_expiry_notice_hours' => array(
+				'label' => __( 'Aviso previo (horas)', 'convoca-gateway' ),
+				'type'  => 'number',
+				'desc'  => __( 'Horas antes de caducar en las que se envía el email de aviso. Por defecto 24.', 'convoca-gateway' ),
+			),
+		);
+
+		foreach ( $link_fields as $key => $field ) {
+			add_settings_field(
+				'convoca_gateway_' . $key,
+				$field['label'],
+				fn() => $this->render_form_field( $key, $field ),
+				'conv-gateway-settings',
+				'convoca_gateway_links'
+			);
+		}
+
+		// Receipts section (D23/D24).
+		add_settings_section(
+			'convoca_gateway_receipts',
+			__( 'Recibos y justificantes', 'convoca-gateway' ),
+			fn() => print '<p>' . esc_html__( 'Datos de la asociación mostrados en los recibos y justificantes de donación.', 'convoca-gateway' ) . '</p>',
+			'conv-gateway-settings'
+		);
+
+		$receipt_fields = array(
+			'org_name'    => array(
+				'label' => __( 'Nombre de la entidad', 'convoca-gateway' ),
+				'type'  => 'text',
+				'desc'  => __( 'Por defecto se usa el nombre del sitio.', 'convoca-gateway' ),
+			),
+			'org_cif'     => array(
+				'label' => __( 'CIF / NIF', 'convoca-gateway' ),
+				'type'  => 'text',
+				'desc'  => __( 'Ej: G-12345678', 'convoca-gateway' ),
+			),
+			'org_address' => array(
+				'label' => __( 'Domicilio fiscal', 'convoca-gateway' ),
+				'type'  => 'text',
+				'desc'  => __( 'Dirección social de la asociación.', 'convoca-gateway' ),
+			),
+		);
+
+		foreach ( $receipt_fields as $key => $field ) {
+			add_settings_field(
+				'convoca_gateway_' . $key,
+				$field['label'],
+				fn() => $this->render_form_field( $key, $field ),
+				'conv-gateway-settings',
+				'convoca_gateway_receipts'
+			);
+		}
+
 		// Recurring payments section (PRO).
 		add_settings_section(
 			'convoca_gateway_recurring',
@@ -461,27 +528,32 @@ class Admin_Settings {
 		}
 
 		return array(
-			'merchant_code'          => sanitize_text_field( $input['merchant_code'] ?? '' ),
-			'bizum_merchant_code'    => sanitize_text_field( $input['bizum_merchant_code'] ?? '' ),
-			'terminal'               => sanitize_text_field( $input['terminal'] ?? '001' ),
-			'secret_key'             => $secret_to_save,
-			'environment'            => in_array( $input['environment'] ?? '', array( 'test', 'production' ) ) ? $input['environment'] : 'test',
-			'iban'                   => sanitize_text_field( $input['iban'] ?? '' ),
-			'beneficiary'            => sanitize_text_field( $input['beneficiary'] ?? '' ),
-			'instructions'           => sanitize_textarea_field( $input['instructions'] ?? '' ),
-			'payment_page_id'        => absint( $input['payment_page_id'] ?? 0 ),
-			'ok_page_id'             => absint( $input['ok_page_id'] ?? 0 ),
-			'ko_page_id'             => absint( $input['ko_page_id'] ?? 0 ),
-			'email_confirmation'     => isset( $input['email_confirmation'] ) ? '1' : '0',
-			'email_sender_name'      => sanitize_text_field( $input['email_sender_name'] ?? '' ),
-			'email_success_subject'  => sanitize_text_field( $input['email_success_subject'] ?? '' ),
-			'email_success_body'     => wp_kses_post( $input['email_success_body'] ?? '' ),
-			'email_failed_subject'   => sanitize_text_field( $input['email_failed_subject'] ?? '' ),
-			'email_failed_body'      => wp_kses_post( $input['email_failed_body'] ?? '' ),
-			'recurring_enabled'      => isset( $input['recurring_enabled'] ) ? '1' : '0',
-			'recurring_period'       => in_array( $input['recurring_period'] ?? '', array( 'monthly', 'quarterly', 'yearly' ) ) ? $input['recurring_period'] : 'monthly',
-			'recurring_max_charges'  => absint( $input['recurring_max_charges'] ?? 0 ),
-			'recurring_grace_period' => absint( $input['recurring_grace_period'] ?? 7 ),
+			'merchant_code'            => sanitize_text_field( $input['merchant_code'] ?? '' ),
+			'bizum_merchant_code'      => sanitize_text_field( $input['bizum_merchant_code'] ?? '' ),
+			'terminal'                 => sanitize_text_field( $input['terminal'] ?? '001' ),
+			'secret_key'               => $secret_to_save,
+			'environment'              => in_array( $input['environment'] ?? '', array( 'test', 'production' ) ) ? $input['environment'] : 'test',
+			'iban'                     => sanitize_text_field( $input['iban'] ?? '' ),
+			'beneficiary'              => sanitize_text_field( $input['beneficiary'] ?? '' ),
+			'instructions'             => sanitize_textarea_field( $input['instructions'] ?? '' ),
+			'payment_page_id'          => absint( $input['payment_page_id'] ?? 0 ),
+			'ok_page_id'               => absint( $input['ok_page_id'] ?? 0 ),
+			'ko_page_id'               => absint( $input['ko_page_id'] ?? 0 ),
+			'email_confirmation'       => isset( $input['email_confirmation'] ) ? '1' : '0',
+			'email_sender_name'        => sanitize_text_field( $input['email_sender_name'] ?? '' ),
+			'email_success_subject'    => sanitize_text_field( $input['email_success_subject'] ?? '' ),
+			'email_success_body'       => wp_kses_post( $input['email_success_body'] ?? '' ),
+			'email_failed_subject'     => sanitize_text_field( $input['email_failed_subject'] ?? '' ),
+			'email_failed_body'        => wp_kses_post( $input['email_failed_body'] ?? '' ),
+			'recurring_enabled'        => isset( $input['recurring_enabled'] ) ? '1' : '0',
+			'recurring_period'         => in_array( $input['recurring_period'] ?? '', array( 'monthly', 'quarterly', 'yearly' ) ) ? $input['recurring_period'] : 'monthly',
+			'recurring_max_charges'    => absint( $input['recurring_max_charges'] ?? 0 ),
+			'recurring_grace_period'   => absint( $input['recurring_grace_period'] ?? 7 ),
+			'link_expiry_days'         => max( 1, absint( $input['link_expiry_days'] ?? 7 ) ),
+			'link_expiry_notice_hours' => max( 1, absint( $input['link_expiry_notice_hours'] ?? 24 ) ),
+			'org_name'                 => sanitize_text_field( $input['org_name'] ?? '' ),
+			'org_cif'                  => sanitize_text_field( $input['org_cif'] ?? '' ),
+			'org_address'              => sanitize_text_field( $input['org_address'] ?? '' ),
 		);
 	}
 

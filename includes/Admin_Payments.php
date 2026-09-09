@@ -380,6 +380,13 @@ class Admin_Payments extends \WP_List_Table {
 			$meta = CPT_Pago::get_meta( $id ); // Refresh meta.
 		}
 
+		// Handle donation toggle (D24).
+		if ( isset( $_POST['convoca_gateway_toggle_donacion'] ) && check_admin_referer( 'convoca_gateway_donacion_' . $id ) ) {
+			$this->handle_toggle_donacion( $id );
+			echo '<div class="updated"><p>' . esc_html__( 'Marcador de donación actualizado.', 'convoca-gateway' ) . '</p></div>';
+			$meta = CPT_Pago::get_meta( $id ); // Refresh meta.
+		}
+
 		?>
 		<div class="wrap">
 			<?php /* translators: %s: order ID */ ?>
@@ -427,8 +434,24 @@ class Admin_Payments extends \WP_List_Table {
 									</tr>
 									<tr>
 										<th><?php esc_html_e( 'Respuesta Redsys', 'convoca-gateway' ); ?></th>
-										<td><?php echo esc_html( $meta['redsys_response'] ?: '—' ); ?></td>
+										<td>
+											<code><?php echo esc_html( $meta['redsys_response'] ?: '—' ); ?></code>
+											<?php if ( ! empty( $meta['redsys_response'] ) ) : ?>
+												<br><span class="description"><?php echo esc_html( Redsys_Client::get_response_message( (string) $meta['redsys_response'] ) ); ?></span>
+											<?php endif; ?>
+										</td>
 									</tr>
+									<?php if ( ! empty( $meta['receipt_number'] ) ) : ?>
+									<tr>
+										<th><?php esc_html_e( 'Número de recibo', 'convoca-gateway' ); ?></th>
+										<td>
+											<code><?php echo esc_html( (string) $meta['receipt_number'] ); ?></code>
+											<?php if ( ! empty( $meta['receipt_pdf'] ) ) : ?>
+												<br><a href="<?php echo esc_url( (string) $meta['receipt_pdf'] ); ?>" class="button" target="_blank"><?php esc_html_e( 'Ver recibo', 'convoca-gateway' ); ?></a>
+											<?php endif; ?>
+										</td>
+									</tr>
+									<?php endif; ?>
 									<?php if ( ! empty( $meta['proof_file'] ) ) : ?>
 									<tr>
 										<th><?php esc_html_e( 'Justificante de pago', 'convoca-gateway' ); ?></th>
@@ -484,6 +507,16 @@ class Admin_Payments extends \WP_List_Table {
 										<?php esc_html_e( 'Reenviar email de confirmación', 'convoca-gateway' ); ?>
 									</button>
 									<p class="description"><?php esc_html_e( 'Solo disponible para pagos completados.', 'convoca-gateway' ); ?></p>
+								</form>
+								<hr>
+								<form method="post">
+									<?php wp_nonce_field( 'convoca_gateway_donacion_' . $id ); ?>
+									<label>
+										<input type="checkbox" name="convoca_gateway_es_donacion" value="1" <?php checked( '1' === (string) ( $meta['es_donacion'] ?? '' ) ); ?>>
+										<?php esc_html_e( 'Este pago es una donación', 'convoca-gateway' ); ?>
+									</label>
+									<button type="submit" name="convoca_gateway_toggle_donacion" class="button button-small"><?php esc_html_e( 'Guardar', 'convoca-gateway' ); ?></button>
+									<p class="description"><?php esc_html_e( 'Si se marca, el recibo se sustituye por un justificante de donación (Ley 49/2002) con numeración D-AÑO-NNN.', 'convoca-gateway' ); ?></p>
 								</form>
 								<?php if ( $meta['status'] !== 'paid' ) : ?>
 									<hr>
@@ -591,5 +624,20 @@ class Admin_Payments extends \WP_List_Table {
 
 		$meta = CPT_Pago::get_meta( $id );
 		\Convoca\Core\Utils::do_action( 'convoca_gateway_payment_completed', 'convoca_payment_completed', $id, $meta['origin'], (int) $meta['origin_id'], $meta );
+	}
+
+	/**
+	 * Toggle the donation flag on a payment (D24).
+	 */
+	private function handle_toggle_donacion( int $id ): void {
+		$is_donation = isset( $_POST['convoca_gateway_es_donacion'] );
+		update_post_meta( $id, '_convoca_es_donacion', $is_donation ? '1' : '0' );
+
+		\Convoca\Core\Logger::log(
+			$is_donation ? __( 'Pago marcado como donación.', 'convoca-gateway' ) : __( 'Pago desmarcado como donación.', 'convoca-gateway' ),
+			'info',
+			'Gateway/Donation',
+			$id
+		);
 	}
 }

@@ -53,6 +53,12 @@ class CPT_Pago {
 		// Recurring payment fields.
 		'redsys_merchant_id', // Tokenized card identifier for recurring payments.
 		'proof_file',         // ID or URL of uploaded payment receipt.
+		// Receipt / donation fields (D23/D24).
+		'es_donacion',        // '1' when the payment is a donation.
+		'receipt_number',     // Annual number (AÑO-NNN or D-AÑO-NNN).
+		'receipt_year',       // Year the receipt number was assigned.
+		'receipt_pdf',        // URL of the receipt/justification print page.
+		'receipt_key',        // Unguessable access key for the receipt page.
 	);
 
 	/** Status labels. */
@@ -311,9 +317,10 @@ class CPT_Pago {
 		if ( $expires_at === 'never' ) {
 			$expires_ts = 0;
 		} else {
+			// Default validity is configurable (convoca_gateway_link_expiry_days, 7 by default).
 			$expires_ts = ! empty( $expires_at )
-				? strtotime( $data['expires_at'] . ' 23:59:59' )
-				: strtotime( '+7 days 23:59:59' );
+				? strtotime( $expires_at . ' 23:59:59' )
+				: Link_Expiry::compute_expiry_timestamp( Link_Expiry::default_expiry_days() );
 		}
 
 		// Use a persistent salt for payment links to prevent them from becoming invalid if WP_SALT changes.
