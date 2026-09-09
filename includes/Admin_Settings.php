@@ -107,6 +107,17 @@ class Admin_Settings {
 				'type'  => 'text',
 				'desc'  => 'Normalmente 001',
 			),
+			'default_method'      => array(
+				'label'   => __( 'Método de pago por defecto', 'convoca-gateway' ),
+				'type'    => 'select',
+				'options' => array(
+					'any'          => __( 'Cualquiera (el usuario elige)', 'convoca-gateway' ),
+					'tarjeta'      => __( 'Tarjeta', 'convoca-gateway' ),
+					'bizum'        => __( 'Bizum', 'convoca-gateway' ),
+					'transferencia' => __( 'Transferencia', 'convoca-gateway' ),
+				),
+				'desc'    => __( 'Método preseleccionado cuando el pago no especifica uno (inscripciones, altas, enlaces «Cualquiera»). El pagador siempre puede cambiarlo en la página de pago.', 'convoca-gateway' ),
+			),
 			'secret_key'          => array(
 				'label' => 'Clave secreta (SHA-256)',
 				'type'  => 'password',
@@ -426,6 +437,12 @@ class Admin_Settings {
 			$value = '';
 		}
 
+		if ( $key === 'default_method' && '' === $value ) {
+			// Show the effective default so the visible option matches what
+			// Redsys_Client::default_method() would return when unset.
+			$value = \Convoca\Gateway\Redsys_Client::default_method();
+		}
+
 		if ( $type === 'select' ) {
 			printf( '<select name="%s[%s]">', esc_attr( self::OPTION ), esc_attr( $key ) );
 			foreach ( $field['options'] as $v => $l ) {
@@ -535,6 +552,7 @@ class Admin_Settings {
 		return array(
 			'merchant_code'            => sanitize_text_field( $input['merchant_code'] ?? '' ),
 			'terminal'                 => sanitize_text_field( $input['terminal'] ?? '001' ),
+			'default_method'           => in_array( $input['default_method'] ?? '', array( 'any', 'tarjeta', 'bizum', 'transferencia' ), true ) ? $input['default_method'] : 'tarjeta',
 			'secret_key'               => $secret_to_save,
 			'environment'              => in_array( $input['environment'] ?? '', array( 'test', 'production' ) ) ? $input['environment'] : 'test',
 			'iban'                     => sanitize_text_field( $input['iban'] ?? '' ),

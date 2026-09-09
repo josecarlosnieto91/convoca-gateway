@@ -132,12 +132,13 @@ class Admin_Generador {
 								<label for="convoca_gateway_method"><?php esc_html_e( 'Método de pago', 'convoca-gateway' ); ?></label>
 							</th>
 							<td>
+								<?php $default_method = \Convoca\Gateway\Redsys_Client::default_method(); ?>
 								<select name="convoca_gateway_method" id="convoca_gateway_method">
-									<option value="any"><?php esc_html_e( 'Cualquiera (usuario elige)', 'convoca-gateway' ); ?></option>
-									<option value="tarjeta"><?php esc_html_e( 'Tarjeta', 'convoca-gateway' ); ?></option>
-									<option value="bizum"><?php esc_html_e( 'Bizum', 'convoca-gateway' ); ?></option>
+									<option value="any" <?php selected( $default_method, 'any' ); ?>><?php esc_html_e( 'Cualquiera (usuario elige)', 'convoca-gateway' ); ?></option>
+									<option value="tarjeta" <?php selected( $default_method, 'tarjeta' ); ?>><?php esc_html_e( 'Tarjeta', 'convoca-gateway' ); ?></option>
+									<option value="bizum" <?php selected( $default_method, 'bizum' ); ?>><?php esc_html_e( 'Bizum', 'convoca-gateway' ); ?></option>
 									<?php if ( ! empty( $offline_methods ) ) : ?>
-										<option value="transferencia"><?php esc_html_e( 'Transferencia', 'convoca-gateway' ); ?></option>
+										<option value="transferencia" <?php selected( $default_method, 'transferencia' ); ?>><?php esc_html_e( 'Transferencia', 'convoca-gateway' ); ?></option>
 									<?php endif; ?>
 								</select>
 							</td>

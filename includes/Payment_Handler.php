@@ -420,7 +420,16 @@ class Payment_Handler {
 		$transfer_enabled = ! empty( $settings['iban'] );
 		$bizum_enabled    = ! empty( Redsys_Client::merchant_code() );
 
-		$suggested = ( $suggested_method === 'any' ) ? '' : $suggested_method;
+		// Suggested badge: honor the payment's own method only if that method
+		// is actually available (e.g. don't suggest transferencia without IBAN).
+		$suggested = '';
+		if ( $suggested_method === 'tarjeta' ) {
+			$suggested = 'tarjeta';
+		} elseif ( $suggested_method === 'bizum' && $bizum_enabled ) {
+			$suggested = 'bizum';
+		} elseif ( $suggested_method === 'transferencia' && $transfer_enabled ) {
+			$suggested = 'transferencia';
+		}
 
 		ob_start();
 		?>

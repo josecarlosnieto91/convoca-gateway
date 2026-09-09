@@ -159,6 +159,16 @@ class Redsys_Client {
 		return $s['terminal'] ?? '001';
 	}
 
+	/**
+	 * Default payment method when a payment does not specify one.
+	 * Falls back to 'tarjeta' if the configured value is not usable.
+	 */
+	public static function default_method(): string {
+		$s = self::settings();
+		$m = $s['default_method'] ?? 'tarjeta';
+		return in_array( $m, array( 'any', 'tarjeta', 'bizum', 'transferencia' ), true ) ? $m : 'tarjeta';
+	}
+
 	/* ── Order ID generation ─────────────────── */
 
 	/**
