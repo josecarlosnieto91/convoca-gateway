@@ -161,12 +161,15 @@ class Redsys_Client {
 
 	/**
 	 * Default payment method when a payment does not specify one.
-	 * Falls back to 'tarjeta' if the configured value is not usable.
+	 *
+	 * No method is hardcoded: if the setting is missing or holds a value that
+	 * is not one of the known methods, fall back to 'any' (let the payer
+	 * choose) — never assume a concrete method in code.
 	 */
 	public static function default_method(): string {
 		$s = self::settings();
-		$m = $s['default_method'] ?? 'tarjeta';
-		return in_array( $m, array( 'any', 'tarjeta', 'bizum', 'transferencia' ), true ) ? $m : 'tarjeta';
+		$m = $s['default_method'] ?? 'any';
+		return in_array( $m, array( 'any', 'tarjeta', 'bizum', 'transferencia' ), true ) ? $m : 'any';
 	}
 
 	/* ── Order ID generation ─────────────────── */

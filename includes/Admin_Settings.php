@@ -552,7 +552,7 @@ class Admin_Settings {
 		return array(
 			'merchant_code'            => sanitize_text_field( $input['merchant_code'] ?? '' ),
 			'terminal'                 => sanitize_text_field( $input['terminal'] ?? '001' ),
-			'default_method'           => in_array( $input['default_method'] ?? '', array( 'any', 'tarjeta', 'bizum', 'transferencia' ), true ) ? $input['default_method'] : 'tarjeta',
+			'default_method'           => in_array( $input['default_method'] ?? '', array( 'any', 'tarjeta', 'bizum', 'transferencia' ), true ) ? $input['default_method'] : 'any',
 			'secret_key'               => $secret_to_save,
 			'environment'              => in_array( $input['environment'] ?? '', array( 'test', 'production' ) ) ? $input['environment'] : 'test',
 			'iban'                     => sanitize_text_field( $input['iban'] ?? '' ),
