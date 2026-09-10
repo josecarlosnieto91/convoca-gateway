@@ -221,6 +221,36 @@ namespace Convoca\Gateway\Tests {
 			$this->assertSame( array(), $GLOBALS['__gw_inserted'] );
 		}
 
+		/**
+		 * El despacho de la página: un enlace va al camino que emite; un registro que
+		 * no es plantilla sigue el de siempre. Sin esto, la prueba llamaría a
+		 * handle_link_use directamente y se saltaría lo que hay que proteger.
+		 */
+		public function test_a_link_page_goes_through_the_emitting_path(): void {
+			$id    = $this->enlace();
+			$_POST = array(
+				'convoca_link_nonce'     => 'nonce',
+				'convoca_gateway_method' => 'transferencia',
+			);
+
+			$this->privado( 'render_link_payment_page', array( $id, 'token-de-prueba', 0 ) );
+
+			$this->assertCount( 1, $GLOBALS['__gw_inserted'], 'Un enlace emite su cobro, no se convierte en él.' );
+			$this->assertSame( 'pending', $GLOBALS['__gw_meta'][ $id ]['_convoca_status'], 'Y no se marca como pagado.' );
+		}
+
+		public function test_a_record_that_is_not_a_link_keeps_the_old_path(): void {
+			$id = $this->enlace( 502 );
+			$GLOBALS['__gw_meta'][ $id ]['_convoca_origin'] = 'donativo';
+			$_GET  = array( 'convoca_gateway_method' => 'tarjeta' );
+			$_POST = array();
+
+			$this->privado( 'render_link_payment_page', array( $id, 'token-de-prueba', 0 ) );
+
+			$this->assertSame( array(), $GLOBALS['__gw_inserted'], 'Lo que no es plantilla no emite.' );
+			$this->assertSame( 'tarjeta', $GLOBALS['__gw_meta'][ $id ]['_convoca_method'], 'Sigue el camino de siempre.' );
+		}
+
 		/** Un enlace caducado o borrado deja de emitir: es la condición de JC. */
 		public function test_an_expired_link_stops_emitting(): void {
 			$id = $this->enlace();
