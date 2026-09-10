@@ -138,6 +138,30 @@ namespace Convoca\Gateway\Tests {
 			$this->assertSame( $creados, count( $GLOBALS['__gw_inserted'] ), 'Y no crea registros nuevos.' );
 		}
 
+		/**
+		 * El enlace que va en el correo lleva el token del pago (y su caducidad), no la
+		 * firma antigua: así el reintento sigue valiendo y caduca cuando toca.
+		 */
+		public function test_the_email_carries_the_signed_payment_url(): void {
+			$res  = $this->crear( array( 'payer_email' => 'socio@example.test' ) );
+			$pago = (int) $res['pago_id'];
+			update_post_meta( $pago, '_convoca_receipt_always', '1' ); // fuerza el envío: aquí se prueba la URL
+
+			( new \Convoca\Gateway\Email_Notifications() )->send_failed_email( $pago, '0180' );
+
+			$cuerpo = (string) ( $GLOBALS['__gw_emails'][0]['message'] ?? '' );
+			$this->assertStringContainsString( 'convoca_gateway_key=', $cuerpo, 'El correo debe llevar la URL con token.' );
+			$this->assertStringNotContainsString( 'convoca_gateway_t=', $cuerpo, 'Y no la firma antigua de 24 horas.' );
+
+			// Un pago sin token (los antiguos) sigue usando la firma de siempre.
+			update_post_meta( 999, '_convoca_payer_email', 'viejo@example.test' );
+			update_post_meta( 999, '_convoca_receipt_always', '1' );
+			$GLOBALS['__gw_emails'] = array();
+			( new \Convoca\Gateway\Email_Notifications() )->send_failed_email( 999, '0180' );
+
+			$this->assertStringContainsString( 'convoca_gateway_t=', (string) ( $GLOBALS['__gw_emails'][0]['message'] ?? '' ) );
+		}
+
 		/** El recibo automático de cuotas: PRO y activado por defecto. */
 		private function reciboDeCuota( int $pago, string $origen ): bool {
 			update_post_meta( $pago, '_convoca_origin', $origen );
