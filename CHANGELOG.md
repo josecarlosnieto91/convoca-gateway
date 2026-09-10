@@ -1,5 +1,26 @@
 # Changelog — convoca-gateway
 
+## v2.6.6 (2026-09-05)
+
+### 🐛 Fixes
+- Log de firma `Ds_Signature` inválida en notificación Redsys
+
+### 🧪 Tests
+- Tests `verify_notification` (firma válida/inválida, versión fija, base64url, payload vacío)
+
+### 📦 Infrastructure
+- CI bloqueante + PHPStan nivel 5 autosuficiente con stub core
+
+## v2.6.5 (2026-09-05)
+
+### 🔐 Security
+- Firma por configuración + validación financiera + rate limit
+
+## v2.6.4 (2026-08-08)
+
+### 🐛 Fixes
+- Usar capacidades centrales del core (`convoca_view_payments`) en el listado de pagos
+
 ## v2.6.3 (2026-08-07)
 
 ### 🐛 Fixes

@@ -6,13 +6,13 @@ Only the latest version of each Convoca plugin receives security updates.
 
 | Plugin               | Latest | Security Updates |
 |----------------------|--------|:----------------:|
-| convoca-core         | 2.1.x  | ✅ |
-| convoca-enroll       | 2.6.x  | ✅ |
-| convoca-members      | 2.6.x  | ✅ |
+| convoca-core         | 2.2.x  | ✅ |
+| convoca-enroll       | 2.7.x  | ✅ |
+| convoca-members      | 2.8.x  | ✅ |
 | convoca-gateway      | 2.6.x  | ✅ |
 | convoca-shifts       | 2.5.x  | ✅ |
-| convoca-publisher    | 1.3.x  | ✅ |
-| convoca-theme        | 2.6.x  | ✅ |
+| convoca-publisher    | 1.4.x  | ✅ |
+| convoca-theme        | 2.7.x  | ✅ |
 
 Older versions are not maintained and may contain unpatched vulnerabilities.
 
