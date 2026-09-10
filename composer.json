@@ -27,7 +27,8 @@
             "@phpcs",
             "@phpstan",
             "@phpunit"
-        ]
+        ],
+        "verify": "php tests/verify-admin-record-actions.php"
     },
     "autoload": {
         "psr-4": {
