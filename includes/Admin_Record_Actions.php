@@ -65,9 +65,14 @@ class Admin_Record_Actions {
 
 	/**
 	 * ¿Puede el usuario actual borrar o editar registros de pago?
+	 *
+	 * Vale la capacidad del plugin **o** ser administrador del sitio: la capacidad
+	 * la concede `convoca-core` al activarse, y en una instalación donde no se haya
+	 * concedido (o con roles propios) el administrador se quedaría sin poder tocar
+	 * sus propios registros. Para borrar dinero, el suelo es el administrador.
 	 */
 	public static function user_can(): bool {
-		return current_user_can( self::CAP );
+		return current_user_can( self::CAP ) || current_user_can( 'manage_options' );
 	}
 
 	/**
