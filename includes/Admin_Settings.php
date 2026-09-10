@@ -201,6 +201,25 @@ class Admin_Settings {
 			),
 		);
 
+		// Recibo automático de cuotas e inscripciones (PRO, activado por defecto).
+		if ( \Convoca\Core\License_Manager::has_pro( 'gateway' ) ) {
+			$email_fields['auto_receipt_fees'] = array(
+				'label' => __( 'Recibo automático de cuotas e inscripciones', 'convoca-gateway' ),
+				'type'  => 'checkbox',
+				'desc'  => __( 'Al cobrarse una cuota o una inscripción se envía el recibo a quien paga, al correo que dejó al apuntarse. Activado por defecto.', 'convoca-gateway' ),
+			);
+		} else {
+			add_settings_field(
+				'convoca_gateway_auto_receipt_fees_locked',
+				__( 'Recibo automático de cuotas e inscripciones', 'convoca-gateway' ),
+				function () {
+					print '<div class="convoca-alert convoca-alert--info" style="display:block;margin:0;padding:12px 16px;background:#f0f9ff;border:1px solid #bae6fd;border-radius:8px;"><p style="margin:0;">🔒 <strong>' . esc_html__( 'Recibo automático de cuotas e inscripciones', 'convoca-gateway' ) . '</strong> ' . esc_html__( 'es una funcionalidad PRO.', 'convoca-gateway' ) . ' <a href="' . esc_url( admin_url( 'admin.php?page=convoca-license' ) ) . '" style="font-weight:600;">' . esc_html__( 'Activa tu licencia', 'convoca-gateway' ) . '</a> ' . esc_html__( 'para enviar el recibo de cada cuota y cada inscripción.', 'convoca-gateway' ) . '</p></div>';
+				},
+				'conv-gateway-settings',
+				'convoca_gateway_emails'
+			);
+		}
+
 		foreach ( $email_fields as $key => $field ) {
 			add_settings_field(
 				'convoca_gateway_' . $key,
@@ -562,6 +581,11 @@ class Admin_Settings {
 			'ok_page_id'               => absint( $input['ok_page_id'] ?? 0 ),
 			'ko_page_id'               => absint( $input['ko_page_id'] ?? 0 ),
 			'email_confirmation'       => isset( $input['email_confirmation'] ) ? '1' : '0',
+			// Sin licencia PRO el campo no se pinta: se conserva lo que hubiera en vez de
+			// apagarlo por un guardado que no lo incluía.
+			'auto_receipt_fees'        => \Convoca\Core\License_Manager::has_pro( 'gateway' )
+				? ( isset( $input['auto_receipt_fees'] ) ? '1' : '0' )
+				: (string) ( $old_settings['auto_receipt_fees'] ?? '1' ),
 			'email_sender_name'        => sanitize_text_field( $input['email_sender_name'] ?? '' ),
 			'email_success_subject'    => sanitize_text_field( $input['email_success_subject'] ?? '' ),
 			'email_success_body'       => wp_kses_post( $input['email_success_body'] ?? '' ),

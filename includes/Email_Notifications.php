@@ -143,6 +143,29 @@ class Email_Notifications {
 	/**
 	 * Generic sender logic.
 	 */
+	/**
+	 * ¿Toca enviar el recibo de una cuota o una inscripción?
+	 *
+	 * Funcionalidad PRO: sin licencia no se envía (queda el aviso general de
+	 * confirmaciones). Con licencia, manda el ajuste, activado por defecto.
+	 *
+	 * @param int $payment_id ID del pago.
+	 */
+	private static function envia_recibo_de_cuota( int $payment_id ): bool {
+		$origin = (string) get_post_meta( $payment_id, '_convoca_origin', true );
+		if ( ! in_array( $origin, array( 'members', 'enroll' ), true ) ) {
+			return false;
+		}
+
+		if ( ! class_exists( 'Convoca\Core\License_Manager' ) || ! \Convoca\Core\License_Manager::has_pro( 'gateway' ) ) {
+			return false;
+		}
+
+		$settings = get_option( 'convoca_gateway_settings', array() );
+
+		return '1' === (string) ( $settings['auto_receipt_fees'] ?? '1' );
+	}
+
 	private function maybe_send( int $payment_id, string $type, array $extra = array() ): void {
 		$settings = get_option( 'convoca_gateway_settings', array() );
 		$enabled  = ( $settings['email_confirmation'] ?? '0' ) === '1';
@@ -151,7 +174,10 @@ class Email_Notifications {
 		// del aviso general de confirmaciones, que puede estar apagado.
 		$forced = '1' === (string) get_post_meta( $payment_id, '_convoca_receipt_always', true );
 
-		if ( ! $enabled && ! $forced ) {
+		// Cuotas e inscripciones: el recibo automático tiene su propio interruptor
+		// (activado por defecto) y es una funcionalidad PRO. Si está apagado o no hay
+		// licencia, se sigue rigiendo por el aviso general de confirmaciones.
+		if ( ! $enabled && ! $forced && ! self::envia_recibo_de_cuota( $payment_id ) ) {
 			return;
 		}
 
@@ -192,8 +218,12 @@ class Email_Notifications {
 		$enroll_url   = get_post_meta( $payment_id, '_convoca_enroll_url', true );
 		$response     = (string) ( $extra['response_code'] ?? get_post_meta( $payment_id, '_convoca_redsys_response', true ) );
 
-		// Build payment link.
-		$payment_url = Payment_Handler::get_payment_link( $payment_id );
+		// Enlace de pago: con token si el registro lo tiene (así el reintento sigue
+		// valiendo y respeta su caducidad), y si no, el enlace firmado de siempre.
+		$link_token  = (string) get_post_meta( $payment_id, '_convoca_link_key', true );
+		$payment_url = $link_token
+			? Payment_Handler::get_payment_link( $payment_id, $link_token, (int) get_post_meta( $payment_id, '_convoca_expires_at', true ) )
+			: Payment_Handler::get_payment_link( $payment_id );
 
 		$motivo = __( 'Tu banco rechazó la operación.', 'convoca-gateway' );
 		if ( '' !== $response ) {

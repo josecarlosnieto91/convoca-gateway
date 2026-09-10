@@ -180,7 +180,44 @@ class CPT_Pago {
 			update_post_meta( $post_id, '_convoca_' . $key, $val );
 		}
 
+		// Correo de contacto de quien paga. Lo entrega el plugin que crea el pago
+		// (socio o inscripción ya lo tienen): es lo que permite enviarle el recibo y
+		// avisarle de que su enlace caduca.
+		$payer_email = sanitize_email( $data['payer_email'] ?? ( $data['email'] ?? '' ) );
+		if ( '' !== $payer_email ) {
+			update_post_meta( $post_id, '_convoca_payer_email', $payer_email );
+		}
+		if ( ! empty( $data['receipt_always'] ) ) {
+			update_post_meta( $post_id, '_convoca_receipt_always', '1' );
+		}
+
+		$recipient = sanitize_email( $data['recipient_email'] ?? '' );
+		if ( '' !== $recipient ) {
+			update_post_meta( $post_id, '_convoca_recipient_email', $recipient );
+		}
+
 		return $post_id;
+	}
+
+	/**
+	 * Token de una URL de pago, ligado al registro y a su caducidad.
+	 *
+	 * Va firmado con una sal persistente (no con WP_SALT) para que la URL no deje de
+	 * valer si cambian las claves del sitio. Lo usan los enlaces generados a mano y
+	 * los pagos que crean los demás plugins.
+	 *
+	 * @param int $post_id    ID del registro de pago.
+	 * @param int $expires_ts Caducidad en marca de tiempo (0 = sin caducidad).
+	 * @return string Token.
+	 */
+	public static function generate_link_token( int $post_id, int $expires_ts ): string {
+		$salt = get_option( 'convoca_gateway_persistent_salt' );
+		if ( ! $salt ) {
+			$salt = wp_generate_password( 64, true, true );
+			update_option( 'convoca_gateway_persistent_salt', $salt, false );
+		}
+
+		return hash_hmac( 'sha256', $post_id . '|' . $expires_ts, (string) $salt );
 	}
 
 	/**
@@ -335,14 +372,7 @@ class CPT_Pago {
 				: Link_Expiry::compute_expiry_timestamp( Link_Expiry::default_expiry_days() );
 		}
 
-		// Use a persistent salt for payment links to prevent them from becoming invalid if WP_SALT changes.
-		$persistent_salt = get_option( 'convoca_gateway_persistent_salt' );
-		if ( ! $persistent_salt ) {
-			$persistent_salt = wp_generate_password( 64, true, true );
-			update_option( 'convoca_gateway_persistent_salt', $persistent_salt );
-		}
-
-		$token = hash_hmac( 'sha256', $post_id . '|' . $expires_ts, $persistent_salt );
+		$token = self::generate_link_token( $post_id, (int) $expires_ts );
 
 		update_post_meta( $post_id, '_convoca_link_key', $token );
 		update_post_meta( $post_id, '_convoca_expires_at', $expires_ts );

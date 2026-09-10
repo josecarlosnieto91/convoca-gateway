@@ -249,7 +249,25 @@ class Payment_Handler {
 			update_post_meta( $pago_id, '_convoca_tokenize', '1' );
 		}
 
-		$payment_url = self::get_payment_link( $pago_id );
+		// El correo de contacto sirve para el recibo y para el aviso de caducidad: si
+		// solo viene uno, se usa para las dos cosas.
+		if ( '' === (string) get_post_meta( $pago_id, '_convoca_recipient_email', true )
+			&& '' !== (string) get_post_meta( $pago_id, '_convoca_payer_email', true ) ) {
+			update_post_meta( $pago_id, '_convoca_recipient_email', (string) get_post_meta( $pago_id, '_convoca_payer_email', true ) );
+		}
+
+		// URL con token y caducidad configurable (ajuste `link_expiry_days`, 7 días por
+		// defecto) en lugar del esquema antiguo de 24 horas. Sigue caducando, y deja de
+		// servir en cuanto el pago se completa.
+		$expires_ts = isset( $data['expires_ts'] )
+			? (int) $data['expires_ts']
+			: Link_Expiry::compute_expiry_timestamp( Link_Expiry::default_expiry_days() );
+
+		$token = CPT_Pago::generate_link_token( $pago_id, $expires_ts );
+		update_post_meta( $pago_id, '_convoca_link_key', $token );
+		update_post_meta( $pago_id, '_convoca_expires_at', $expires_ts );
+
+		$payment_url = self::get_payment_link( $pago_id, $token, $expires_ts );
 
 		return array(
 			'pago_id'     => $pago_id,
@@ -431,7 +449,9 @@ class Payment_Handler {
 			return $this->render_transfer_instructions( $pago_id, $meta );
 		}
 
-		return $this->render_link_form( $pago_id, $meta, $product_desc, $amount_cents, $suggested_method, $recipient_email, $params );
+		// No es plantilla (un pago de socio, de inscripción o una aportación): los
+		// métodos son enlaces que llevan el método en la URL, como siempre.
+		return $this->render_link_form( $pago_id, $meta, $product_desc, $amount_cents, $suggested_method, $recipient_email, $params, false );
 	}
 
 	/**
