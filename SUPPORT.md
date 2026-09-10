@@ -17,7 +17,7 @@
 
 PRO license holders receive priority support:
 
-- **Email**: support@convoca.org
+- **Email**: hola@mg.getconvoca.app
 - **Response time**: within 24 hours (business days)
 - **Scope**: installation, configuration, troubleshooting, and bug fixes
 - **Exclusions**: custom development, third-party integrations, server administration
@@ -40,11 +40,11 @@ PRO license holders receive priority support:
 |------|-------|---------|
 | Bug report | GitHub Issues | Steps, expected vs actual behavior, environment |
 | Feature request | GitHub Discussions | Use case, proposed solution |
-| Security issue | security@convoca.org | See SECURITY.md — do NOT open public issues |
+| Security issue | hola@mg.getconvoca.app | See SECURITY.md — do NOT open public issues |
 
 ### Professional Services
 
 For custom development, integration services, or training:
 
-- **Email**: hello@convoca.org
+- **Email**: hola@mg.getconvoca.app
 - **Website**: [getconvoca.app](https://getconvoca.app)

@@ -24,7 +24,7 @@ We take security seriously. If you discover a security vulnerability within any 
 
 ### How to Report
 
-Send an encrypted email to **security@convoca.org** with:
+Send an encrypted email to **hola@mg.getconvoca.app** with:
 
 1. A clear description of the vulnerability
 2. Steps to reproduce (proof-of-concept code is helpful but not required)

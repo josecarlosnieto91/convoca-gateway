@@ -59,7 +59,7 @@ públicos.
 
 Los casos de comportamiento abusivo, acosador o inaceptable de cualquier otro
 modo pueden denunciarse a las personas responsables de la comunidad encargadas
-del cumplimiento en **coordinacion@getconvoca.app**. Todas las quejas se
+del cumplimiento en **hola@mg.getconvoca.app**. Todas las quejas se
 revisarán e investigarán de forma rápida y justa.
 
 Todas las personas responsables de la comunidad están obligadas a respetar la
