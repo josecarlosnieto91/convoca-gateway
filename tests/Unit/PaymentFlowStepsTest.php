@@ -66,8 +66,15 @@ namespace {
 		}
 	}
 	if ( ! function_exists( 'get_post' ) ) {
+		/**
+		 * Devuelve un post solo si existe en los almacenes del harness: un pago
+		 * inexistente tiene que seguir siendo null para el resto de pruebas.
+		 */
 		function get_post( $post = null ) {
-			return new WP_Post( (int) $post );
+			$id = (int) $post;
+			$existe = isset( $GLOBALS['__gw_meta'][ $id ] ) || isset( $GLOBALS['__gw_inserted'][ $id ] );
+
+			return $existe ? new WP_Post( $id ) : null;
 		}
 	}
 	if ( ! function_exists( 'get_permalink' ) ) {
