@@ -52,7 +52,7 @@ namespace Convoca\Gateway\Tests {
 
 		protected function setUp(): void {
 			if ( ! self::$cargado ) {
-				foreach ( array( 'CPT_Pago', 'Redsys_Client', 'Link_Expiry', 'Admin_Payments' ) as $class ) {
+				foreach ( array( 'CPT_Pago', 'Redsys_Client', 'Link_Expiry', 'Admin_Payments', 'Admin_Links' ) as $class ) {
 					$path = dirname( __DIR__, 2 ) . '/includes/' . $class . '.php';
 					if ( file_exists( $path ) ) {
 						require_once $path;
@@ -94,6 +94,14 @@ namespace Convoca\Gateway\Tests {
 
 			$this->assertSame( 'Importe libre', $tabla->column_amount( $this->registro( 20, array( 'amount_cents' => 0, 'open_amount' => '1' ) ) ) );
 			$this->assertSame( '25,00 €', $tabla->column_amount( $this->registro( 21, array( 'amount_cents' => 2500 ) ) ) );
+		}
+
+		/** Un enlace no tiene «estado de pago»: es una plantilla, no un cobro pendiente. */
+		public function test_the_links_list_has_no_payment_status_column(): void {
+			$columnas = ( new \Convoca\Gateway\Admin_Links() )->get_columns();
+
+			$this->assertArrayNotHasKey( 'status', $columnas, 'El estado del pago no aplica a un enlace.' );
+			$this->assertArrayHasKey( 'active', $columnas, 'Lo que sí interesa: si sigue activo y cuántos cobros ha emitido.' );
 		}
 
 		/** La consulta tiene que dejar fuera los enlaces, y sin exigir el metadato. */

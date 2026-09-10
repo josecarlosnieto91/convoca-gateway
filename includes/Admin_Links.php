@@ -67,7 +67,8 @@ class Admin_Links extends \WP_List_Table {
 			'method'   => __( 'Método', 'convoca-gateway' ),
 			'origin'   => __( 'Origen', 'convoca-gateway' ),
 			'email'    => __( 'Email Destinatario', 'convoca-gateway' ),
-			'status'   => __( 'Estado Pago', 'convoca-gateway' ),
+			// Sin «Estado Pago»: un enlace es una plantilla, no un cobro pendiente. Su
+			// estado («Activo», «Caducado» o cuántos cobros ha emitido) es lo de al lado.
 			'active'   => __( 'Activo', 'convoca-gateway' ),
 			'expires'  => __( 'Caducidad', 'convoca-gateway' ),
 			'created'  => __( 'Generado', 'convoca-gateway' ),
@@ -222,16 +223,6 @@ class Admin_Links extends \WP_List_Table {
 		$email = $meta['recipient_email'] ?: ( $meta['payer_email'] ?? '' );
 
 		return esc_html( $email ?: '—' );
-	}
-
-	/**
-	 * Column renderer.
-	 *
-	 * @param \WP_Post $item Row item (WP_Post from WP_Query).
-	 */
-	public function column_status( $item ): string {
-		$meta = CPT_Pago::get_meta( $item->ID );
-		return CPT_Pago::badge( $meta['status'] );
 	}
 
 	/**
