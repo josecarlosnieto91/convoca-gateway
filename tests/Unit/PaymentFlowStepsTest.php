@@ -237,6 +237,30 @@ namespace Convoca\Gateway\Tests {
 			$this->assertStringNotContainsString( 'convoca_donation_email', $html );
 		}
 
+		public function test_donation_form_does_not_repeat_the_open_amount_spiel(): void {
+			update_post_meta( 504, '_convoca_product_desc', 'Donativo' );
+			update_post_meta( 504, '_convoca_link_key', 'token-de-prueba' );
+
+			$html = $this->call( 'render_donation_form', array( 504, \Convoca\Gateway\CPT_Pago::get_meta( 504 ) ) );
+
+			$this->assertStringContainsString( 'Donativo', $html, 'El concepto sí se muestra.' );
+			$this->assertStringNotContainsString( 'Importe libre', $html, 'El resumen no debe repetir «Importe libre»: basta con el concepto.' );
+			$this->assertStringNotContainsString( 'Cada aportación se registra', $html );
+		}
+
+		public function test_security_note_speaks_in_first_person_plural(): void {
+			update_post_meta( 505, '_convoca_product_desc', 'Donativo' );
+			update_post_meta( 505, '_convoca_link_key', 'token-de-prueba' );
+
+			$donativo = $this->call( 'render_donation_form', array( 505, \Convoca\Gateway\CPT_Pago::get_meta( 505 ) ) );
+			$manual   = $this->call( 'render_manual_form' );
+
+			foreach ( array( 'donativo' => $donativo, 'manual' => $manual ) as $cual => $bloque ) {
+				$this->assertStringContainsString( 'No almacenamos tus datos bancarios', $bloque, 'El aviso debe ir en primera persona en el ' . $cual . '.' );
+				$this->assertStringNotContainsString( 'Convoca Gateway no almacena', $bloque );
+			}
+		}
+
 		public function test_donation_form_second_step_asks_amount_and_email(): void {
 			update_post_meta( 501, '_convoca_product_desc', 'Donativo' );
 			update_post_meta( 501, '_convoca_link_key', 'token-de-prueba' );

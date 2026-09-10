@@ -916,8 +916,6 @@ class Payment_Handler {
 		<div class="conv-payment-wrapper convoca-form" role="region" aria-label="<?php esc_attr_e( 'Formulario de donativo', 'convoca-gateway' ); ?>">
 			<div class="conv-payment-summary">
 				<h3><?php echo esc_html( $concepto ); ?></h3>
-				<div class="conv-amount"><?php esc_html_e( 'Importe libre', 'convoca-gateway' ); ?></div>
-				<p class="conv-desc"><?php esc_html_e( 'Elige cuánto quieres aportar. Cada aportación se registra y se recibe por separado.', 'convoca-gateway' ); ?></p>
 			</div>
 
 			<?php if ( '' !== $error ) : ?>
@@ -981,7 +979,7 @@ class Payment_Handler {
 				<?php if ( 'transferencia' === $method ) : ?>
 					🍀 <?php esc_html_e( 'Al continuar te mostraremos los datos para hacer el ingreso.', 'convoca-gateway' ); ?>
 				<?php else : ?>
-					🔒 <?php esc_html_e( 'Pago seguro gestionado por Redsys. Convoca Gateway no almacena tus datos bancarios.', 'convoca-gateway' ); ?>
+					🔒 <?php esc_html_e( 'Pago seguro gestionado por Redsys. No almacenamos tus datos bancarios.', 'convoca-gateway' ); ?>
 				<?php endif; ?>
 			</p>
 		</div>
@@ -1418,7 +1416,7 @@ class Payment_Handler {
 				<?php if ( 'transferencia' === $method ) : ?>
 					🍀 <?php esc_html_e( 'Al continuar te mostraremos los datos para hacer el ingreso.', 'convoca-gateway' ); ?>
 				<?php else : ?>
-					🔒 <?php esc_html_e( 'Pago seguro gestionado por Redsys. Convoca Gateway no almacena tus datos bancarios.', 'convoca-gateway' ); ?>
+					🔒 <?php esc_html_e( 'Pago seguro gestionado por Redsys. No almacenamos tus datos bancarios.', 'convoca-gateway' ); ?>
 				<?php endif; ?>
 			</p>
 		</div>
