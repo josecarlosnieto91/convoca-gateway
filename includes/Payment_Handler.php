@@ -428,11 +428,7 @@ class Payment_Handler {
 	 */
 	private function render_link_form( int $pago_id, array $meta, string $product_desc, int $amount_cents, string $suggested_method, string $recipient_email, array $params ): string {
 		$amount_display = CPT_Pago::format_amount( $amount_cents );
-		$base_url       = self::get_payment_link( $pago_id, get_post_meta( $pago_id, '_convoca_link_key', true ), get_post_meta( $pago_id, '_convoca_expires_at', true ) );
-
-		$card_url     = add_query_arg( 'convoca_gateway_method', 'tarjeta', $base_url );
-		$bizum_url    = add_query_arg( 'convoca_gateway_method', 'bizum', $base_url );
-		$transfer_url = add_query_arg( 'convoca_gateway_method', 'transferencia', $base_url );
+		$base_url       = self::get_payment_link( $pago_id, (string) get_post_meta( $pago_id, '_convoca_link_key', true ), (int) get_post_meta( $pago_id, '_convoca_expires_at', true ) );
 
 		$settings         = get_option( 'convoca_gateway_settings', array() );
 		$transfer_enabled = ! empty( $settings['iban'] );
@@ -478,42 +474,10 @@ class Payment_Handler {
 					<p class="conv-help"><?php esc_html_e( 'Si lo indicas, te enviamos el recibo del pago a este correo.', 'convoca-gateway' ); ?></p>
 				</div>
 
-				<h4>Selecciona un método de pago</h4>
-				<div class="conv-methods">
-					<a href="<?php echo esc_url( $card_url ); ?>" class="conv-method conv-method-card <?php echo ( $suggested === 'tarjeta' ) ? 'conv-method--suggested' : ''; ?>">
-						<span class="conv-method-icon">💳</span>
-						<span class="conv-method-label">Tarjeta</span>
-						<span class="conv-method-desc">Visa, Mastercard, etc.</span>
-						<?php
-						if ( $suggested === 'tarjeta' ) :
-							?>
-							<span class="conv-method-badge">Recomendado</span><?php endif; ?>
-					</a>
-
-					<?php if ( $bizum_enabled ) : ?>
-					<a href="<?php echo esc_url( $bizum_url ); ?>" class="conv-method conv-method-bizum <?php echo ( $suggested === 'bizum' ) ? 'conv-method--suggested' : ''; ?>">
-						<span class="conv-method-icon">📱</span>
-						<span class="conv-method-label">Bizum</span>
-						<span class="conv-method-desc">Pago instantáneo con tu móvil</span>
-						<?php
-						if ( $suggested === 'bizum' ) :
-							?>
-							<span class="conv-method-badge">Recomendado</span><?php endif; ?>
-					</a>
-					<?php endif; ?>
-
-					<?php if ( $transfer_enabled ) : ?>
-					<a href="<?php echo esc_url( $transfer_url ); ?>" class="conv-method conv-method-transfer <?php echo ( $suggested === 'transferencia' ) ? 'conv-method--suggested' : ''; ?>">
-						<span class="conv-method-icon">🍀</span>
-						<span class="conv-method-label">Transferencia</span>
-						<span class="conv-method-desc">Ingresa desde tu banco</span>
-						<?php
-						if ( $suggested === 'transferencia' ) :
-							?>
-							<span class="conv-method-badge">Sugerido</span><?php endif; ?>
-					</a>
-					<?php endif; ?>
-				</div>
+				<?php
+				// Tarjetas compartidas: tarjeta y Bizum en paralelo, transferencia a lo ancho.
+				echo $this->render_method_picker( $base_url, __( 'Selecciona un método de pago', 'convoca-gateway' ), array(), $suggested ); // phpcs:ignore WordPress.Security.EscapeOutput.OutputNotEscaped -- Marcado propio, ya escapado.
+				?>
 
 				<script>
 				// El email de quien paga viaja en el enlace del método elegido: es lo que
@@ -600,30 +564,227 @@ class Payment_Handler {
 				border-radius: 8px;
 				font-size: 1rem;
 			}
+		</style>
+		<?php
+		return ob_get_clean();
+	}
+
+	/** Evita repetir el mismo bloque de CSS en una página. */
+	private static bool $methods_css_printed = false;
+
+	/*
+	 * ── Selector de método de pago (compartido) ────────────────────────────
+	 *
+	 * Un único sitio define qué métodos hay y cómo se pintan, para que el
+	 * enlace de pago y el de donativo no se separen con el tiempo.
+	 */
+
+	/**
+	 * Métodos de pago disponibles según la configuración del sitio.
+	 *
+	 * Tarjeta y Bizum dependen de Redsys; la transferencia, del IBAN.
+	 *
+	 * @return array<string, array{icon: string, label: string, desc: string, wide: bool}>
+	 */
+	private function enabled_methods(): array {
+		$settings = get_option( 'convoca_gateway_settings', array() );
+		$settings = is_array( $settings ) ? $settings : array();
+
+		$redsys   = '' !== Redsys_Client::merchant_code() && '' !== Redsys_Client::secret_key();
+		$transfer = ! empty( $settings['iban'] );
+
+		$methods = array();
+
+		if ( $redsys ) {
+			$methods['tarjeta'] = array(
+				'icon'  => '💳',
+				'label' => __( 'Tarjeta', 'convoca-gateway' ),
+				'desc'  => __( 'Visa, Mastercard, etc.', 'convoca-gateway' ),
+				'wide'  => false,
+			);
+			$methods['bizum']   = array(
+				'icon'  => '📱',
+				'label' => __( 'Bizum', 'convoca-gateway' ),
+				'desc'  => __( 'Pago instantáneo con tu móvil', 'convoca-gateway' ),
+				'wide'  => false,
+			);
+		}
+
+		if ( $transfer ) {
+			$methods['transferencia'] = array(
+				'icon'  => '🍀',
+				'label' => __( 'Transferencia', 'convoca-gateway' ),
+				'desc'  => __( 'Ingresa desde tu banco', 'convoca-gateway' ),
+				'wide'  => true,
+			);
+		}
+
+		return $methods;
+	}
+
+	/**
+	 * Método elegido en la petición actual, ya validado contra los disponibles.
+	 *
+	 * Llega por el enlace de la tarjeta (GET) en el paso 1 y por el campo
+	 * oculto del formulario (POST) en el paso 2. Un slug desconocido o un
+	 * método no disponible se tratan como "sin elegir".
+	 */
+	private function requested_method(): string {
+		$raw = $_GET['convoca_gateway_method'] ?? ( $_POST['convoca_gateway_method'] ?? '' );
+		$raw = is_string( $raw ) ? wp_unslash( $raw ) : '';
+
+		if ( '' === $raw ) {
+			return '';
+		}
+
+		return array_key_exists( $raw, $this->enabled_methods() ) ? $raw : '';
+	}
+
+	/**
+	 * Tarjetas grandes de método de pago: tarjeta y Bizum en paralelo,
+	 * transferencia a lo ancho debajo.
+	 *
+	 * @param string $base_url  URL del paso 1 (sin convoca_gateway_method).
+	 * @param array  $args      Argumentos extra que añadir a cada enlace.
+	 * @param string $suggested Slug a destacar con la etiqueta «Recomendado».
+	 */
+	private function render_method_cards( string $base_url, array $args = array(), string $suggested = '' ): string {
+		$methods = $this->enabled_methods();
+
+		if ( empty( $methods ) ) {
+			return '<div class="convoca-alert convoca-alert--warning">' .
+				esc_html__( 'No hay ningún método de pago disponible. Contacta con la entidad.', 'convoca-gateway' ) .
+				'</div>' . $this->methods_css();
+		}
+
+		ob_start();
+		?>
+		<div class="conv-methods">
+			<?php foreach ( $methods as $slug => $method ) : ?>
+				<?php
+				$url   = add_query_arg( array_merge( array( 'convoca_gateway_method' => $slug ), $args ), $base_url );
+				$class = 'conv-method conv-method-card conv-method--' . $slug;
+				if ( $method['wide'] ) {
+					$class .= ' conv-method-card--wide';
+				}
+				if ( $slug === $suggested ) {
+					$class .= ' conv-method--suggested';
+				}
+				?>
+				<a href="<?php echo esc_url( $url ); ?>" class="<?php echo esc_attr( $class ); ?>">
+					<span class="conv-method-icon"><?php echo esc_html( $method['icon'] ); ?></span>
+					<span class="conv-method-text">
+						<span class="conv-method-label"><?php echo esc_html( $method['label'] ); ?></span>
+						<span class="conv-method-desc"><?php echo esc_html( $method['desc'] ); ?></span>
+					</span>
+					<?php if ( $slug === $suggested ) : ?>
+						<span class="conv-method-badge"><?php esc_html_e( 'Recomendado', 'convoca-gateway' ); ?></span>
+					<?php endif; ?>
+				</a>
+			<?php endforeach; ?>
+		</div>
+		<?php
+		echo $this->methods_css(); // phpcs:ignore WordPress.Security.EscapeOutput.OutputNotEscaped -- CSS estático del propio plugin.
+		return (string) ob_get_clean();
+	}
+
+	/**
+	 * Selector completo: título + tarjetas.
+	 *
+	 * @param string $base_url  URL del paso 1 (sin convoca_gateway_method).
+	 * @param string $heading   Título del selector.
+	 * @param array  $args      Argumentos extra que añadir a cada enlace.
+	 * @param string $suggested Slug a destacar, si procede.
+	 */
+	private function render_method_picker( string $base_url, string $heading, array $args = array(), string $suggested = '' ): string {
+		return '<h4 class="conv-methods-heading">' . esc_html( $heading ) . '</h4>' .
+			$this->render_method_cards( $base_url, $args, $suggested );
+	}
+
+	/**
+	 * Bloque del método ya elegido, con enlace para cambiarlo (paso 2).
+	 *
+	 * @param string $method   Slug elegido.
+	 * @param string $base_url URL del paso 1, para volver a elegir.
+	 */
+	private function render_chosen_method( string $method, string $base_url ): string {
+		$methods = $this->enabled_methods();
+
+		if ( ! isset( $methods[ $method ] ) ) {
+			return '';
+		}
+
+		ob_start();
+		?>
+		<div class="conv-chosen-method">
+			<span class="conv-chosen-icon"><?php echo esc_html( $methods[ $method ]['icon'] ); ?></span>
+			<span class="conv-chosen-label"><?php echo esc_html( $methods[ $method ]['label'] ); ?></span>
+			<a class="conv-chosen-change" href="<?php echo esc_url( remove_query_arg( 'convoca_gateway_method', $base_url ) ); ?>">
+				<?php esc_html_e( 'Cambiar método', 'convoca-gateway' ); ?>
+			</a>
+		</div>
+		<?php
+		return (string) ob_get_clean();
+	}
+
+	/**
+	 * CSS de las tarjetas de método. Se imprime una sola vez por petición.
+	 */
+	private function methods_css(): string {
+		if ( self::$methods_css_printed ) {
+			return '';
+		}
+
+		self::$methods_css_printed = true;
+
+		return '<style>
 			.conv-methods {
 				display: grid;
-				grid-template-columns: repeat(auto-fit, minmax(180px, 1fr));
+				grid-template-columns: 1fr 1fr;
 				gap: 1.25rem;
-				margin-top: 1rem;
+				margin: 1rem 0 1.5rem;
 			}
-			.conv-method {
+			.conv-method-card {
 				display: flex;
 				flex-direction: column;
 				align-items: center;
+				justify-content: center;
 				padding: 1.5rem;
 				border: 2px solid #eee;
 				border-radius: 12px;
 				text-decoration: none;
 				color: #333 !important;
+				background: #fafafa;
 				transition: all 0.3s cubic-bezier(0.4, 0, 0.2, 1);
 				position: relative;
-				background: #fafafa;
 			}
-			.conv-method:hover {
+			.conv-method-card:hover,
+			.conv-method-card:focus-visible {
 				border-color: var(--wp--preset--color--naranja, #ff8700);
 				background: #fff;
 				transform: translateY(-4px);
 				box-shadow: 0 8px 20px rgba(255, 135, 0, 0.12);
+			}
+			.conv-method-card--wide {
+				grid-column: 1 / -1;
+				flex-direction: row;
+				gap: 1.25rem;
+				padding: 1.75rem 1.5rem;
+			}
+			.conv-method-card--wide .conv-method-icon {
+				font-size: 3rem;
+				margin-bottom: 0;
+			}
+			.conv-method-card--wide .conv-method-label {
+				font-size: 1.35rem;
+			}
+			.conv-method-card--wide .conv-method-text {
+				align-items: flex-start;
+			}
+			.conv-method-text {
+				display: flex;
+				flex-direction: column;
+				align-items: center;
 			}
 			.conv-method--suggested {
 				border-color: var(--wp--preset--color--naranja, #ff8700);
@@ -632,7 +793,7 @@ class Payment_Handler {
 			.conv-method-icon {
 				font-size: 2.5rem;
 				margin-bottom: 0.75rem;
-				filter: drop-shadow(0 2px 4px rgba(0,0,0,0.1));
+				filter: drop-shadow(0 2px 4px rgba(0, 0, 0, 0.1));
 			}
 			.conv-method-label {
 				font-weight: 700;
@@ -642,7 +803,7 @@ class Payment_Handler {
 			.conv-method-desc {
 				font-size: 0.85rem;
 				color: #777;
-				text-align: center;
+				text-align: left;
 				line-height: 1.4;
 			}
 			.conv-method-badge {
@@ -658,22 +819,60 @@ class Payment_Handler {
 				letter-spacing: 0.8px;
 				box-shadow: 0 2px 8px rgba(255, 135, 0, 0.3);
 			}
+			.conv-methods-heading {
+				margin-bottom: 0;
+			}
+			.conv-chosen-method {
+				display: flex;
+				align-items: center;
+				gap: 0.6rem;
+				margin: 0 0 1.5rem;
+				padding: 0.9rem 1.1rem;
+				border: 2px solid #eee;
+				border-radius: 12px;
+				background: #fafafa;
+				text-align: left;
+			}
+			.conv-chosen-icon {
+				font-size: 1.6rem;
+				line-height: 1;
+			}
+			.conv-chosen-label {
+				font-weight: 700;
+			}
+			.conv-chosen-change {
+				margin-left: auto;
+				font-size: 0.85rem;
+				white-space: nowrap;
+			}
 			@media (max-width: 480px) {
 				.conv-methods {
 					grid-template-columns: 1fr;
 				}
+				.conv-method-card--wide {
+					flex-direction: column;
+					gap: 0;
+				}
+				.conv-method-card--wide .conv-method-icon {
+					margin-bottom: 0.5rem;
+				}
+				.conv-method-card--wide .conv-method-text {
+					align-items: center;
+				}
+				.conv-method-desc {
+					text-align: center;
+				}
 			}
-		</style>
-		<?php
-		return ob_get_clean();
+		</style>';
 	}
 
 	/**
 	 * Formulario de donativo: importe libre, email opcional y método de pago.
 	 *
-	 * Es reutilizable: cada envío crea un pago propio (ver
-	 * handle_donation_submission), de modo que el enlace sirve para tantas
-	 * aportaciones como quiera hacer la gente.
+	 * Se rellena en dos pantallas: primero el método (paso 1, enlaces) y luego
+	 * el importe y el correo (paso 2, envío). Es reutilizable: cada envío crea
+	 * un pago propio (ver handle_donation_submission), de modo que el enlace
+	 * sirve para tantas aportaciones como quiera hacer la gente.
 	 *
 	 * @param int    $pago_id Enlace de donativo (registro plantilla).
 	 * @param array  $meta    Metadatos del enlace.
@@ -689,10 +888,10 @@ class Payment_Handler {
 		$params = get_post_meta( $pago_id, '_convoca_params', true );
 		$params = is_array( $params ) ? $params : array();
 
-		$settings         = get_option( 'convoca_gateway_settings', array() );
-		$transfer_enabled = ! empty( $settings['iban'] );
-		$redsys_enabled   = ! empty( Redsys_Client::merchant_code() ) && ! empty( Redsys_Client::secret_key() );
-		$bizum_enabled    = ! empty( Redsys_Client::merchant_code() );
+		$method  = $this->requested_method();
+		$methods = $this->enabled_methods();
+		$token   = (string) get_post_meta( $pago_id, '_convoca_link_key', true );
+		$base    = $token ? self::get_payment_link( $pago_id, $token ) : remove_query_arg( 'convoca_gateway_method' );
 
 		ob_start();
 		?>
@@ -718,55 +917,55 @@ class Payment_Handler {
 			</div>
 			<?php endif; ?>
 
-			<form method="post" action="" class="conv-link-form conv-donation-form">
-				<?php wp_nonce_field( 'convoca_donation_' . $pago_id, 'convoca_donation_nonce' ); ?>
+			<?php if ( '' === $method ) : ?>
+				<?php
+				// Paso 1: método de pago. El importe y el correo llegan después.
+				echo $this->render_method_picker( $base, __( 'Selecciona un método de pago', 'convoca-gateway' ) ); // phpcs:ignore WordPress.Security.EscapeOutput.OutputNotEscaped -- Marcado propio, ya escapado.
+				?>
+			<?php else : ?>
+				<?php echo $this->render_chosen_method( $method, $base ); // phpcs:ignore WordPress.Security.EscapeOutput.OutputNotEscaped -- Marcado propio, ya escapado. ?>
 
-				<div class="conv-field">
-					<label for="convoca_donation_amount"><?php esc_html_e( 'Importe (€)', 'convoca-gateway' ); ?> *</label>
-					<input type="number" name="convoca_donation_amount" id="convoca_donation_amount"
-							class="regular-text" step="0.01" min="0.50" required
-							value="<?php echo esc_attr( $amount ); ?>" placeholder="0.00">
-					<p class="conv-help"><?php esc_html_e( 'Mínimo 0,50 €.', 'convoca-gateway' ); ?></p>
-				</div>
+				<form method="post" action="" class="conv-link-form conv-donation-form">
+					<?php wp_nonce_field( 'convoca_donation_' . $pago_id, 'convoca_donation_nonce' ); ?>
+					<input type="hidden" name="convoca_gateway_method" value="<?php echo esc_attr( $method ); ?>">
 
-				<div class="conv-email-field">
-					<label for="convoca_donation_email"><?php esc_html_e( 'Email para el recibo (opcional)', 'convoca-gateway' ); ?></label>
-					<input type="email" name="convoca_donation_email" id="convoca_donation_email"
-							class="regular-text" value="<?php echo esc_attr( $email ); ?>">
-					<p class="conv-help"><?php esc_html_e( 'Si lo indicas, te enviamos el recibo de tu aportación.', 'convoca-gateway' ); ?></p>
-				</div>
+					<div class="conv-field">
+						<label for="convoca_donation_amount"><?php esc_html_e( 'Importe (€)', 'convoca-gateway' ); ?> *</label>
+						<input type="number" name="convoca_donation_amount" id="convoca_donation_amount"
+								class="regular-text" step="0.01" min="0.50" required
+								value="<?php echo esc_attr( $amount ); ?>" placeholder="0.00">
+						<p class="conv-help"><?php esc_html_e( 'Mínimo 0,50 €.', 'convoca-gateway' ); ?></p>
+					</div>
 
-				<h4><?php esc_html_e( 'Elige cómo aportar', 'convoca-gateway' ); ?></h4>
-				<div class="conv-methods conv-methods--donation">
-					<?php if ( $redsys_enabled ) : ?>
-						<button type="submit" name="convoca_donation_method" value="tarjeta" class="conv-method conv-method-card">
-							<span class="conv-method-icon">💳</span>
-							<span class="conv-method-label"><?php esc_html_e( 'Tarjeta', 'convoca-gateway' ); ?></span>
-							<span class="conv-method-desc"><?php esc_html_e( 'Visa, Mastercard, etc.', 'convoca-gateway' ); ?></span>
+					<div class="conv-email-field">
+						<label for="convoca_donation_email"><?php esc_html_e( 'Email para el recibo (opcional)', 'convoca-gateway' ); ?></label>
+						<input type="email" name="convoca_donation_email" id="convoca_donation_email"
+								class="regular-text" value="<?php echo esc_attr( $email ); ?>">
+						<p class="conv-help"><?php esc_html_e( 'Si lo indicas, te enviamos el recibo de tu aportación.', 'convoca-gateway' ); ?></p>
+					</div>
+
+					<div class="form-actions">
+						<button type="submit" class="wp-block-button__link">
+							<?php
+							printf(
+								/* translators: %s: payment method label (Tarjeta, Bizum o Transferencia). */
+								esc_html__( 'Continuar con %s', 'convoca-gateway' ),
+								esc_html( $methods[ $method ]['label'] )
+							);
+							?>
+							&rarr;
 						</button>
-					<?php endif; ?>
+					</div>
+				</form>
+			<?php endif; ?>
 
-					<?php if ( $bizum_enabled ) : ?>
-						<button type="submit" name="convoca_donation_method" value="bizum" class="conv-method conv-method-bizum">
-							<span class="conv-method-icon">📱</span>
-							<span class="conv-method-label"><?php esc_html_e( 'Bizum', 'convoca-gateway' ); ?></span>
-							<span class="conv-method-desc"><?php esc_html_e( 'Pago instantáneo con tu móvil', 'convoca-gateway' ); ?></span>
-						</button>
-					<?php endif; ?>
-
-					<?php if ( $transfer_enabled ) : ?>
-						<button type="submit" name="convoca_donation_method" value="transferencia" class="conv-method conv-method-transfer">
-							<span class="conv-method-icon">🍀</span>
-							<span class="conv-method-label"><?php esc_html_e( 'Transferencia', 'convoca-gateway' ); ?></span>
-							<span class="conv-method-desc"><?php esc_html_e( 'Ingresa desde tu banco', 'convoca-gateway' ); ?></span>
-						</button>
-					<?php endif; ?>
-				</div>
-
-				<?php if ( ! $redsys_enabled && ! $transfer_enabled ) : ?>
-					<div class="convoca-alert convoca-alert--warning"><?php esc_html_e( 'No hay ningún método de pago disponible. Contacta con la entidad.', 'convoca-gateway' ); ?></div>
+			<p class="conv-security-note">
+				<?php if ( 'transferencia' === $method ) : ?>
+					🍀 <?php esc_html_e( 'Al continuar te mostraremos los datos para hacer el ingreso.', 'convoca-gateway' ); ?>
+				<?php else : ?>
+					🔒 <?php esc_html_e( 'Pago seguro gestionado por Redsys. Convoca Gateway no almacena tus datos bancarios.', 'convoca-gateway' ); ?>
 				<?php endif; ?>
-			</form>
+			</p>
 		</div>
 		<style>
 			.conv-donation-form .conv-field,
@@ -774,11 +973,11 @@ class Payment_Handler {
 			.conv-donation-form .conv-field label,
 			.conv-donation-form .conv-email-field label { display: block; font-weight: 600; margin-bottom: .35rem; }
 			.conv-donation-form input[type="number"] { max-width: 180px; font-size: 1.25rem; padding: .6rem .75rem; }
+			.conv-donation-form .form-actions { margin-top: 1.5rem; }
 			.conv-help { margin: .35rem 0 0; font-size: .85rem; opacity: .75; }
-			.conv-methods--donation .conv-method { text-align: left; cursor: pointer; font: inherit; width: 100%; }
 		</style>
 		<?php
-		return ob_get_clean();
+		return (string) ob_get_clean();
 	}
 
 	/**
@@ -798,7 +997,7 @@ class Payment_Handler {
 
 		$amount = (float) str_replace( ',', '.', (string) wp_unslash( $_POST['convoca_donation_amount'] ?? '' ) );
 		$email  = sanitize_email( wp_unslash( $_POST['convoca_donation_email'] ?? '' ) );
-		$method = sanitize_text_field( wp_unslash( $_POST['convoca_donation_method'] ?? '' ) );
+		$method = $this->requested_method();
 
 		$raw_amount = (string) wp_unslash( $_POST['convoca_donation_amount'] ?? '' );
 
@@ -822,7 +1021,7 @@ class Payment_Handler {
 			);
 		}
 
-		if ( ! in_array( $method, array( 'tarjeta', 'bizum', 'transferencia' ), true ) ) {
+		if ( '' === $method ) {
 			return $this->render_donation_form(
 				$pago_id,
 				CPT_Pago::get_meta( $pago_id ),
@@ -868,7 +1067,7 @@ class Payment_Handler {
 		);
 
 		$token = get_post_meta( $pago, '_convoca_link_key', true );
-		$url   = add_query_arg( 'convoca_gateway_method', $method, self::get_payment_link( $pago, $token ) );
+		$url   = add_query_arg( array( 'convoca_gateway_method' => $method ), self::get_payment_link( $pago, $token ) );
 
 		return '<script>window.location.href="' . esc_url_raw( $url ) . '";</script>' .
 			'<div class="convoca-alert convoca-alert--info">' .
@@ -1138,6 +1337,10 @@ class Payment_Handler {
 	 * Render a manual payment form when no link is provided.
 	 */
 	private function render_manual_form( string $error = '' ): string {
+		$method  = $this->requested_method();
+		$methods = $this->enabled_methods();
+		$base    = (string) ( get_permalink() ?: self::get_payment_page_url() );
+
 		ob_start();
 		?>
 		<div class="conv-payment-wrapper convoca-form convoca-card card-glass">
@@ -1150,38 +1353,59 @@ class Payment_Handler {
 				<div class="convoca-alert convoca-alert--danger"><?php echo esc_html( $error ); ?></div>
 			<?php endif; ?>
 
-			<form method="post" action="" class="conv-manual-form">
-				<?php wp_nonce_field( 'convoca_gateway_manual_payment_action', 'convoca_gateway_manual_nonce' ); ?>
-				<input type="hidden" name="convoca_gateway_manual_payment" value="1">
+			<?php if ( '' === $method ) : ?>
+				<?php
+				// Paso 1: método de pago. Los datos del pago llegan después.
+				echo $this->render_method_picker( $base, __( 'Selecciona un método de pago', 'convoca-gateway' ) ); // phpcs:ignore WordPress.Security.EscapeOutput.OutputNotEscaped -- Marcado propio, ya escapado.
+				?>
+			<?php else : ?>
+				<?php echo $this->render_chosen_method( $method, $base ); // phpcs:ignore WordPress.Security.EscapeOutput.OutputNotEscaped -- Marcado propio, ya escapado. ?>
 
-				<div class="form-group">
-					<label for="amount"><?php esc_html_e( 'Importe (€)', 'convoca-gateway' ); ?></label>
-					<input type="number" name="amount" id="amount" step="0.01" min="0.50" placeholder="0.00" required>
-				</div>
+				<form method="post" action="" class="conv-manual-form">
+					<?php wp_nonce_field( 'convoca_gateway_manual_payment_action', 'convoca_gateway_manual_nonce' ); ?>
+					<input type="hidden" name="convoca_gateway_manual_payment" value="1">
+					<input type="hidden" name="convoca_gateway_method" value="<?php echo esc_attr( $method ); ?>">
 
-				<div class="form-group">
-					<label for="description"><?php esc_html_e( 'Concepto o Actividad', 'convoca-gateway' ); ?></label>
-					<input type="text" name="description" id="description" placeholder="<?php esc_attr_e( 'Ej: Inscripción Taller Aves', 'convoca-gateway' ); ?>" required>
-				</div>
+					<div class="form-group">
+						<label for="amount"><?php esc_html_e( 'Importe (€)', 'convoca-gateway' ); ?></label>
+						<input type="number" name="amount" id="amount" step="0.01" min="0.50" placeholder="0.00" required>
+					</div>
 
-				<div class="form-group">
-					<label for="email"><?php esc_html_e( 'Email para el recibo', 'convoca-gateway' ); ?></label>
-					<input type="email" name="email" id="email" placeholder="tu@email.com" required>
-				</div>
+					<div class="form-group">
+						<label for="description"><?php esc_html_e( 'Concepto o Actividad', 'convoca-gateway' ); ?></label>
+						<input type="text" name="description" id="description" placeholder="<?php esc_attr_e( 'Ej: Inscripción Taller Aves', 'convoca-gateway' ); ?>" required>
+					</div>
 
-				<div class="form-actions">
-					<button type="submit" class="wp-block-button__link">
-						<?php esc_html_e( 'Continuar al pago', 'convoca-gateway' ); ?> &rarr;
-					</button>
-				</div>
-			</form>
+					<div class="form-group">
+						<label for="email"><?php esc_html_e( 'Email para el recibo', 'convoca-gateway' ); ?></label>
+						<input type="email" name="email" id="email" placeholder="tu@email.com" required>
+					</div>
+
+					<div class="form-actions">
+						<button type="submit" class="wp-block-button__link">
+							<?php
+							printf(
+								/* translators: %s: payment method label (Tarjeta, Bizum o Transferencia). */
+								esc_html__( 'Continuar con %s', 'convoca-gateway' ),
+								esc_html( $methods[ $method ]['label'] )
+							);
+							?>
+							&rarr;
+						</button>
+					</div>
+				</form>
+			<?php endif; ?>
 
 			<p class="conv-security-note">
-				🔒 <?php esc_html_e( 'Pago seguro gestionado por Redsys. Convoca Gateway no almacena tus datos bancarios.', 'convoca-gateway' ); ?>
+				<?php if ( 'transferencia' === $method ) : ?>
+					🍀 <?php esc_html_e( 'Al continuar te mostraremos los datos para hacer el ingreso.', 'convoca-gateway' ); ?>
+				<?php else : ?>
+					🔒 <?php esc_html_e( 'Pago seguro gestionado por Redsys. Convoca Gateway no almacena tus datos bancarios.', 'convoca-gateway' ); ?>
+				<?php endif; ?>
 			</p>
 		</div>
 		<?php
-		return ob_get_clean();
+		return (string) ob_get_clean();
 	}
 
 	/**
@@ -1191,6 +1415,11 @@ class Payment_Handler {
 		$amount = (float) str_replace( ',', '.', wp_unslash( $_POST['amount'] ?? 0 ) );
 		$desc   = sanitize_text_field( wp_unslash( $_POST['description'] ?? '' ) );
 		$email  = sanitize_email( wp_unslash( $_POST['email'] ?? '' ) );
+		$method = $this->requested_method();
+
+		if ( '' === $method ) {
+			return $this->render_manual_form( __( 'Elige un método de pago.', 'convoca-gateway' ) );
+		}
 
 		if ( $amount < 0.50 ) {
 			return $this->render_manual_form( 'El importe mínimo es de 0,50€.' );
@@ -1205,7 +1434,7 @@ class Payment_Handler {
 				'amount'     => $amount,
 				'concepto'   => $desc,
 				'email'      => $email,
-				'method'     => 'any',
+				'method'     => $method,
 				'expires_at' => 'never',
 			)
 		);
@@ -1215,7 +1444,7 @@ class Payment_Handler {
 		}
 
 		$token = get_post_meta( $pago_id, '_convoca_link_key', true );
-		$url   = self::get_payment_link( $pago_id, $token );
+		$url   = add_query_arg( array( 'convoca_gateway_method' => $method ), self::get_payment_link( $pago_id, $token ) );
 
 		return '<script>window.location.href="' . esc_url_raw( $url ) . '";</script>' .
 				'<div class="convoca-alert convoca-alert--info">Generando orden de pago... Si no eres redirigido, <a href="' . esc_url( $url ) . '">haz clic aquí</a>.</div>';
@@ -1263,10 +1492,6 @@ class Payment_Handler {
 		$amount_display = CPT_Pago::format_amount( (int) $meta['amount_cents'] );
 		$base_url       = self::get_payment_link( $pago_id );
 
-		$card_url     = add_query_arg( 'convoca_gateway_method', 'tarjeta', $base_url );
-		$bizum_url    = add_query_arg( 'convoca_gateway_method', 'bizum', $base_url );
-		$transfer_url = add_query_arg( 'convoca_gateway_method', 'transferencia', $base_url );
-
 		$settings         = get_option( 'convoca_gateway_settings', array() );
 		$transfer_enabled = ! empty( $settings['iban'] );
 		$bizum_enabled    = ! empty( Redsys_Client::merchant_code() );
@@ -1286,28 +1511,10 @@ class Payment_Handler {
 				<?php endif; ?>
 			</div>
 
-			<h4>Selecciona un método de pago</h4>
-			<div class="conv-methods">
-				<a href="<?php echo esc_url( $card_url ); ?>" class="conv-method-card">
-					<span class="conv-method-icon">💳</span>
-					<span class="conv-method-label">Tarjeta</span>
-					<span class="conv-method-desc">Visa, Mastercard, etc.</span>
-				</a>
-				<?php if ( $bizum_enabled ) : ?>
-					<a href="<?php echo esc_url( $bizum_url ); ?>" class="conv-method-card">
-						<span class="conv-method-icon">📱</span>
-						<span class="conv-method-label">Bizum</span>
-						<span class="conv-method-desc">Pago instantáneo con tu móvil</span>
-					</a>
-				<?php endif; ?>
-				<?php if ( $transfer_enabled ) : ?>
-					<a href="<?php echo esc_url( $transfer_url ); ?>" class="conv-method-card">
-						<span class="conv-method-icon">🍀</span>
-						<span class="conv-method-label">Transferencia</span>
-						<span class="conv-method-desc">Ingresa desde tu banco</span>
-					</a>
-				<?php endif; ?>
-			</div>
+			<?php
+			// Tarjetas compartidas con el resto de flujos de pago.
+			echo $this->render_method_picker( self::get_payment_link( $pago_id ), __( 'Selecciona un método de pago', 'convoca-gateway' ) ); // phpcs:ignore WordPress.Security.EscapeOutput.OutputNotEscaped -- Marcado propio, ya escapado.
+			?>
 
 			<p class="conv-security-note">
 				<?php
@@ -1349,46 +1556,6 @@ class Payment_Handler {
 			.conv-desc {
 				color: #666;
 				margin-top: .5rem;
-			}
-
-			.conv-methods {
-				display: grid;
-				grid-template-columns: 1fr 1fr;
-				gap: 1rem;
-				margin: 1rem 0 1.5rem;
-			}
-
-			.conv-method-card {
-				display: flex;
-				flex-direction: column;
-				align-items: center;
-				padding: 1.5rem 1rem;
-				border: 2px solid #e0e0e0;
-				border-radius: 12px;
-				text-decoration: none;
-				color: inherit;
-				transition: border-color .2s, box-shadow .2s;
-			}
-
-			.conv-method-card:hover {
-				border-color: var(--wp--preset--color--naranja, #E86833);
-				box-shadow: 0 4px 12px rgba(232, 104, 51, .15);
-			}
-
-			.conv-method-icon {
-				font-size: 2.5rem;
-				margin-bottom: .5rem;
-			}
-
-			.conv-method-label {
-				font-weight: 700;
-				font-size: 1.1rem;
-			}
-
-			.conv-method-desc {
-				font-size: .85rem;
-				color: #888;
-				margin-top: .25rem;
 			}
 
 			.conv-security-note {

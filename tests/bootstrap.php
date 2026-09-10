@@ -25,7 +25,13 @@ if (!class_exists('Convoca\\Core\\Logger')) {
     require_once __DIR__ . '/StubLogger.php';
 }
 if (!function_exists('get_option')) {
-    function get_option($key, $default = false) { return $default; }
+    function get_option($key, $default = false) {
+        // Los tests pueden precargar opciones en $GLOBALS['__gw_options'].
+        if (isset($GLOBALS['__gw_options']) && array_key_exists($key, $GLOBALS['__gw_options'])) {
+            return $GLOBALS['__gw_options'][$key];
+        }
+        return $default;
+    }
     function get_page_by_title($title) { return null; }
     function is_ssl() { return true; }
     function home_url($path = '') { return "https://example.com$path"; }
@@ -34,8 +40,8 @@ if (!function_exists('get_option')) {
     function esc_attr($s) { return $s; }
     function esc_url($s) { return $s; }
     function admin_url($path) { return "/wp-admin/$path"; }
-    function update_option($key, $value, $autoload = null) { return true; }
-    function delete_option($key) { return true; }
+    function update_option($key, $value, $autoload = null) { $GLOBALS['__gw_options'][$key] = $value; return true; }
+    function delete_option($key) { unset($GLOBALS['__gw_options'][$key]); return true; }
     function current_time($format) { return '2025-01-01 00:00:00'; }
     function wp_next_scheduled($hook, $args = array()) { return false; }
     function wp_schedule_event($timestamp, $recurrence, $hook, $args = array()) { return true; }
