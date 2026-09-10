@@ -323,5 +323,24 @@ namespace Convoca\Gateway\Tests {
 			$this->assertStringContainsString( 'No hay ningún método de pago disponible', $html );
 			$this->assertStringNotContainsString( 'class="conv-method conv-method-card', $html, 'Sin métodos no debe haber tarjetas.' );
 		}
+		// ── wpautop no debe desmontar el diseño ────────────────────────
+
+		public function test_generated_markup_keeps_tags_joined(): void {
+			update_post_meta( 503, '_convoca_product_desc', 'Donativo' );
+			update_post_meta( 503, '_convoca_link_key', 'token-de-prueba' );
+
+			$picker = $this->call( 'render_method_picker', array( 'https://example.com/pago/', 'Selecciona un método de pago' ) );
+			$this->assertDoesNotMatchRegularExpression( '/>\s+</', $picker, 'wpautop convierte el salto entre etiquetas en <br> y mete un hijo de más en la rejilla.' );
+
+			$donativo = $this->call( 'render_donation_form', array( 503, \Convoca\Gateway\CPT_Pago::get_meta( 503 ) ) );
+			$this->assertDoesNotMatchRegularExpression( '/>\s+</', $donativo );
+
+			$_GET['convoca_gateway_method'] = 'tarjeta';
+			$donativo2 = $this->call( 'render_donation_form', array( 503, \Convoca\Gateway\CPT_Pago::get_meta( 503 ) ) );
+			$this->assertDoesNotMatchRegularExpression( '/>\s+</', $donativo2 );
+
+			$manual = $this->call( 'render_manual_form' );
+			$this->assertDoesNotMatchRegularExpression( '/>\s+</', $manual );
+		}
 	}
 }

@@ -566,7 +566,7 @@ class Payment_Handler {
 			}
 		</style>
 		<?php
-		return ob_get_clean();
+		return $this->compact_html( (string) ob_get_clean() );
 	}
 
 	/** Evita repetir el mismo bloque de CSS en una página. */
@@ -685,7 +685,7 @@ class Payment_Handler {
 		</div>
 		<?php
 		echo $this->methods_css(); // phpcs:ignore WordPress.Security.EscapeOutput.OutputNotEscaped -- CSS estático del propio plugin.
-		return (string) ob_get_clean();
+		return $this->compact_html( (string) ob_get_clean() );
 	}
 
 	/**
@@ -697,8 +697,10 @@ class Payment_Handler {
 	 * @param string $suggested Slug a destacar, si procede.
 	 */
 	private function render_method_picker( string $base_url, string $heading, array $args = array(), string $suggested = '' ): string {
-		return '<h4 class="conv-methods-heading">' . esc_html( $heading ) . '</h4>' .
-			$this->render_method_cards( $base_url, $args, $suggested );
+		return $this->compact_html(
+			'<h4 class="conv-methods-heading">' . esc_html( $heading ) . '</h4>' .
+			$this->render_method_cards( $base_url, $args, $suggested )
+		);
 	}
 
 	/**
@@ -725,6 +727,18 @@ class Payment_Handler {
 		</div>
 		<?php
 		return (string) ob_get_clean();
+	}
+
+	/**
+	 * Quita los saltos de línea entre etiquetas del HTML generado.
+	 *
+	 * WordPress pasa el contenido por wpautop: un salto entre dos etiquetas se
+	 * convierte en <br> (o en <p>) y desmonta la rejilla de las tarjetas. Pasó
+	 * en la página de pago de demo, que usa el editor clásico; en Lugg, con
+	 * bloques, no se reproducía.
+	 */
+	private function compact_html( string $html ): string {
+		return (string) preg_replace( '/>\s+</', '><', $html );
 	}
 
 	/**
@@ -977,7 +991,7 @@ class Payment_Handler {
 			.conv-help { margin: .35rem 0 0; font-size: .85rem; opacity: .75; }
 		</style>
 		<?php
-		return (string) ob_get_clean();
+		return $this->compact_html( (string) ob_get_clean() );
 	}
 
 	/**
@@ -1405,7 +1419,7 @@ class Payment_Handler {
 			</p>
 		</div>
 		<?php
-		return (string) ob_get_clean();
+		return $this->compact_html( (string) ob_get_clean() );
 	}
 
 	/**
@@ -1565,7 +1579,7 @@ class Payment_Handler {
 			}
 		</style>
 		<?php
-		return ob_get_clean();
+		return $this->compact_html( (string) ob_get_clean() );
 	}
 
 	/**

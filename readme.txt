@@ -4,7 +4,7 @@ Tags: payments, redsys, donations, fees, tpv
 Requires at least: 6.4
 Tested up to: 7.1
 Requires PHP: 8.1
-Stable tag: 2.7.1
+Stable tag: 2.7.2
 License: GPL-2.0-or-later
 License URI: https://www.gnu.org/licenses/gpl-2.0.html
 
@@ -35,6 +35,9 @@ This plugin connects to the Redsys payment gateway to process transactions. Paym
 4. Configure your Redsys account in Settings > Convoca Gateway
 
 == Changelog ==
+
+= 2.7.2 =
+* Corregido: en páginas con el editor clásico las tarjetas de método salían apiladas (WordPress insertaba un <br> entre ellas).
 
 = 2.7.1 =
 * El pago se pide en dos pasos: primero el método (tarjeta, Bizum o transferencia) y después el importe y el correo, tanto en el enlace de donativo como en la página de pago.
