@@ -90,8 +90,14 @@ class PDF_Exporter {
 			. 'td.num{text-align:right;white-space:nowrap;}'
 			. '.foot{margin-top:14px;font-size:10px;color:#646970;}'
 			. '</style></head><body>'
-			. '<h1>' . esc_html( sprintf( __( 'Pagos — %s', 'convoca-gateway' ), $site_name ) ) . '</h1>'
-			. '<p class="sub">' . esc_html( sprintf( __( 'Generado el %s · %d pagos · Total: %s €', 'convoca-gateway' ), $date, $count, $total_e ) ) . '</p>'
+			. '<h1>' . esc_html(
+				/* translators: %s: site name. */
+				sprintf( __( 'Pagos — %s', 'convoca-gateway' ), $site_name )
+			) . '</h1>'
+			. '<p class="sub">' . esc_html(
+				/* translators: 1: generation date, 2: number of payments, 3: total amount. */
+				sprintf( __( 'Generado el %1$s · %2$d pagos · Total: %3$s €', 'convoca-gateway' ), $date, $count, $total_e )
+			) . '</p>'
 			. '<table><thead><tr>'
 			. '<th>' . esc_html__( 'ID', 'convoca-gateway' ) . '</th>'
 			. '<th>' . esc_html__( 'ID Pedido', 'convoca-gateway' ) . '</th>'
@@ -105,7 +111,10 @@ class PDF_Exporter {
 			. '</tr></thead><tbody>'
 			. ( $rows_html ?: '<tr><td colspan="9">' . esc_html__( 'No hay pagos registrados.', 'convoca-gateway' ) . '</td></tr>' )
 			. '</tbody></table>'
-			. '<p class="foot">' . esc_html( sprintf( __( 'Generado automáticamente por %s — %s', 'convoca-gateway' ), $site_name, $date ) ) . '</p>'
+			. '<p class="foot">' . esc_html(
+				/* translators: 1: site name, 2: generation date. */
+				sprintf( __( 'Generado automáticamente por %1$s — %2$s', 'convoca-gateway' ), $site_name, $date )
+			) . '</p>'
 			. '</body></html>';
 
 		$dompdf = new \Dompdf\Dompdf();
