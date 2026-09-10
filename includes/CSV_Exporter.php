@@ -82,13 +82,15 @@ class CSV_Exporter {
 				__( 'Fecha Creación', 'convoca-gateway' ),
 				__( 'Fecha Pago', 'convoca-gateway' ),
 			),
-			';'
+			';',
+			'"',
+			'\\'
 		);
 
 		foreach ( $payments as $post ) {
 			$meta = CPT_Pago::get_meta( $post->ID );
 
-			$email = self::get_user_email( $meta['origin'], $meta['origin_id'] );
+			$email = self::get_user_email( (string) $meta['origin'], (int) $meta['origin_id'] );
 
 			$row = array(
 				$post->ID,
@@ -109,7 +111,7 @@ class CSV_Exporter {
 				}
 			}
 
-			fputcsv( $output, $row, ';', '"' );
+			fputcsv( $output, $row, ';', '"', '\\' );
 		}
 
 		// phpcs:ignore WordPress.WP.AlternativeFunctions.file_system_operations_fclose -- Stream to php://output, WP_Filesystem not applicable.
