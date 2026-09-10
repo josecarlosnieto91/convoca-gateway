@@ -103,6 +103,17 @@ class Admin_Payments extends \WP_List_Table {
 		);
 	}
 
+	/**
+	 * Acciones en bloque del listado. El borrado pide confirmación después.
+	 */
+	protected function get_bulk_actions(): array {
+		if ( ! Admin_Record_Actions::user_can() ) {
+			return array();
+		}
+
+		return array( 'convoca_delete' => __( 'Eliminar', 'convoca-gateway' ) );
+	}
+
 	public function get_columns(): array {
 		return array(
 			'cb'       => __( '<input type="checkbox" />', 'convoca-gateway' ),
@@ -271,6 +282,15 @@ class Admin_Payments extends \WP_List_Table {
 			$actions['origin'] = sprintf( '<a href="%s" target="_blank">%s</a>', esc_url( $member_url ), esc_html__( 'Ver miembro', 'convoca-gateway' ) );
 		}
 
+		if ( Admin_Record_Actions::user_can() ) {
+			$actions['delete'] = sprintf(
+				'<a href="%s" class="submitdelete" aria-label="%s">%s</a>',
+				esc_url( admin_url( 'admin.php?page=conv-gateway-payments&action=delete&id=' . $item->ID ) ),
+				esc_attr__( 'Eliminar este pago', 'convoca-gateway' ),
+				esc_html__( 'Eliminar', 'convoca-gateway' )
+			);
+		}
+
 		return sprintf( '<strong><a href="%s">%s</a></strong> %s', esc_url( $url ), esc_html( $meta['order_id'] ), $this->row_actions( $actions ) );
 	}
 
@@ -330,6 +350,13 @@ class Admin_Payments extends \WP_List_Table {
 
 	public function render_page(): void {
 
+		// Borrado: la acción (de fila o en bloque) lleva a la pantalla de confirmación.
+		$borrado = Admin_Record_Actions::pending_action();
+		if ( 'convoca_delete' === $borrado || ( isset( $_GET['action'] ) && 'delete' === $_GET['action'] ) ) {
+			Admin_Record_Actions::render_confirm( 'pago', Admin_Record_Actions::requested_ids( 'pago' ) );
+			return;
+		}
+
 		if ( isset( $_GET['action'] ) && 'view' === $_GET['action'] || isset( $_GET['page'] ) && 'conv-gateway-payments-detail' === $_GET['page'] ) {
 			$this->render_detail();
 			return;
@@ -342,6 +369,8 @@ class Admin_Payments extends \WP_List_Table {
 			<a href="<?php echo esc_url( wp_nonce_url( admin_url( 'admin.php?page=conv-gateway-payments&action=export_csv' ), 'convoca_gateway_export_csv' ) ); ?>" class="page-title-action"><?php esc_html_e( 'Exportar a CSV', 'convoca-gateway' ); ?></a>
 			<a href="<?php echo esc_url( wp_nonce_url( admin_url( 'admin-post.php?action=convoca_gateway_export_payments_pdf' ), 'convoca_gateway_export_payments_pdf' ) ); ?>" class="page-title-action"><?php esc_html_e( 'Exportar PDF', 'convoca-gateway' ); ?></a>
 			<hr class="wp-header-end">
+
+			<?php Admin_Record_Actions::maybe_notice( 'pago' ); ?>
 
 			<form method="get">
 				<input type="hidden" name="page" value="conv-gateway-payments">

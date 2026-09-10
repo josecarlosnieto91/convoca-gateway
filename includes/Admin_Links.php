@@ -43,6 +43,19 @@ class Admin_Links extends \WP_List_Table {
 				'screen'   => 'conv-gateway-links',
 			)
 		);
+
+		add_action( 'admin_post_convoca_gateway_save_link', array( $this, 'handle_save' ) );
+	}
+
+	/**
+	 * Acciones en bloque del listado. El borrado pide confirmación después.
+	 */
+	protected function get_bulk_actions(): array {
+		if ( ! Admin_Record_Actions::user_can() ) {
+			return array();
+		}
+
+		return array( 'convoca_delete' => __( 'Eliminar', 'convoca-gateway' ) );
 	}
 
 	public function get_columns(): array {
@@ -140,6 +153,20 @@ class Admin_Links extends \WP_List_Table {
 			'view' => sprintf( '<a href="%s">%s</a>', esc_url( $url ), esc_html__( 'Ver detalles', 'convoca-gateway' ) ),
 			'copy' => sprintf( '<a href="#" class="conv-gateway-copy-link" data-link="%s">%s</a>', esc_attr( $link_url ), esc_html__( 'Copiar enlace', 'convoca-gateway' ) ),
 		);
+
+		if ( Admin_Record_Actions::user_can() ) {
+			$actions['edit']   = sprintf(
+				'<a href="%s">%s</a>',
+				esc_url( admin_url( 'admin.php?page=conv-gateway-links&action=edit&id=' . $item->ID ) ),
+				esc_html__( 'Editar', 'convoca-gateway' )
+			);
+			$actions['delete'] = sprintf(
+				'<a href="%s" class="submitdelete" aria-label="%s">%s</a>',
+				esc_url( admin_url( 'admin.php?page=conv-gateway-links&action=delete&id=' . $item->ID ) ),
+				esc_attr__( 'Eliminar este enlace de pago', 'convoca-gateway' ),
+				esc_html__( 'Eliminar', 'convoca-gateway' )
+			);
+		}
 
 		return sprintf( '<strong>%s</strong> %s', esc_html( $meta['product_desc'] ), $this->row_actions( $actions ) );
 	}
@@ -257,6 +284,19 @@ class Admin_Links extends \WP_List_Table {
 	}
 
 	public function render_page(): void {
+		// Borrado: la acción (de fila o en bloque) lleva a la pantalla de confirmación.
+		$borrado = Admin_Record_Actions::pending_action();
+		if ( 'convoca_delete' === $borrado || ( isset( $_GET['action'] ) && 'delete' === $_GET['action'] ) ) {
+			Admin_Record_Actions::render_confirm( 'enlace', Admin_Record_Actions::requested_ids( 'enlace' ) );
+			return;
+		}
+
+		// Edición de un enlace generado.
+		if ( isset( $_GET['action'] ) && 'edit' === $_GET['action'] ) {
+			$this->render_edit( absint( wp_unslash( $_GET['id'] ?? 0 ) ) );
+			return;
+		}
+
 		$cols = array_keys( $this->get_columns() );
 		$this->prepare_items();
 		?>
@@ -264,6 +304,8 @@ class Admin_Links extends \WP_List_Table {
 			<h1 class="wp-heading-inline"><?php echo esc_html__( 'Enlaces de Pago Generados', 'convoca-gateway' ); ?></h1>
 			<a href="<?php echo esc_url( admin_url( 'admin.php?page=conv-gateway-generador' ) ); ?>" class="page-title-action"><?php echo esc_html__( 'Generar nuevo', 'convoca-gateway' ); ?></a>
 			<hr class="wp-header-end">
+
+			<?php Admin_Record_Actions::maybe_notice( 'enlace' ); ?>
 
 			<form method="get">
 				<input type="hidden" name="page" value="conv-gateway-links">
@@ -312,5 +354,231 @@ class Admin_Links extends \WP_List_Table {
 		}
 		</script>
 		<?php
+	}
+
+	/*
+	 * ── Edición de un enlace ───────────────────────────────────────────────
+	 */
+
+	/**
+	 * Avisos de la pantalla de edición (guardado o error).
+	 */
+	private static function save_notices(): void {
+		$error = isset( $_GET['convoca_save_error'] ) ? sanitize_key( wp_unslash( $_GET['convoca_save_error'] ) ) : ''; // phpcs:ignore WordPress.Security.NonceVerification.Recommended -- solo pinta un aviso.
+
+		if ( '' !== $error ) {
+			$mensajes = array(
+				'concepto' => __( 'El concepto es obligatorio.', 'convoca-gateway' ),
+				'importe'  => __( 'El importe mínimo es 0,50 €. Déjalo vacío si quieres un enlace de importe libre.', 'convoca-gateway' ),
+			);
+			printf(
+				'<div class="notice notice-error"><p>%s</p></div>',
+				esc_html( $mensajes[ $error ] ?? __( 'No se pudo guardar el enlace.', 'convoca-gateway' ) )
+			);
+		}
+
+		if ( isset( $_GET['convoca_saved'] ) ) { // phpcs:ignore WordPress.Security.NonceVerification.Recommended -- solo pinta un aviso.
+			echo '<div class="notice notice-success is-dismissible"><p>' . esc_html__( 'Enlace actualizado.', 'convoca-gateway' ) . '</p></div>';
+		}
+	}
+
+	/**
+	 * Formulario de edición de un enlace generado.
+	 *
+	 * No se toca el token del enlace: la URL publicada sigue valiendo después de
+	 * editar (si cambiara, todo lo ya repartido dejaría de funcionar).
+	 *
+	 * @param int $id Identificador del enlace.
+	 */
+	public function render_edit( int $id ): void {
+		if ( ! Admin_Record_Actions::user_can() ) {
+			wp_die( esc_html__( 'No tienes permiso para editar enlaces de pago.', 'convoca-gateway' ) );
+		}
+
+		if ( ! $id || 'pago' !== get_post_type( $id ) ) {
+			echo '<div class="wrap"><div class="notice notice-error"><p>' . esc_html__( 'Enlace no encontrado.', 'convoca-gateway' ) . '</p></div></div>';
+			return;
+		}
+
+		$meta    = CPT_Pago::get_meta( $id );
+		$token   = (string) get_post_meta( $id, '_convoca_link_key', true );
+		$enlace  = Payment_Handler::get_payment_link( $id, $token, ! empty( $meta['expires_at'] ) ? (int) $meta['expires_at'] : null );
+		$abierto = ! empty( $meta['open_amount'] );
+		$nunca   = empty( $meta['expires_at'] );
+		$fecha   = $nunca ? '' : wp_date( 'Y-m-d', (int) $meta['expires_at'] );
+		$volver  = admin_url( 'admin.php?page=conv-gateway-links' );
+		?>
+		<div class="wrap">
+			<h1 class="wp-heading-inline"><?php esc_html_e( 'Editar enlace de pago', 'convoca-gateway' ); ?></h1>
+			<a href="<?php echo esc_url( $volver ); ?>" class="page-title-action"><?php esc_html_e( 'Volver a los enlaces', 'convoca-gateway' ); ?></a>
+			<hr class="wp-header-end">
+
+			<?php self::save_notices(); ?>
+
+			<form method="post" action="<?php echo esc_url( admin_url( 'admin-post.php' ) ); ?>">
+				<input type="hidden" name="action" value="convoca_gateway_save_link">
+				<input type="hidden" name="id" value="<?php echo (int) $id; ?>">
+				<?php wp_nonce_field( 'convoca_gateway_save_link' ); ?>
+
+				<table class="form-table" role="presentation">
+					<tr>
+						<th scope="row"><?php esc_html_e( 'Pedido', 'convoca-gateway' ); ?></th>
+						<td>
+							<code><?php echo esc_html( (string) $meta['order_id'] ); ?></code>
+							<span class="description">#<?php echo (int) $id; ?> · <?php echo esc_html( (string) $meta['created_at'] ); ?></span>
+						</td>
+					</tr>
+					<tr>
+						<th scope="row"><?php esc_html_e( 'Enlace', 'convoca-gateway' ); ?></th>
+						<td>
+							<input type="text" class="large-text code" readonly value="<?php echo esc_url( $enlace ); ?>">
+							<p class="description"><?php esc_html_e( 'La dirección no cambia al editar: si el enlace ya está publicado, sigue funcionando igual.', 'convoca-gateway' ); ?></p>
+						</td>
+					</tr>
+					<tr>
+						<th scope="row"><label for="convoca_concepto"><?php esc_html_e( 'Concepto', 'convoca-gateway' ); ?> *</label></th>
+						<td><input type="text" name="concepto" id="convoca_concepto" class="regular-text" required value="<?php echo esc_attr( (string) $meta['product_desc'] ); ?>"></td>
+					</tr>
+					<tr>
+						<th scope="row"><label for="convoca_importe"><?php esc_html_e( 'Importe (€)', 'convoca-gateway' ); ?></label></th>
+						<td>
+							<input type="text" name="importe" id="convoca_importe" class="small-text" value="<?php echo $abierto ? '' : esc_attr( number_format( (int) $meta['amount_cents'] / 100, 2, ',', '.' ) ); ?>">
+							<p class="description"><?php esc_html_e( 'Déjalo vacío para que sea un enlace de donativo de importe libre (lo elige quien aporta, mínimo 0,50 €).', 'convoca-gateway' ); ?></p>
+						</td>
+					</tr>
+					<tr>
+						<th scope="row"><label for="convoca_method"><?php esc_html_e( 'Método de pago', 'convoca-gateway' ); ?></label></th>
+						<td>
+							<select name="method" id="convoca_method">
+								<?php
+								$metodos = array(
+									'any'           => __( 'Cualquier método (lo elige quien paga)', 'convoca-gateway' ),
+									'tarjeta'       => __( 'Tarjeta', 'convoca-gateway' ),
+									'bizum'         => __( 'Bizum', 'convoca-gateway' ),
+									'transferencia' => __( 'Transferencia', 'convoca-gateway' ),
+								);
+								foreach ( $metodos as $slug => $etiqueta ) :
+									?>
+									<option value="<?php echo esc_attr( $slug ); ?>" <?php selected( (string) $meta['method'], $slug ); ?>><?php echo esc_html( $etiqueta ); ?></option>
+								<?php endforeach; ?>
+							</select>
+						</td>
+					</tr>
+					<tr>
+						<th scope="row"><label for="convoca_expires"><?php esc_html_e( 'Caducidad', 'convoca-gateway' ); ?></label></th>
+						<td>
+							<input type="date" name="expires" id="convoca_expires" value="<?php echo esc_attr( $fecha ); ?>">
+							<label style="margin-left:1rem;">
+								<input type="checkbox" name="never_expires" value="1" <?php checked( $nunca ); ?>>
+								<?php esc_html_e( 'Sin caducidad', 'convoca-gateway' ); ?>
+							</label>
+							<p class="description"><?php esc_html_e( 'Con la casilla marcada el enlace no caduca nunca. Sin fecha y sin casilla se aplica la caducidad por defecto del plugin.', 'convoca-gateway' ); ?></p>
+						</td>
+					</tr>
+					<tr>
+						<th scope="row"><label for="convoca_email"><?php esc_html_e( 'Email de notificación', 'convoca-gateway' ); ?></label></th>
+						<td>
+							<input type="email" name="email" id="convoca_email" class="regular-text" value="<?php echo esc_attr( (string) $meta['recipient_email'] ); ?>">
+							<p class="description"><?php esc_html_e( 'Opcional. Es también el correo del recibo si lo deja quien paga.', 'convoca-gateway' ); ?></p>
+						</td>
+					</tr>
+				</table>
+
+				<p class="submit">
+					<button type="submit" class="button button-primary"><?php esc_html_e( 'Guardar cambios', 'convoca-gateway' ); ?></button>
+					<a class="button" href="<?php echo esc_url( $volver ); ?>"><?php esc_html_e( 'Cancelar', 'convoca-gateway' ); ?></a>
+					<a class="button button-link-delete" href="<?php echo esc_url( admin_url( 'admin.php?page=conv-gateway-links&action=delete&id=' . $id ) ); ?>"><?php esc_html_e( 'Eliminar este enlace', 'convoca-gateway' ); ?></a>
+				</p>
+			</form>
+		</div>
+		<?php
+	}
+
+	/**
+	 * Guarda los cambios del enlace (admin-post).
+	 */
+	public function handle_save(): void {
+		check_admin_referer( 'convoca_gateway_save_link' );
+
+		if ( ! Admin_Record_Actions::user_can() ) {
+			wp_die( esc_html__( 'No tienes permiso para editar enlaces de pago.', 'convoca-gateway' ), 403 );
+		}
+
+		$id = absint( wp_unslash( $_POST['id'] ?? 0 ) );
+		if ( ! $id || 'pago' !== get_post_type( $id ) ) {
+			wp_die( esc_html__( 'Enlace no encontrado.', 'convoca-gateway' ), 404 );
+		}
+
+		$destino = admin_url( 'admin.php?page=conv-gateway-links&action=edit&id=' . $id );
+
+		$concepto = sanitize_text_field( wp_unslash( $_POST['concepto'] ?? '' ) );
+		if ( '' === $concepto ) {
+			wp_safe_redirect( add_query_arg( 'convoca_save_error', 'concepto', $destino ) );
+			exit;
+		}
+
+		// Importe vacío = enlace de donativo (importe libre).
+		$importe_crudo = trim( (string) wp_unslash( $_POST['importe'] ?? '' ) );
+		$abierto       = ( '' === $importe_crudo );
+		$cents         = $abierto ? 0 : (int) round( (float) str_replace( ',', '.', $importe_crudo ) * 100 );
+
+		if ( ! $abierto && $cents < 50 ) {
+			wp_safe_redirect( add_query_arg( 'convoca_save_error', 'importe', $destino ) );
+			exit;
+		}
+
+		$permitidos = array( 'any', 'tarjeta', 'bizum', 'transferencia' );
+		$method     = sanitize_key( wp_unslash( $_POST['method'] ?? 'any' ) );
+		if ( ! in_array( $method, $permitidos, true ) ) {
+			$method = 'any';
+		}
+
+		$email = sanitize_email( wp_unslash( $_POST['email'] ?? '' ) );
+		$nunca = ! empty( $_POST['never_expires'] );
+		$fecha = sanitize_text_field( wp_unslash( $_POST['expires'] ?? '' ) );
+
+		if ( $nunca ) {
+			$expira = 0;
+		} elseif ( '' !== $fecha ) {
+			$expira = (int) strtotime( $fecha . ' 23:59:59' );
+		} else {
+			$expira = Link_Expiry::compute_expiry_timestamp( Link_Expiry::default_expiry_days() );
+		}
+
+		update_post_meta( $id, '_convoca_product_desc', $concepto );
+		update_post_meta( $id, '_convoca_amount_cents', $cents );
+		update_post_meta( $id, '_convoca_open_amount', $abierto ? '1' : '' );
+		update_post_meta( $id, '_convoca_method', $method );
+		update_post_meta( $id, '_convoca_recipient_email', $email );
+		update_post_meta( $id, '_convoca_expires_at', $expira );
+
+		// El token (`_convoca_link_key`) NO se toca a propósito: la URL publicada sigue valiendo.
+		$order_id = (string) get_post_meta( $id, '_convoca_order_id', true );
+		$titulo   = $abierto
+			? sprintf( '%s — %s — Enlace de donativo (importe libre)', $order_id, $concepto )
+			: sprintf( '%s — %s€ — Enlace de pago', $order_id, number_format( $cents / 100, 2, ',', '.' ) );
+
+		wp_update_post(
+			array(
+				'ID'         => $id,
+				'post_title' => $titulo,
+			)
+		);
+
+		\Convoca\Core\Logger::info(
+			sprintf(
+				'Enlace #%d editado: concepto «%s», importe %s, método %s, caduca %s.',
+				$id,
+				$concepto,
+				$abierto ? 'libre' : number_format( $cents / 100, 2, ',', '.' ) . '€',
+				$method,
+				$expira ? wp_date( 'd/m/Y', $expira ) : 'nunca'
+			),
+			'Gateway/LinkEdit',
+			$id
+		);
+
+		wp_safe_redirect( add_query_arg( 'convoca_saved', 1, $destino ) );
+		exit;
 	}
 }

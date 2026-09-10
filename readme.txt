@@ -4,7 +4,7 @@ Tags: payments, redsys, donations, fees, tpv
 Requires at least: 6.4
 Tested up to: 7.1
 Requires PHP: 8.1
-Stable tag: 2.7.4
+Stable tag: 2.8.0
 License: GPL-2.0-or-later
 License URI: https://www.gnu.org/licenses/gpl-2.0.html
 
@@ -35,6 +35,12 @@ This plugin connects to the Redsys payment gateway to process transactions. Paym
 4. Configure your Redsys account in Settings > Convoca Gateway
 
 == Changelog ==
+
+= 2.8.0 =
+* Ya se pueden eliminar pagos, sea cual sea su estado, con una pantalla de confirmación que avisa de si está pagado, de si tiene recibo y de si procede de una inscripción.
+* Los enlaces de pago generados ya se pueden editar (concepto, importe o importe libre, método, caducidad y email) y eliminar. La dirección del enlace no cambia al editarlo.
+* El borrado también va en bloque desde los dos listados, con la misma confirmación.
+* El borrado es definitivo y queda registrado en el diario del plugin; los pagos hechos desde un enlace no se borran al borrar el enlace.
 
 = 2.7.4 =
 * El aviso de seguridad habla en primera persona: «No almacenamos tus datos bancarios».
