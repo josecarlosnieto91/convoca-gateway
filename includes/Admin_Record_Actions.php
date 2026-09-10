@@ -256,7 +256,7 @@ class Admin_Record_Actions {
 								<td><?php echo esc_html( $meta['product_desc'] ?: '—' ); ?></td>
 								<td><?php echo esc_html( ! empty( $meta['open_amount'] ) ? __( 'Importe libre', 'convoca-gateway' ) : CPT_Pago::format_amount( (int) $meta['amount_cents'] ) ); ?></td>
 							<?php else : ?>
-								<td><?php echo esc_html( CPT_Pago::format_amount( (int) $meta['amount_cents'] ) ); ?></td>
+								<td><?php echo esc_html( ! empty( $meta['open_amount'] ) ? __( 'Importe libre', 'convoca-gateway' ) : CPT_Pago::format_amount( (int) $meta['amount_cents'] ) ); ?></td>
 								<td><?php echo wp_kses_post( CPT_Pago::badge( $meta['status'] ?? '' ) ); ?></td>
 								<td><?php echo esc_html( $meta['created_at'] ?? '' ); ?></td>
 							<?php endif; ?>

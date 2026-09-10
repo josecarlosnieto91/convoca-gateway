@@ -1452,6 +1452,9 @@ class Payment_Handler {
 				'email'      => $email,
 				'method'     => $method,
 				'expires_at' => 'never',
+				// Un cobro del formulario no es un enlace: si no se distingue, aparece
+				// en el listado de enlaces y desaparece del de pagos.
+				'origin'     => 'manual',
 			)
 		);
 

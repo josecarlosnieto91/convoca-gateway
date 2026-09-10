@@ -169,8 +169,9 @@ class Admin_Payments extends \WP_List_Table {
 		echo '<select name="origin_filter">';
 		printf( '<option value="">— %s —</option>', esc_html__( 'Todos los orígenes', 'convoca-gateway' ) );
 		foreach ( array(
-			'enroll'  => 'Actividades',
-			'members' => 'Socio/a',
+			'enroll'   => 'Actividades',
+			'members'  => 'Socio/a',
+			'donativo' => 'Donaciones',
 		) as $key => $label ) {
 			printf( '<option value="%s"%s>%s</option>', esc_attr( $key ), selected( $origin_filter, $key, false ), esc_html( $label ) );
 		}
@@ -218,6 +219,23 @@ class Admin_Payments extends \WP_List_Table {
 				'compare' => 'LIKE',
 			);
 		}
+
+		// Un enlace de pago es una plantilla, no un cobro: vive en «Enlaces de Pago».
+		// Se excluye aquí para que no se confunda con un pago pendiente. La condición va
+		// con NOT EXISTS porque los registros antiguos pueden no tener el metadato, y un
+		// `!=` a secas los dejaría fuera.
+		$args['meta_query']['convoca_sin_enlaces'] = array(
+			'relation' => 'OR',
+			array(
+				'key'     => '_convoca_origin',
+				'value'   => 'link_payment',
+				'compare' => '!=',
+			),
+			array(
+				'key'     => '_convoca_origin',
+				'compare' => 'NOT EXISTS',
+			),
+		);
 
 		// Filters.
 		foreach ( array( 'status', 'method', 'origin' ) as $key ) {
@@ -301,6 +319,12 @@ class Admin_Payments extends \WP_List_Table {
 	 */
 	public function column_amount( $item ): string {
 		$meta = CPT_Pago::get_meta( $item->ID );
+
+		// Un enlace de donativo no tiene importe: lo pone quien aporta.
+		if ( ! empty( $meta['open_amount'] ) ) {
+			return esc_html__( 'Importe libre', 'convoca-gateway' );
+		}
+
 		return CPT_Pago::format_amount( $meta['amount_cents'] );
 	}
 
@@ -332,9 +356,11 @@ class Admin_Payments extends \WP_List_Table {
 	public function column_origin( $item ): string {
 		$meta = CPT_Pago::get_meta( $item->ID );
 		return match ( $meta['origin'] ) {
-			'enroll' => __( 'Inscripción', 'convoca-gateway' ),
-			'members' => __( 'Socio/a', 'convoca-gateway' ),
-			default => $meta['origin'],
+			'enroll'       => __( 'Inscripción', 'convoca-gateway' ),
+			'members'      => __( 'Socio/a', 'convoca-gateway' ),
+			'manual'       => __( 'Formulario web', 'convoca-gateway' ),
+			'donativo'     => __( 'Donación', 'convoca-gateway' ),
+			default        => $meta['origin'],
 		};
 	}
 

@@ -162,13 +162,20 @@ check( 'pagos', str_contains( $A::list_url( 'pago' ), 'page=conv-gateway-payment
 check( 'enlaces', str_contains( $A::list_url( 'enlace' ), 'page=conv-gateway-links' ) && 'enlace' === $A::field( 'enlace' ) );
 
 echo "-- los listados están cableados\n";
-$pagos   = (string) file_get_contents( $G . '/includes/Admin_Payments.php' );
-$enlaces = (string) file_get_contents( $G . '/includes/Admin_Links.php' );
+// Se compara con los espacios colapsados: en el código las columnas van alineadas
+// y una comprobación a pelo por cadena falla por un espacio de más.
+$plano   = static fn( string $f ): string => (string) preg_replace( '/\s+/', ' ', (string) file_get_contents( $G . '/includes/' . $f ) );
+$pagos   = $plano( 'Admin_Payments.php' );
+$enlaces = $plano( 'Admin_Links.php' );
 check( 'Pagos: acción en bloque y de fila', str_contains( $pagos, "'convoca_delete' => __( 'Eliminar'" ) && str_contains( $pagos, 'action=delete&id=' ) );
 check( 'Pagos: despacha a la confirmación y avisa', str_contains( $pagos, 'Admin_Record_Actions::render_confirm' ) && str_contains( $pagos, "maybe_notice( 'pago' )" ) );
 check( 'Enlaces: bloque, editar y eliminar', str_contains( $enlaces, "'convoca_delete' => __( 'Eliminar'" ) && str_contains( $enlaces, 'action=edit&id=' ) && str_contains( $enlaces, 'action=delete&id=' ) );
 check( 'Enlaces: edición y guardado enganchados', str_contains( $enlaces, 'function render_edit' ) && str_contains( $enlaces, 'function handle_save' ) && str_contains( $enlaces, 'admin_post_convoca_gateway_save_link' ) );
 check( 'Enlaces: al guardar no se toca el token', str_contains( $enlaces, 'la URL publicada sigue valiendo' ) );
+check( 'Pagos: los enlaces quedan fuera del listado', str_contains( $pagos, "'convoca_sin_enlaces'" ) && str_contains( $pagos, "'value' => 'link_payment'" ) && str_contains( $pagos, "'compare' => 'NOT EXISTS'" ) );
+check( 'Pagos: orígenes en castellano y filtro de donaciones', str_contains( $pagos, "'donativo' => __( 'Donación'" ) && str_contains( $pagos, "'donativo' => 'Donaciones'" ) && str_contains( $pagos, "'manual' => __( 'Formulario web'" ) );
+check( 'Pagos: el importe libre no se pinta como 0,00 €', str_contains( $pagos, "__( 'Importe libre'" ) );
+check( 'un cobro del formulario no se marca como enlace', str_contains( $plano( 'Payment_Handler.php' ), "'origin' => 'manual'" ) );
 check( 'la clase se carga al arrancar', str_contains( (string) file_get_contents( $G . '/convoca-gateway.php' ), 'new Admin_Record_Actions()' ) );
 
 printf( "\n   RESULTADO: %s\n", 0 === $f ? 'TODO OK' : $f . ' FALLO(S)' );
