@@ -12,31 +12,31 @@ parameters:
 			- ../dev-tools
 			- ../node_modules (?)
 	scanFiles:
-		- /home/josecnr91/.openclaw/workspace/convoca-core/includes/Admin_Analytics.php
-		- /home/josecnr91/.openclaw/workspace/convoca-core/includes/admin-appearance.php
-		- /home/josecnr91/.openclaw/workspace/convoca-core/includes/Admin_Backup.php
-		- /home/josecnr91/.openclaw/workspace/convoca-core/includes/admin-global-menu.php
-		- /home/josecnr91/.openclaw/workspace/convoca-core/includes/Admin_Logs_List.php
-		- /home/josecnr91/.openclaw/workspace/convoca-core/includes/Admin_Setup_Wizard.php
-		- /home/josecnr91/.openclaw/workspace/convoca-core/includes/Admin_Templates.php
-		- /home/josecnr91/.openclaw/workspace/convoca-core/includes/Blocks_Common.php
-		- /home/josecnr91/.openclaw/workspace/convoca-core/includes/Capabilities.php
-		- /home/josecnr91/.openclaw/workspace/convoca-core/includes/Common_Upgrade_Manager.php
-		- /home/josecnr91/.openclaw/workspace/convoca-core/includes/Email_Layout.php
-		- /home/josecnr91/.openclaw/workspace/convoca-core/includes/Event_Style_Registry.php
-		- /home/josecnr91/.openclaw/workspace/convoca-core/includes/Features.php
-		- /home/josecnr91/.openclaw/workspace/convoca-core/includes/Installer.php
-		- /home/josecnr91/.openclaw/workspace/convoca-core/includes/License_Manager.php
-		- /home/josecnr91/.openclaw/workspace/convoca-core/includes/Logger.php
-		- /home/josecnr91/.openclaw/workspace/convoca-core/includes/Memory_Report.php
-		- /home/josecnr91/.openclaw/workspace/convoca-core/includes/Notifications.php
-		- /home/josecnr91/.openclaw/workspace/convoca-core/includes/PDF_Serve.php
-		- /home/josecnr91/.openclaw/workspace/convoca-core/includes/Push_Notifier.php
-		- /home/josecnr91/.openclaw/workspace/convoca-core/includes/Settings_Helper.php
-		- /home/josecnr91/.openclaw/workspace/convoca-core/includes/Signature.php
-		- /home/josecnr91/.openclaw/workspace/convoca-core/includes/Upgrade_Manager.php
-		- /home/josecnr91/.openclaw/workspace/convoca-core/includes/Utils.php
-		- /home/josecnr91/.openclaw/workspace/convoca-core/includes/Webhook_Manager.php
+		- /home/josecnr91/repos/convoca-core/includes/Admin_Analytics.php
+		- /home/josecnr91/repos/convoca-core/includes/admin-appearance.php
+		- /home/josecnr91/repos/convoca-core/includes/Admin_Backup.php
+		- /home/josecnr91/repos/convoca-core/includes/admin-global-menu.php
+		- /home/josecnr91/repos/convoca-core/includes/Admin_Logs_List.php
+		- /home/josecnr91/repos/convoca-core/includes/Admin_Setup_Wizard.php
+		- /home/josecnr91/repos/convoca-core/includes/Admin_Templates.php
+		- /home/josecnr91/repos/convoca-core/includes/Blocks_Common.php
+		- /home/josecnr91/repos/convoca-core/includes/Capabilities.php
+		- /home/josecnr91/repos/convoca-core/includes/Common_Upgrade_Manager.php
+		- /home/josecnr91/repos/convoca-core/includes/Email_Layout.php
+		- /home/josecnr91/repos/convoca-core/includes/Event_Style_Registry.php
+		- /home/josecnr91/repos/convoca-core/includes/Features.php
+		- /home/josecnr91/repos/convoca-core/includes/Installer.php
+		- /home/josecnr91/repos/convoca-core/includes/License_Manager.php
+		- /home/josecnr91/repos/convoca-core/includes/Logger.php
+		- /home/josecnr91/repos/convoca-core/includes/Memory_Report.php
+		- /home/josecnr91/repos/convoca-core/includes/Notifications.php
+		- /home/josecnr91/repos/convoca-core/includes/PDF_Serve.php
+		- /home/josecnr91/repos/convoca-core/includes/Push_Notifier.php
+		- /home/josecnr91/repos/convoca-core/includes/Settings_Helper.php
+		- /home/josecnr91/repos/convoca-core/includes/Signature.php
+		- /home/josecnr91/repos/convoca-core/includes/Upgrade_Manager.php
+		- /home/josecnr91/repos/convoca-core/includes/Utils.php
+		- /home/josecnr91/repos/convoca-core/includes/Webhook_Manager.php
 	bootstrapFiles:
 		- ../vendor/php-stubs/wordpress-stubs/wordpress-stubs.php
 		- ../phpstan-bootstrap.php

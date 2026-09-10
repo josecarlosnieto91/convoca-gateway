@@ -28,7 +28,10 @@ if ( ! defined( 'WP_UNINSTALL_PLUGIN' ) ) {
 // ─── Keep data mode ───
 // Define CONVOCA_KEEP_DATA_ON_UNINSTALL in wp-config.php to preserve all data
 // when uninstalling. Useful for temporary deactivation + reactivation.
-if ( defined( 'CONVOCA_KEEP_DATA_ON_UNINSTALL' ) && CONVOCA_KEEP_DATA_ON_UNINSTALL ) {
+$convoca_conservar = ( defined( 'CONVOCA_KEEP_DATA_ON_UNINSTALL' ) && CONVOCA_KEEP_DATA_ON_UNINSTALL )
+	|| 1 === (int) get_option( 'convoca_uninstall_keep_data', 0 );
+
+if ( $convoca_conservar ) {
 	return;
 }
 
@@ -53,3 +56,11 @@ $payments = get_posts(
 foreach ( $payments as $payment ) {
 	wp_delete_post( $payment->ID, true );
 }
+
+// ─── Transients con prefijo del plugin ───
+// phpcs:ignore WordPress.DB.DirectDatabaseQuery, WordPress.DB.PreparedSQL.InterpolatedNotPrepared
+$wpdb->query(
+	"DELETE FROM {$wpdb->options}
+	 WHERE option_name LIKE '_transient_convoca_gateway_%'
+	    OR option_name LIKE '_transient_timeout_convoca_gateway_%'"
+);

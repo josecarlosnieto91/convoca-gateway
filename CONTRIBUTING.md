@@ -14,7 +14,7 @@
 El entorno local de desarrollo está en **Podman** y se levanta con:
 
 ```bash
-cd ~/.openclaw/workspace/convoca-dev
+cd ~/repos/convoca-dev
 podman compose up -d
 ```
 
