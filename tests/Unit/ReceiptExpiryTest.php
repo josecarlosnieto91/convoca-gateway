@@ -119,6 +119,10 @@ namespace Convoca\Gateway\Tests {
 
 		public function test_regenerate_link_keeps_order_id_and_refreshes_expiry(): void {
 			$id = 123;
+			// El bootstrap ya define get_post() (tipo por ID, 'miembro' por defecto);
+			// aquí el pago tiene que ser de tipo 'pago' para que no devuelva
+			// pago_not_found.
+			$GLOBALS['_wp_stores']['post_types'][ $id ] = 'pago';
 			$GLOBALS['__gw_meta'][ $id ] = array(
 				'_convoca_order_id'   => '260901ABCDEF',
 				'_convoca_link_key'   => 'testtoken',
