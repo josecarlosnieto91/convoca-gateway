@@ -148,9 +148,9 @@ check( 'sin ids no hace nada', 0 === $A::delete_records( array() ) && 0 === $A::
 
 echo "-- aviso de resultado\n";
 $_GET = array( $A::FLAG => '1' );
-check( 'en singular', str_contains( capturar( static fn() => $A::maybe_notice( 'pago' ) ), 'Se ha eliminado 1 registro' ) );
+check( 'en singular', str_contains( capturar( static fn() => $A::maybe_notice( 'pago' ) ), 'Se ha eliminado 1 pago' ) );
 $_GET = array( $A::FLAG => '3' );
-check( 'en plural', str_contains( capturar( static fn() => $A::maybe_notice( 'enlace' ) ), 'Se han eliminado 3 registros' ) );
+check( 'en plural', str_contains( capturar( static fn() => $A::maybe_notice( 'enlace' ) ), 'Se han eliminado 3 enlaces' ) );
 $_GET = array( $A::FLAG_ERROR => '1' );
 $html = capturar( static fn() => $A::maybe_notice( 'pago' ) );
 check( 'y el error se explica', str_contains( $html, 'notice-error' ) && str_contains( $html, 'permisos' ) );
@@ -175,6 +175,8 @@ check( 'Enlaces: al guardar no se toca el token', str_contains( $enlaces, 'la UR
 check( 'Pagos: los enlaces quedan fuera del listado', str_contains( $pagos, "'convoca_sin_enlaces'" ) && str_contains( $pagos, "'value' => 'link_payment'" ) && str_contains( $pagos, "'compare' => 'NOT EXISTS'" ) );
 check( 'Pagos: orígenes en castellano y filtro de donaciones', str_contains( $pagos, "'donativo' => __( 'Donación'" ) && str_contains( $pagos, "'donativo' => 'Donaciones'" ) && str_contains( $pagos, "'manual' => __( 'Formulario web'" ) );
 check( 'Pagos: el importe libre no se pinta como 0,00 €', str_contains( $pagos, "__( 'Importe libre'" ) );
+check( 'el enlace puede emitir cobros y se cuentan', str_contains( $plano( 'Payment_Handler.php' ), "'origin' => 'enlace'" ) && str_contains( $plano( 'CPT_Pago.php' ), 'function cobros_emitidos' ) );
+check( 'el uso del enlace va firmado y no emite al abrir', str_contains( $plano( 'Payment_Handler.php' ), "'convoca_link_nonce'" ) && str_contains( $plano( 'Payment_Handler.php' ), 'enviar_formulario' ) );
 check( 'un cobro del formulario no se marca como enlace', str_contains( $plano( 'Payment_Handler.php' ), "'origin' => 'manual'" ) );
 check( 'la clase se carga al arrancar', str_contains( (string) file_get_contents( $G . '/convoca-gateway.php' ), 'new Admin_Record_Actions()' ) );
 

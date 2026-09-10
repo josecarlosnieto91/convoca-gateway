@@ -399,19 +399,26 @@ class Payment_Handler {
 			return '<div class="convoca-alert convoca-alert--success">✅ Este pago ya ha sido completado' . ( $paid_at ? ' el ' . $paid_at : '' ) . '.</div>';
 		}
 
-		// El campo «Email de notificación» del formulario no se leía en ningún sitio: se
-		// guarda como email de quien paga, que es lo que usa el recibo.
-		$payer_email = sanitize_email( wp_unslash( $_GET['convoca_gateway_email'] ?? '' ) );
-		if ( '' !== $payer_email && filter_var( $payer_email, FILTER_VALIDATE_EMAIL ) ) {
-			update_post_meta( $pago_id, '_convoca_payer_email', $payer_email );
-		}
-
 		$product_desc     = get_post_meta( $pago_id, '_convoca_product_desc', true );
 		$amount_cents     = (int) get_post_meta( $pago_id, '_convoca_amount_cents', true );
 		$suggested_method = get_post_meta( $pago_id, '_convoca_method', true );
 		$recipient_email  = get_post_meta( $pago_id, '_convoca_recipient_email', true );
 		$params           = get_post_meta( $pago_id, '_convoca_params', true );
 		$params           = is_array( $params ) ? $params : array();
+
+		// Un enlace es una plantilla, no un cobro: al usarlo emite un registro de pago
+		// propio y sigue siendo enlace para el siguiente uso. Antes el enlace se
+		// convertía él mismo en el cobro y quedaba gastado al primer pago.
+		if ( 'link_payment' === ( $meta['origin'] ?? '' ) ) {
+			return $this->handle_link_use( $pago_id, $meta, $product_desc, $amount_cents, $suggested_method, $recipient_email, $params );
+		}
+
+		// El campo «Email de notificación» del formulario no se leía en ningún sitio: se
+		// guarda como email de quien paga, que es lo que usa el recibo.
+		$payer_email = sanitize_email( wp_unslash( $_GET['convoca_gateway_email'] ?? '' ) );
+		if ( '' !== $payer_email && filter_var( $payer_email, FILTER_VALIDATE_EMAIL ) ) {
+			update_post_meta( $pago_id, '_convoca_payer_email', $payer_email );
+		}
 
 		$selected_method = sanitize_text_field( wp_unslash( $_GET['convoca_gateway_method'] ?? '' ) );
 		if ( $selected_method && in_array( $selected_method, array( 'tarjeta', 'bizum' ), true ) ) {
@@ -428,9 +435,108 @@ class Payment_Handler {
 	}
 
 	/**
+	 * Uso de un enlace: emite el cobro y lleva al pago.
+	 *
+	 * El enlace no se toca (sigue con su estado, su caducidad y su token), así que se
+	 * puede usar tantas veces como haga falta: cada uso deja su propio registro en
+	 * «Todos los Pagos». El cobro se emite al enviar el formulario, no al abrir la
+	 * página: una visita (o un rastreador) no deja registros sueltos.
+	 *
+	 * @param int    $enlace_id        ID del enlace (plantilla).
+	 * @param array  $meta             Metadatos del enlace.
+	 * @param string $product_desc     Concepto del enlace.
+	 * @param int    $amount_cents     Importe del enlace en céntimos.
+	 * @param string $suggested_method Método sugerido.
+	 * @param string $recipient_email  Email de notificación guardado en el enlace.
+	 * @param array  $params           Datos adicionales del enlace.
+	 */
+	private function handle_link_use( int $enlace_id, array $meta, string $product_desc, int $amount_cents, string $suggested_method, string $recipient_email, array $params ): string {
+		if ( ! isset( $_POST['convoca_link_nonce'] ) ) {
+			// Paso 1: resumen, correo y métodos (botones que envían el formulario).
+			return $this->render_link_form( $enlace_id, $meta, $product_desc, $amount_cents, $suggested_method, $recipient_email, $params );
+		}
+
+		$nonce = sanitize_text_field( wp_unslash( $_POST['convoca_link_nonce'] ) );
+		if ( ! wp_verify_nonce( $nonce, 'convoca_link_' . $enlace_id ) ) {
+			\Convoca\Core\Logger::warning( "Uso de enlace con nonce inválido. Enlace ID: $enlace_id", 'Gateway/LinkPayment', $enlace_id );
+
+			return $this->render_payment_alert( __( 'La sesión ha caducado. Vuelve a cargar el enlace.', 'convoca-gateway' ) );
+		}
+
+		$method = sanitize_text_field( wp_unslash( $_POST['convoca_gateway_method'] ?? '' ) );
+		if ( ! in_array( $method, array( 'tarjeta', 'bizum', 'transferencia' ), true ) ) {
+			return $this->render_payment_alert( __( 'Elige un método de pago.', 'convoca-gateway' ) );
+		}
+
+		$payer_email = sanitize_email( wp_unslash( $_POST['convoca_gateway_email'] ?? $recipient_email ) );
+
+		$cobro = $this->emitir_cobro_del_enlace( $enlace_id, $meta, $method, $payer_email );
+		if ( is_wp_error( $cobro ) ) {
+			return $this->render_payment_alert( $cobro->get_error_message() );
+		}
+
+		$meta_cobro = CPT_Pago::get_meta( $cobro );
+
+		return ( 'transferencia' === $method )
+			? $this->render_transfer_instructions( $cobro, $meta_cobro )
+			: $this->render_redsys_redirect( $cobro, $meta_cobro, $method );
+	}
+
+	/**
+	 * Emite el registro de pago de un uso del enlace.
+	 *
+	 * @param int    $enlace_id   ID del enlace.
+	 * @param array  $meta        Metadatos del enlace.
+	 * @param string $method      Método elegido.
+	 * @param string $payer_email Email de quien paga (recibo), si lo dejó.
+	 * @return int|\WP_Error ID del cobro emitido.
+	 */
+	private function emitir_cobro_del_enlace( int $enlace_id, array $meta, string $method, string $payer_email = '' ): int|\WP_Error {
+		$cobro = CPT_Pago::create_link_payment(
+			array(
+				'amount'      => ( (int) ( $meta['amount_cents'] ?? 0 ) ) / 100,
+				'concepto'    => (string) get_post_meta( $enlace_id, '_convoca_product_desc', true ),
+				'method'      => $method,
+				'expires_at'  => 'never',
+				// Origen propio: el cobro aparece en «Todos los Pagos» y el enlace sigue
+				// siendo enlace (el listado de enlaces filtra por link_payment).
+				'origin'      => 'enlace',
+				'origin_id'   => $enlace_id,
+				'payer_email' => $payer_email,
+			)
+		);
+
+		if ( is_wp_error( $cobro ) ) {
+			return $cobro;
+		}
+
+		$params = get_post_meta( $enlace_id, '_convoca_params', true );
+		if ( is_array( $params ) && ! empty( $params ) ) {
+			update_post_meta( $cobro, '_convoca_params', $params );
+		}
+
+		\Convoca\Core\Logger::info(
+			sprintf( 'Cobro emitido por el enlace #%d: pago #%d por %s (%s).', $enlace_id, $cobro, CPT_Pago::format_amount( (int) ( $meta['amount_cents'] ?? 0 ) ), $method ),
+			'Gateway/LinkPayment',
+			$cobro
+		);
+
+		return (int) $cobro;
+	}
+
+	/**
+	 * Aviso sencillo dentro de la página de pago.
+	 */
+	private function render_payment_alert( string $mensaje ): string {
+		return $this->compact_html(
+			'<div class="conv-payment-wrapper"><div class="convoca-alert convoca-alert--danger">' . esc_html( $mensaje ) . '</div></div>'
+		);
+	}
+
+	/**
 	 * Render payment form for link-generated payments.
 	 */
-	private function render_link_form( int $pago_id, array $meta, string $product_desc, int $amount_cents, string $suggested_method, string $recipient_email, array $params ): string {
+	private function render_link_form( int $pago_id, array $meta, string $product_desc, int $amount_cents, string $suggested_method, string $recipient_email, array $params, bool $es_plantilla = true ): string {
 		$amount_display = CPT_Pago::format_amount( $amount_cents );
 		$base_url       = self::get_payment_link( $pago_id, (string) get_post_meta( $pago_id, '_convoca_link_key', true ), (int) get_post_meta( $pago_id, '_convoca_expires_at', true ) );
 
@@ -472,6 +578,10 @@ class Payment_Handler {
 			<?php endif; ?>
 
 			<form method="post" action="" class="conv-link-form">
+				<?php if ( $es_plantilla ) : ?>
+					<?php wp_nonce_field( 'convoca_link_' . $pago_id, 'convoca_link_nonce' ); ?>
+				<?php endif; ?>
+
 				<div class="conv-email-field">
 					<label for="convoca_gateway_email"><?php esc_html_e( 'Email de notificación', 'convoca-gateway' ); ?></label>
 					<input type="email" name="convoca_gateway_email" id="convoca_gateway_email" value="<?php echo esc_attr( $recipient_email ); ?>" class="regular-text">
@@ -480,38 +590,10 @@ class Payment_Handler {
 
 				<?php
 				// Tarjetas compartidas: tarjeta y Bizum en paralelo, transferencia a lo ancho.
-				echo $this->render_method_picker( $base_url, __( 'Selecciona un método de pago', 'convoca-gateway' ), array(), $suggested ); // phpcs:ignore WordPress.Security.EscapeOutput.OutputNotEscaped -- Marcado propio, ya escapado.
+				// En un enlace son botones que envían el formulario: el cobro se emite al
+				// pulsar, no al abrir la página (una visita no deja registros de pago).
+				echo $this->render_method_picker( $base_url, __( 'Selecciona un método de pago', 'convoca-gateway' ), array(), $suggested, $es_plantilla ); // phpcs:ignore WordPress.Security.EscapeOutput.OutputNotEscaped -- Marcado propio, ya escapado.
 				?>
-
-				<script>
-				// El email de quien paga viaja en el enlace del método elegido: es lo que
-				// permite enviarle el recibo (antes el campo se pintaba y se ignoraba).
-				( function () {
-					var input = document.getElementById( 'convoca_gateway_email' );
-					if ( ! input ) { return; }
-
-					var links = document.querySelectorAll( 'a.conv-method' );
-
-					function sync() {
-						var value = input.value.trim();
-
-						Array.prototype.forEach.call( links, function ( link ) {
-							var url = new URL( link.getAttribute( 'href' ), window.location.origin );
-
-							if ( value ) {
-								url.searchParams.set( 'convoca_gateway_email', value );
-							} else {
-								url.searchParams.delete( 'convoca_gateway_email' );
-							}
-
-							link.setAttribute( 'href', url.toString() );
-						} );
-					}
-
-					input.addEventListener( 'input', sync );
-					sync();
-				} )();
-				</script>
 			</form>
 		</div>
 		<style>
@@ -652,7 +734,7 @@ class Payment_Handler {
 	 * @param array  $args      Argumentos extra que añadir a cada enlace.
 	 * @param string $suggested Slug a destacar con la etiqueta «Recomendado».
 	 */
-	private function render_method_cards( string $base_url, array $args = array(), string $suggested = '' ): string {
+	private function render_method_cards( string $base_url, array $args = array(), string $suggested = '', bool $enviar_formulario = false ): string {
 		$methods = $this->enabled_methods();
 
 		if ( empty( $methods ) ) {
@@ -675,16 +757,29 @@ class Payment_Handler {
 					$class .= ' conv-method--suggested';
 				}
 				?>
-				<a href="<?php echo esc_url( $url ); ?>" class="<?php echo esc_attr( $class ); ?>">
-					<span class="conv-method-icon"><?php echo esc_html( $method['icon'] ); ?></span>
-					<span class="conv-method-text">
-						<span class="conv-method-label"><?php echo esc_html( $method['label'] ); ?></span>
-						<span class="conv-method-desc"><?php echo esc_html( $method['desc'] ); ?></span>
-					</span>
-					<?php if ( $slug === $suggested ) : ?>
-						<span class="conv-method-badge"><?php esc_html_e( 'Recomendado', 'convoca-gateway' ); ?></span>
-					<?php endif; ?>
-				</a>
+				<?php if ( $enviar_formulario ) : ?>
+					<button type="submit" name="convoca_gateway_method" value="<?php echo esc_attr( $slug ); ?>" class="<?php echo esc_attr( $class ); ?>">
+						<span class="conv-method-icon"><?php echo esc_html( $method['icon'] ); ?></span>
+						<span class="conv-method-text">
+							<span class="conv-method-label"><?php echo esc_html( $method['label'] ); ?></span>
+							<span class="conv-method-desc"><?php echo esc_html( $method['desc'] ); ?></span>
+						</span>
+						<?php if ( $slug === $suggested ) : ?>
+							<span class="conv-method-badge"><?php esc_html_e( 'Recomendado', 'convoca-gateway' ); ?></span>
+						<?php endif; ?>
+					</button>
+				<?php else : ?>
+					<a href="<?php echo esc_url( $url ); ?>" class="<?php echo esc_attr( $class ); ?>">
+						<span class="conv-method-icon"><?php echo esc_html( $method['icon'] ); ?></span>
+						<span class="conv-method-text">
+							<span class="conv-method-label"><?php echo esc_html( $method['label'] ); ?></span>
+							<span class="conv-method-desc"><?php echo esc_html( $method['desc'] ); ?></span>
+						</span>
+						<?php if ( $slug === $suggested ) : ?>
+							<span class="conv-method-badge"><?php esc_html_e( 'Recomendado', 'convoca-gateway' ); ?></span>
+						<?php endif; ?>
+					</a>
+				<?php endif; ?>
 			<?php endforeach; ?>
 		</div>
 		<?php
@@ -700,10 +795,10 @@ class Payment_Handler {
 	 * @param array  $args      Argumentos extra que añadir a cada enlace.
 	 * @param string $suggested Slug a destacar, si procede.
 	 */
-	private function render_method_picker( string $base_url, string $heading, array $args = array(), string $suggested = '' ): string {
+	private function render_method_picker( string $base_url, string $heading, array $args = array(), string $suggested = '', bool $enviar_formulario = false ): string {
 		return $this->compact_html(
 			'<h4 class="conv-methods-heading">' . esc_html( $heading ) . '</h4>' .
-			$this->render_method_cards( $base_url, $args, $suggested )
+			$this->render_method_cards( $base_url, $args, $suggested, $enviar_formulario )
 		);
 	}
 
@@ -782,6 +877,14 @@ class Payment_Handler {
 				background: #fff;
 				transform: translateY(-4px);
 				box-shadow: 0 8px 20px rgba(255, 135, 0, 0.12);
+			}
+			button.conv-method-card {
+				width: 100%;
+				font: inherit;
+				font-family: inherit;
+				text-align: center;
+				cursor: pointer;
+				appearance: none;
 			}
 			.conv-method-card--wide {
 				grid-column: 1 / -1;

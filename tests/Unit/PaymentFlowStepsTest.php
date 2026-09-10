@@ -357,7 +357,8 @@ namespace Convoca\Gateway\Tests {
 			$this->assertStringContainsString( 'conv-method--suggested', $html, 'El método sugerido se sigue destacando.' );
 			$this->assertStringContainsString( 'Recomendado', $html );
 			$this->assertStringContainsString( 'convoca_gateway_email', $html, 'El email del enlace normal sigue disponible.' );
-			$this->assertStringContainsString( 'a.conv-method', $html, 'El script que arrastra el email apunta a estas tarjetas.' );
+			$this->assertStringContainsString( 'name="convoca_gateway_method"', $html, 'En un enlace los métodos envían el formulario: el cobro se emite al pulsar.' );
+			$this->assertStringContainsString( 'convoca_link_nonce', $html, 'El formulario del enlace va firmado.' );
 		}
 
 		public function test_shared_css_is_printed_only_once_per_page(): void {

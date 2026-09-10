@@ -295,11 +295,11 @@ namespace Convoca\Gateway\Tests {
 		public function test_result_notice_speaks_in_singular_and_plural(): void {
 			$_GET = array( \Convoca\Gateway\Admin_Record_Actions::FLAG => '1' );
 			$uno  = $this->capturar( static fn() => \Convoca\Gateway\Admin_Record_Actions::maybe_notice( 'pago' ) );
-			$this->assertStringContainsString( 'Se ha eliminado 1 registro', $uno );
+			$this->assertStringContainsString( 'Se ha eliminado 1 pago', $uno );
 
 			$_GET    = array( \Convoca\Gateway\Admin_Record_Actions::FLAG => '3' );
 			$varios  = $this->capturar( static fn() => \Convoca\Gateway\Admin_Record_Actions::maybe_notice( 'enlace' ) );
-			$this->assertStringContainsString( 'Se han eliminado 3 registros', $varios );
+			$this->assertStringContainsString( 'Se han eliminado 3 enlaces', $varios, 'El aviso nombra lo que se ha borrado.' );
 
 			$_GET = array();
 			$this->assertSame( '', $this->capturar( static fn() => \Convoca\Gateway\Admin_Record_Actions::maybe_notice( 'pago' ) ) );

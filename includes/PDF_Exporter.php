@@ -55,7 +55,7 @@ class PDF_Exporter {
 		$rows_html = '';
 		$total     = 0;
 		foreach ( $payments as $post ) {
-			$meta  = CPT_Pago::get_meta( $post->ID );
+			$meta   = CPT_Pago::get_meta( $post->ID );
 			$total += (int) $meta['amount_cents'];
 
 			$status_label = CPT_Pago::status()[ $meta['status'] ] ?? $meta['status'];

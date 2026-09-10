@@ -304,8 +304,13 @@ class Admin_Record_Actions {
 			if ( ! empty( $meta['expires_at'] ) && (int) $meta['expires_at'] < time() ) {
 				$avisos[] = __( 'Ya estaba caducado.', 'convoca-gateway' );
 			}
-			if ( 'paid' === ( $meta['status'] ?? '' ) ) {
-				$avisos[] = __( 'Ya se usó una vez.', 'convoca-gateway' );
+			$emitidos = CPT_Pago::cobros_emitidos( (int) $id );
+			if ( $emitidos > 0 ) {
+				$avisos[] = sprintf(
+					/* translators: %d: número de cobros emitidos por el enlace. */
+					_n( 'Ha emitido %d cobro, que no se borra con el enlace.', 'Ha emitido %d cobros, que no se borran con el enlace.', $emitidos, 'convoca-gateway' ),
+					$emitidos
+				);
 			}
 			if ( post_type_exists( 'enroll' ) ) {
 				$avisos[] = __( 'Si el enlace está publicado en una web o un email, dejará de funcionar.', 'convoca-gateway' );
@@ -357,9 +362,9 @@ class Admin_Record_Actions {
 			);
 		}
 
-		$tipo    = isset( $_POST['tipo'] ) ? sanitize_key( wp_unslash( $_POST['tipo'] ) ) : 'pago';
-		$crudo   = isset( $_POST['ids'] ) && is_array( $_POST['ids'] ) ? wp_unslash( $_POST['ids'] ) : array();
-		$ids     = array_values( array_filter( array_map( 'absint', $crudo ) ) );
+		$tipo     = isset( $_POST['tipo'] ) ? sanitize_key( wp_unslash( $_POST['tipo'] ) ) : 'pago';
+		$crudo    = isset( $_POST['ids'] ) && is_array( $_POST['ids'] ) ? wp_unslash( $_POST['ids'] ) : array();
+		$ids      = array_values( array_filter( array_map( 'absint', $crudo ) ) );
 		$borrados = self::delete_records( $ids );
 
 		wp_safe_redirect(
@@ -397,7 +402,7 @@ class Admin_Record_Actions {
 			);
 
 			if ( wp_delete_post( $id, true ) ) {
-				$borrados++;
+				++$borrados;
 				\Convoca\Core\Logger::info( $detalle, 'Gateway/Delete', $id );
 			} else {
 				\Convoca\Core\Logger::error( 'No se pudo eliminar: ' . $detalle, 'Gateway/Delete', $id );
@@ -416,15 +421,16 @@ class Admin_Record_Actions {
 		if ( isset( $_GET[ self::FLAG ] ) ) { // phpcs:ignore WordPress.Security.NonceVerification.Recommended -- solo pinta un aviso.
 			$n = absint( wp_unslash( $_GET[ self::FLAG ] ) );
 
+			// El aviso nombra lo que se ha borrado: no es lo mismo un pago que un enlace.
+			$mensaje = ( 'enlace' === $tipo )
+				/* translators: %d: número de enlaces eliminados. */
+				? _n( 'Se ha eliminado %d enlace.', 'Se han eliminado %d enlaces.', $n, 'convoca-gateway' )
+				/* translators: %d: número de pagos eliminados. */
+				: _n( 'Se ha eliminado %d pago.', 'Se han eliminado %d pagos.', $n, 'convoca-gateway' );
+
 			printf(
 				'<div class="notice notice-success is-dismissible"><p>%s</p></div>',
-				esc_html(
-					sprintf(
-						/* translators: %d: número de registros eliminados. */
-						_n( 'Se ha eliminado %d registro.', 'Se han eliminado %d registros.', $n, 'convoca-gateway' ),
-						$n
-					)
-				)
+				esc_html( sprintf( $mensaje, $n ) )
 			);
 		}
 

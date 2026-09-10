@@ -251,19 +251,24 @@ class Admin_Links extends \WP_List_Table {
 		return sprintf( '<span style="color:%s">%s</span>', $color, wp_date( 'd/m/Y H:i', $meta['expires_at'] ) );
 	}
 
-	/**
-	 * Column renderer.
-	 *
-	 * @param \WP_Post $item Row item (WP_Post from WP_Query).
-	 */
 	public function column_active( $item ): string {
 		$meta = CPT_Pago::get_meta( $item->ID );
 
 		$expired = $meta['expires_at'] > 0 && $meta['expires_at'] < time();
-		$used    = ( $meta['status'] === 'paid' );
 
-		if ( $used ) {
-			return '<span class="convoca-badge convoca-badge--info">' . __( 'Usado', 'convoca-gateway' ) . '</span>';
+		// Un enlace no se gasta: emite un cobro por cada uso. Se cuentan sus cobros
+		// (los pagos con `origin_id` apuntando al enlace), no su propio estado.
+		$emitidos = CPT_Pago::cobros_emitidos( (int) $item->ID );
+
+		if ( $emitidos > 0 && ! $expired ) {
+			return sprintf(
+				'<span class="convoca-badge convoca-badge--info">%s</span>',
+				sprintf(
+					/* translators: %d: número de cobros emitidos por el enlace. */
+					_n( '%d cobro', '%d cobros', $emitidos, 'convoca-gateway' ),
+					$emitidos
+				)
+			);
 		}
 
 		if ( $expired ) {

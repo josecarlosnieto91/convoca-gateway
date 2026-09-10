@@ -4,7 +4,7 @@ Tags: payments, redsys, donations, fees, tpv
 Requires at least: 6.4
 Tested up to: 7.1
 Requires PHP: 8.1
-Stable tag: 2.8.1
+Stable tag: 2.9.0
 License: GPL-2.0-or-later
 License URI: https://www.gnu.org/licenses/gpl-2.0.html
 
@@ -35,6 +35,11 @@ This plugin connects to the Redsys payment gateway to process transactions. Paym
 4. Configure your Redsys account in Settings > Convoca Gateway
 
 == Changelog ==
+
+= 2.9.0 =
+* Un enlace de pago ya no se convierte en el cobro: cada vez que se usa emite un registro de pago propio, que aparece en «Todos los Pagos» con el origen «Cobro con enlace». Un enlace puede emitir uno o más cobros mientras no haya caducado ni se haya eliminado.
+* El enlace no se gasta al usarse: mantiene su estado, su caducidad y su dirección. El listado de enlaces muestra cuántos cobros ha emitido.
+* El cobro se emite al enviar el formulario del método de pago, no al abrir la página: una visita o un rastreador no deja registros sueltos.
 
 = 2.8.1 =
 * Los enlaces de pago ya no aparecen en el listado de pagos: son plantillas y su sitio es «Enlaces de Pago». Así no se confunden con un pago pendiente.

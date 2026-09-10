@@ -97,33 +97,33 @@ class Admin_Settings {
 		);
 
 		$fields = array(
-			'merchant_code'       => array(
+			'merchant_code'  => array(
 				'label' => 'FUC (Código comercio)',
 				'type'  => 'text',
 				'desc'  => 'Ejemplo: 999008881 (test)',
 			),
-			'terminal'            => array(
+			'terminal'       => array(
 				'label' => 'Terminal',
 				'type'  => 'text',
 				'desc'  => 'Normalmente 001',
 			),
-			'default_method'      => array(
+			'default_method' => array(
 				'label'   => __( 'Método de pago por defecto', 'convoca-gateway' ),
 				'type'    => 'select',
 				'options' => array(
-					'any'          => __( 'Cualquiera (el usuario elige)', 'convoca-gateway' ),
-					'tarjeta'      => __( 'Tarjeta', 'convoca-gateway' ),
-					'bizum'        => __( 'Bizum', 'convoca-gateway' ),
+					'any'           => __( 'Cualquiera (el usuario elige)', 'convoca-gateway' ),
+					'tarjeta'       => __( 'Tarjeta', 'convoca-gateway' ),
+					'bizum'         => __( 'Bizum', 'convoca-gateway' ),
 					'transferencia' => __( 'Transferencia', 'convoca-gateway' ),
 				),
 				'desc'    => __( 'Método preseleccionado cuando el pago no especifica uno (inscripciones, altas, enlaces «Cualquiera»). El pagador siempre puede cambiarlo en la página de pago.', 'convoca-gateway' ),
 			),
-			'secret_key'          => array(
+			'secret_key'     => array(
 				'label' => 'Clave secreta (SHA-256)',
 				'type'  => 'password',
 				'desc'  => 'La clave de firma proporcionada por el banco',
 			),
-			'environment'         => array(
+			'environment'    => array(
 				'label'   => 'Entorno',
 				'type'    => 'select',
 				'options' => array(
@@ -430,7 +430,7 @@ class Admin_Settings {
 		if ( array_key_exists( $key, $template_defaults ) && '' === $value ) {
 			$value = $template_defaults[ $key ];
 		}
-		$type     = $field['type'] ?? 'text';
+		$type = $field['type'] ?? 'text';
 
 		// Don't show encrypted secret key value.
 		if ( $key === 'secret_key' && str_starts_with( $value, 'enc:' ) ) {

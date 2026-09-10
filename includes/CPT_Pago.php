@@ -396,6 +396,39 @@ class CPT_Pago {
 	}
 
 	/**
+	 * Cobros emitidos por un enlace: los pagos que apuntan a él.
+	 *
+	 * Un enlace es una plantilla; cada uso deja su propio registro de pago con
+	 * `origin_id` apuntando al enlace. Esto es lo que cuenta «cuántas veces se ha
+	 * usado», en lugar del estado del propio enlace (que no se gasta).
+	 *
+	 * @param int $enlace_id ID del enlace.
+	 * @return int Número de cobros emitidos.
+	 */
+	public static function cobros_emitidos( int $enlace_id ): int {
+		if ( $enlace_id <= 0 ) {
+			return 0;
+		}
+
+		$pagos = get_posts(
+			array(
+				'post_type'   => 'pago',
+				'numberposts' => -1,
+				'fields'      => 'ids',
+				'post_status' => 'any',
+				'meta_query'  => array( // phpcs:ignore WordPress.DB.SlowDBQuery.slow_db_query_meta_query -- consulta acotada por un meta concreto.
+					array(
+						'key'   => '_convoca_origin_id',
+						'value' => (string) $enlace_id,
+					),
+				),
+			)
+		);
+
+		return count( $pagos );
+	}
+
+	/**
 	 * Build a payment link URL.
 	 *
 	 * @param int    $pago_id    Payment post ID.

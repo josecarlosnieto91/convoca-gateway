@@ -145,7 +145,7 @@ class Diagnostic {
 		$terminal = $settings['terminal'] ?? '';
 
 		if ( empty( $terminal ) ) {
-			$r = self::result( 'terminal', 'Terminal', 'No configurado', self::SEVERITY_WARNING, 'Configura el terminal (por defecto 001)', array( __CLASS__, 'fix_default_terminal' ) );
+			$r            = self::result( 'terminal', 'Terminal', 'No configurado', self::SEVERITY_WARNING, 'Configura el terminal (por defecto 001)', array( __CLASS__, 'fix_default_terminal' ) );
 			$r['fix_url'] = admin_url( 'admin.php?page=conv-gateway-settings&tab=status' );
 			return $r;
 		}

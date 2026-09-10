@@ -172,6 +172,7 @@ class Admin_Payments extends \WP_List_Table {
 			'enroll'   => 'Actividades',
 			'members'  => 'Socio/a',
 			'donativo' => 'Donaciones',
+			'enlace'   => 'Cobros con enlace',
 		) as $key => $label ) {
 			printf( '<option value="%s"%s>%s</option>', esc_attr( $key ), selected( $origin_filter, $key, false ), esc_html( $label ) );
 		}
@@ -359,6 +360,7 @@ class Admin_Payments extends \WP_List_Table {
 			'enroll'       => __( 'Inscripción', 'convoca-gateway' ),
 			'members'      => __( 'Socio/a', 'convoca-gateway' ),
 			'manual'       => __( 'Formulario web', 'convoca-gateway' ),
+			'enlace'       => __( 'Cobro con enlace', 'convoca-gateway' ),
 			'donativo'     => __( 'Donación', 'convoca-gateway' ),
 			default        => $meta['origin'],
 		};
