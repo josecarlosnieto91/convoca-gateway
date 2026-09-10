@@ -4,7 +4,7 @@ Tags: payments, redsys, donations, fees, tpv
 Requires at least: 6.4
 Tested up to: 7.1
 Requires PHP: 8.1
-Stable tag: 2.6.6
+Stable tag: 2.7.0
 License: GPL-2.0-or-later
 License URI: https://www.gnu.org/licenses/gpl-2.0.html
 
@@ -35,6 +35,13 @@ This plugin connects to the Redsys payment gateway to process transactions. Paym
 4. Configure your Redsys account in Settings > Convoca Gateway
 
 == Changelog ==
+
+= 2.7.0 =
+* Nuevo: enlaces de donativo. Si se deja la cantidad vacía al generar el enlace, se crea un enlace de importe libre y reutilizable: quien aporta elige cuánto donar y cada aportación se registra como un pago propio (con su orden de Redsys y su recibo).
+* Nuevo: el importe del donativo se introduce en la página pública del enlace (mínimo 0,50 €), junto al método de pago y un email opcional.
+* Nuevo: recibo para quien paga. El email indicado durante el pago se guarda y se le envía la confirmación con el enlace a su recibo; en los donativos se envía siempre que haya email, sin depender del aviso general de confirmaciones.
+* Fix: el campo «Email de notificación» del formulario de pago se pintaba pero no se usaba en ningún sitio; ahora viaja con el método elegido y permite enviar el recibo. En los pagos sin email de pagador, el recibo sigue dependiendo del ajuste general.
+* Admin: los enlaces de donativo muestran «Importe libre» en el listado y el email de quien paga cuando no hay destinatario.
 
 = 2.6.6 =
 * Fix: la notificación con firma Ds_Signature inválida ahora se registra en el log (antes retornaba error sin rastro) — el Security Monitor puede alertar de intentos de firma falsificada.

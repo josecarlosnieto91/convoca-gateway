@@ -105,25 +105,25 @@ class Admin_Generador {
 					<table class="form-table">
 						<tr>
 							<th scope="row">
-								<label for="convoca_gateway_amount"><?php esc_html_e( 'Cantidad (€)', 'convoca-gateway' ); ?> *</label>
+								<label for="convoca_gateway_amount"><?php esc_html_e( 'Cantidad (€)', 'convoca-gateway' ); ?></label>
 							</th>
 							<td>
 								<input type="number" name="convoca_gateway_amount" id="convoca_gateway_amount" 
-										class="regular-text" step="0.01" min="0.50" required
+										class="regular-text" step="0.01" min="0.50"
 										placeholder="Ej: 50.00">
-								<p class="description">Importe en euros (mínimo 0.50€)</p>
+								<p class="description"><?php esc_html_e( 'Importe en euros (mínimo 0.50€). Déjalo vacío para crear un enlace de donativo de importe libre: quien aporte decidirá cuánto.', 'convoca-gateway' ); ?></p>
 							</td>
 						</tr>
 
 						<tr>
 							<th scope="row">
-								<label for="convoca_gateway_concepto"><?php esc_html_e( 'Concepto', 'convoca-gateway' ); ?> *</label>
+								<label for="convoca_gateway_concepto"><?php esc_html_e( 'Concepto', 'convoca-gateway' ); ?></label>
 							</th>
 							<td>
 								<input type="text" name="convoca_gateway_concepto" id="convoca_gateway_concepto" 
-										class="regular-text" maxlength="125" required
+										class="regular-text" maxlength="125"
 										placeholder="Ej: Cuota mensual de socio">
-								<p class="description">Descripción del pago (máx. 125 caracteres)</p>
+								<p class="description"><?php esc_html_e( 'Descripción del pago (máx. 125 caracteres). Obligatorio salvo en enlaces de donativo, donde se usa «Donativo».', 'convoca-gateway' ); ?></p>
 							</td>
 						</tr>
 
@@ -260,14 +260,21 @@ class Admin_Generador {
 	}
 
 	private function process_generation( array $post ): array|\WP_Error {
-		$amount = (float) ( $post['convoca_gateway_amount'] ?? 0 );
-		if ( $amount < 0.50 ) {
+		$raw_amount  = trim( (string) ( $post['convoca_gateway_amount'] ?? '' ) );
+		$open_amount = ( '' === $raw_amount ); // Sin cantidad = enlace de donativo de importe libre.
+		$amount      = (float) $raw_amount;
+
+		if ( ! $open_amount && $amount < 0.50 ) {
 			return new \WP_Error( 'invalid_amount', 'El importe mínimo es 0.50€' );
 		}
 
 		$concepto = sanitize_text_field( $post['convoca_gateway_concepto'] ?? '' );
 		if ( empty( $concepto ) ) {
-			return new \WP_Error( 'missing_concept', 'El concepto es obligatorio' );
+			if ( ! $open_amount ) {
+				return new \WP_Error( 'missing_concept', 'El concepto es obligatorio' );
+			}
+
+			$concepto = __( 'Donativo', 'convoca-gateway' );
 		}
 
 		if ( mb_strlen( $concepto ) > 125 ) {
@@ -287,12 +294,14 @@ class Admin_Generador {
 
 		$pago_id = CPT_Pago::create_link_payment(
 			array(
-				'amount'     => $amount,
-				'concepto'   => $concepto,
-				'method'     => $method,
-				'email'      => $email,
-				'params'     => $params,
-				'expires_at' => $never_expires ? 'never' : $expires,
+				'amount'      => $amount,
+				'open_amount' => $open_amount,
+				'concepto'    => $concepto,
+				'method'      => $method,
+				'email'       => $email,
+				'params'      => $params,
+				// Un enlace de donativo no caduca: está pensado para estar publicado.
+				'expires_at'  => ( $open_amount || $never_expires ) ? 'never' : $expires,
 			)
 		);
 

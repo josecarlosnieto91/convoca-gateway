@@ -147,7 +147,11 @@ class Email_Notifications {
 		$settings = get_option( 'convoca_gateway_settings', array() );
 		$enabled  = ( $settings['email_confirmation'] ?? '0' ) === '1';
 
-		if ( ! $enabled ) {
+		// Los donativos llevan marca propia: el donante espera su recibo y no depende
+		// del aviso general de confirmaciones, que puede estar apagado.
+		$forced = '1' === (string) get_post_meta( $payment_id, '_convoca_receipt_always', true );
+
+		if ( ! $enabled && ! $forced ) {
 			return;
 		}
 

@@ -176,6 +176,12 @@ class Admin_Links extends \WP_List_Table {
 	 */
 	public function column_amount( $item ): string {
 		$meta = CPT_Pago::get_meta( $item->ID );
+
+		// Enlace de donativo: aún no hay importe, lo pone quien aporta.
+		if ( ! empty( $meta['open_amount'] ) ) {
+			return esc_html__( 'Importe libre', 'convoca-gateway' );
+		}
+
 		return CPT_Pago::format_amount( $meta['amount_cents'] );
 	}
 
@@ -185,8 +191,10 @@ class Admin_Links extends \WP_List_Table {
 	 * @param \WP_Post $item Row item (WP_Post from WP_Query).
 	 */
 	public function column_email( $item ): string {
-		$meta = CPT_Pago::get_meta( $item->ID );
-		return esc_html( $meta['recipient_email'] ?: '—' );
+		$meta  = CPT_Pago::get_meta( $item->ID );
+		$email = $meta['recipient_email'] ?: ( $meta['payer_email'] ?? '' );
+
+		return esc_html( $email ?: '—' );
 	}
 
 	/**

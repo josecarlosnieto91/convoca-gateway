@@ -50,6 +50,8 @@ class CPT_Pago {
 		'recipient_email',    // Email for payment link.
 		'params',             // Custom parameters (serialized).
 		'link_generated_by',  // Admin user ID who generated the link.
+		'open_amount',        // '1' = enlace de donativo: el importe lo elige quien aporta.
+		'payer_email',        // Email de quien paga (recibo). Puede venir del formulario.
 		// Recurring payment fields.
 		'redsys_merchant_id', // Tokenized card identifier for recurring payments.
 		'proof_file',         // ID or URL of uploaded payment receipt.
@@ -268,18 +270,27 @@ class CPT_Pago {
 	 */
 	public static function create_link_payment( array $data ): int|\WP_Error {
 		$amount_cents = (int) round( ( $data['amount'] ?? 0 ) * 100 );
+		$open_amount  = ! empty( $data['open_amount'] );
 
-		if ( $amount_cents < 50 ) {
+		// Enlace de donativo: nace sin importe, porque lo decide quien aporta en la
+		// página pública. Es el único caso en que no se exige el mínimo.
+		if ( ! $open_amount && $amount_cents < 50 ) {
 			return new \WP_Error( 'invalid_amount', __( 'El importe mínimo es 0.50€', 'convoca-gateway' ) );
 		}
 
 		$order_id = Redsys_Client::generate_order_id();
 
-		$title = sprintf(
-			'%s — %s€ — Enlace de pago',
-			$order_id,
-			number_format( $amount_cents / 100, 2, ',', '.' )
-		);
+		$title = $open_amount
+			? sprintf(
+				'%s — %s — Enlace de donativo (importe libre)',
+				$order_id,
+				sanitize_text_field( $data['concepto'] ?? __( 'Donativo', 'convoca-gateway' ) )
+			)
+			: sprintf(
+				'%s — %s€ — Enlace de pago',
+				$order_id,
+				number_format( $amount_cents / 100, 2, ',', '.' )
+			);
 
 		$post_id = wp_insert_post(
 			array(
@@ -300,8 +311,9 @@ class CPT_Pago {
 			'currency'         => Redsys_Client::CURRENCY_EUR,
 			'method'           => sanitize_text_field( $data['method'] ?? Redsys_Client::default_method() ),
 			'status'           => 'pending',
-			'origin'           => 'link_payment',
-			'origin_id'        => 0,
+			'origin'           => sanitize_text_field( $data['origin'] ?? 'link_payment' ),
+			'origin_id'        => (int) ( $data['origin_id'] ?? 0 ),
+			'open_amount'      => $open_amount ? '1' : '',
 			'product_desc'     => sanitize_text_field( $data['concepto'] ?? '' ),
 			'redsys_response'  => '',
 			'redsys_auth_code' => '',
@@ -336,6 +348,19 @@ class CPT_Pago {
 		update_post_meta( $post_id, '_convoca_expires_at', $expires_ts );
 		update_post_meta( $post_id, '_convoca_recipient_email', sanitize_email( $data['email'] ?? '' ) );
 		update_post_meta( $post_id, '_convoca_link_generated_by', get_current_user_id() );
+
+		// Email de quien paga (para el recibo) y, en donativos, orden de enviarlo
+		// aunque el aviso general de confirmaciones esté apagado.
+		$payer_email = sanitize_email( $data['payer_email'] ?? '' );
+		if ( '' !== $payer_email ) {
+			update_post_meta( $post_id, '_convoca_payer_email', $payer_email );
+		}
+		update_post_meta( $post_id, '_convoca_receipt_always', ! empty( $data['receipt_always'] ) ? '1' : '' );
+
+		// Marca de donativo: activa la serie de numeración y el texto legal del recibo.
+		if ( ! empty( $data['es_donacion'] ) ) {
+			update_post_meta( $post_id, '_convoca_es_donacion', '1' );
+		}
 
 		$params = array();
 		if ( ! empty( $data['params'] ) ) {

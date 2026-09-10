@@ -379,9 +379,27 @@ class Payment_Handler {
 		}
 
 		$meta = CPT_Pago::get_meta( $pago_id );
+
+		// Enlace de donativo: es reutilizable (un pago no lo consume) y el importe lo
+		// elige quien aporta, así que se sirve su propio formulario. Cada aportación
+		// crea un pago independiente, de modo que el recibo y la conciliación son por
+		// donativo y no por enlace.
+		if ( ! empty( $meta['open_amount'] ) ) {
+			return isset( $_POST['convoca_donation_method'] )
+				? $this->handle_donation_submission( $pago_id )
+				: $this->render_donation_form( $pago_id, $meta );
+		}
+
 		if ( $meta['status'] === 'paid' ) {
 			$paid_at = ! empty( $meta['paid_at'] ) ? wp_date( 'd/m/Y H:i', strtotime( $meta['paid_at'] ) ) : '';
 			return '<div class="convoca-alert convoca-alert--success">✅ Este pago ya ha sido completado' . ( $paid_at ? ' el ' . $paid_at : '' ) . '.</div>';
+		}
+
+		// El campo «Email de notificación» del formulario no se leía en ningún sitio: se
+		// guarda como email de quien paga, que es lo que usa el recibo.
+		$payer_email = sanitize_email( wp_unslash( $_GET['convoca_gateway_email'] ?? '' ) );
+		if ( '' !== $payer_email && filter_var( $payer_email, FILTER_VALIDATE_EMAIL ) ) {
+			update_post_meta( $pago_id, '_convoca_payer_email', $payer_email );
 		}
 
 		$product_desc     = get_post_meta( $pago_id, '_convoca_product_desc', true );
@@ -457,6 +475,7 @@ class Payment_Handler {
 				<div class="conv-email-field">
 					<label for="convoca_gateway_email"><?php esc_html_e( 'Email de notificación', 'convoca-gateway' ); ?></label>
 					<input type="email" name="convoca_gateway_email" id="convoca_gateway_email" value="<?php echo esc_attr( $recipient_email ); ?>" class="regular-text">
+					<p class="conv-help"><?php esc_html_e( 'Si lo indicas, te enviamos el recibo del pago a este correo.', 'convoca-gateway' ); ?></p>
 				</div>
 
 				<h4>Selecciona un método de pago</h4>
@@ -495,6 +514,36 @@ class Payment_Handler {
 					</a>
 					<?php endif; ?>
 				</div>
+
+				<script>
+				// El email de quien paga viaja en el enlace del método elegido: es lo que
+				// permite enviarle el recibo (antes el campo se pintaba y se ignoraba).
+				( function () {
+					var input = document.getElementById( 'convoca_gateway_email' );
+					if ( ! input ) { return; }
+
+					var links = document.querySelectorAll( 'a.conv-method' );
+
+					function sync() {
+						var value = input.value.trim();
+
+						Array.prototype.forEach.call( links, function ( link ) {
+							var url = new URL( link.getAttribute( 'href' ), window.location.origin );
+
+							if ( value ) {
+								url.searchParams.set( 'convoca_gateway_email', value );
+							} else {
+								url.searchParams.delete( 'convoca_gateway_email' );
+							}
+
+							link.setAttribute( 'href', url.toString() );
+						} );
+					}
+
+					input.addEventListener( 'input', sync );
+					sync();
+				} )();
+				</script>
 			</form>
 		</div>
 		<style>
@@ -617,6 +666,214 @@ class Payment_Handler {
 		</style>
 		<?php
 		return ob_get_clean();
+	}
+
+	/**
+	 * Formulario de donativo: importe libre, email opcional y método de pago.
+	 *
+	 * Es reutilizable: cada envío crea un pago propio (ver
+	 * handle_donation_submission), de modo que el enlace sirve para tantas
+	 * aportaciones como quiera hacer la gente.
+	 *
+	 * @param int    $pago_id Enlace de donativo (registro plantilla).
+	 * @param array  $meta    Metadatos del enlace.
+	 * @param string $error   Mensaje de error a mostrar.
+	 * @param string $amount  Importe tecleado, para repoblarlo si hubo error.
+	 * @param string $email   Email tecleado, para repoblarlo si hubo error.
+	 * @return string HTML.
+	 */
+	private function render_donation_form( int $pago_id, array $meta, string $error = '', string $amount = '', string $email = '' ): string {
+		$concepto = get_post_meta( $pago_id, '_convoca_product_desc', true );
+		$concepto = $concepto ?: __( 'Donativo', 'convoca-gateway' );
+
+		$params = get_post_meta( $pago_id, '_convoca_params', true );
+		$params = is_array( $params ) ? $params : array();
+
+		$settings         = get_option( 'convoca_gateway_settings', array() );
+		$transfer_enabled = ! empty( $settings['iban'] );
+		$redsys_enabled   = ! empty( Redsys_Client::merchant_code() ) && ! empty( Redsys_Client::secret_key() );
+		$bizum_enabled    = ! empty( Redsys_Client::merchant_code() );
+
+		ob_start();
+		?>
+		<div class="conv-payment-wrapper convoca-form" role="region" aria-label="<?php esc_attr_e( 'Formulario de donativo', 'convoca-gateway' ); ?>">
+			<div class="conv-payment-summary">
+				<h3><?php echo esc_html( $concepto ); ?></h3>
+				<div class="conv-amount"><?php esc_html_e( 'Importe libre', 'convoca-gateway' ); ?></div>
+				<p class="conv-desc"><?php esc_html_e( 'Elige cuánto quieres aportar. Cada aportación se registra y se recibe por separado.', 'convoca-gateway' ); ?></p>
+			</div>
+
+			<?php if ( '' !== $error ) : ?>
+				<div class="convoca-alert convoca-alert--danger"><?php echo esc_html( $error ); ?></div>
+			<?php endif; ?>
+
+			<?php if ( ! empty( $params ) ) : ?>
+			<div class="conv-params">
+				<h4><?php esc_html_e( 'Datos adicionales', 'convoca-gateway' ); ?></h4>
+				<ul class="conv-params-list">
+					<?php foreach ( $params as $k => $v ) : ?>
+					<li><span class="conv-param-key"><?php echo esc_html( $k ); ?>:</span> <span class="conv-param-value"><?php echo esc_html( $v ); ?></span></li>
+					<?php endforeach; ?>
+				</ul>
+			</div>
+			<?php endif; ?>
+
+			<form method="post" action="" class="conv-link-form conv-donation-form">
+				<?php wp_nonce_field( 'convoca_donation_' . $pago_id, 'convoca_donation_nonce' ); ?>
+
+				<div class="conv-field">
+					<label for="convoca_donation_amount"><?php esc_html_e( 'Importe (€)', 'convoca-gateway' ); ?> *</label>
+					<input type="number" name="convoca_donation_amount" id="convoca_donation_amount"
+							class="regular-text" step="0.01" min="0.50" required
+							value="<?php echo esc_attr( $amount ); ?>" placeholder="0.00">
+					<p class="conv-help"><?php esc_html_e( 'Mínimo 0,50 €.', 'convoca-gateway' ); ?></p>
+				</div>
+
+				<div class="conv-email-field">
+					<label for="convoca_donation_email"><?php esc_html_e( 'Email para el recibo (opcional)', 'convoca-gateway' ); ?></label>
+					<input type="email" name="convoca_donation_email" id="convoca_donation_email"
+							class="regular-text" value="<?php echo esc_attr( $email ); ?>">
+					<p class="conv-help"><?php esc_html_e( 'Si lo indicas, te enviamos el recibo de tu aportación.', 'convoca-gateway' ); ?></p>
+				</div>
+
+				<h4><?php esc_html_e( 'Elige cómo aportar', 'convoca-gateway' ); ?></h4>
+				<div class="conv-methods conv-methods--donation">
+					<?php if ( $redsys_enabled ) : ?>
+						<button type="submit" name="convoca_donation_method" value="tarjeta" class="conv-method conv-method-card">
+							<span class="conv-method-icon">💳</span>
+							<span class="conv-method-label"><?php esc_html_e( 'Tarjeta', 'convoca-gateway' ); ?></span>
+							<span class="conv-method-desc"><?php esc_html_e( 'Visa, Mastercard, etc.', 'convoca-gateway' ); ?></span>
+						</button>
+					<?php endif; ?>
+
+					<?php if ( $bizum_enabled ) : ?>
+						<button type="submit" name="convoca_donation_method" value="bizum" class="conv-method conv-method-bizum">
+							<span class="conv-method-icon">📱</span>
+							<span class="conv-method-label"><?php esc_html_e( 'Bizum', 'convoca-gateway' ); ?></span>
+							<span class="conv-method-desc"><?php esc_html_e( 'Pago instantáneo con tu móvil', 'convoca-gateway' ); ?></span>
+						</button>
+					<?php endif; ?>
+
+					<?php if ( $transfer_enabled ) : ?>
+						<button type="submit" name="convoca_donation_method" value="transferencia" class="conv-method conv-method-transfer">
+							<span class="conv-method-icon">🍀</span>
+							<span class="conv-method-label"><?php esc_html_e( 'Transferencia', 'convoca-gateway' ); ?></span>
+							<span class="conv-method-desc"><?php esc_html_e( 'Ingresa desde tu banco', 'convoca-gateway' ); ?></span>
+						</button>
+					<?php endif; ?>
+				</div>
+
+				<?php if ( ! $redsys_enabled && ! $transfer_enabled ) : ?>
+					<div class="convoca-alert convoca-alert--warning"><?php esc_html_e( 'No hay ningún método de pago disponible. Contacta con la entidad.', 'convoca-gateway' ); ?></div>
+				<?php endif; ?>
+			</form>
+		</div>
+		<style>
+			.conv-donation-form .conv-field,
+			.conv-donation-form .conv-email-field { margin-bottom: 1.25rem; }
+			.conv-donation-form .conv-field label,
+			.conv-donation-form .conv-email-field label { display: block; font-weight: 600; margin-bottom: .35rem; }
+			.conv-donation-form input[type="number"] { max-width: 180px; font-size: 1.25rem; padding: .6rem .75rem; }
+			.conv-help { margin: .35rem 0 0; font-size: .85rem; opacity: .75; }
+			.conv-methods--donation .conv-method { text-align: left; cursor: pointer; font: inherit; width: 100%; }
+		</style>
+		<?php
+		return ob_get_clean();
+	}
+
+	/**
+	 * Procesa el formulario de donativo: crea un pago con el importe elegido.
+	 *
+	 * El registro de pago se crea aquí y no en el enlace, para que cada aportación
+	 * tenga su propia orden de Redsys, su recibo y su fila en el listado.
+	 *
+	 * @param int $pago_id Enlace de donativo.
+	 * @return string HTML (redirección al pago, o el formulario con el error).
+	 */
+	private function handle_donation_submission( int $pago_id ): string {
+		$nonce = sanitize_text_field( wp_unslash( $_POST['convoca_donation_nonce'] ?? '' ) );
+		if ( ! wp_verify_nonce( $nonce, 'convoca_donation_' . $pago_id ) ) {
+			return $this->render_donation_form( $pago_id, CPT_Pago::get_meta( $pago_id ), __( 'La sesión ha caducado. Vuelve a intentarlo.', 'convoca-gateway' ) );
+		}
+
+		$amount = (float) str_replace( ',', '.', (string) wp_unslash( $_POST['convoca_donation_amount'] ?? '' ) );
+		$email  = sanitize_email( wp_unslash( $_POST['convoca_donation_email'] ?? '' ) );
+		$method = sanitize_text_field( wp_unslash( $_POST['convoca_donation_method'] ?? '' ) );
+
+		$raw_amount = (string) wp_unslash( $_POST['convoca_donation_amount'] ?? '' );
+
+		if ( $amount < 0.50 ) {
+			return $this->render_donation_form(
+				$pago_id,
+				CPT_Pago::get_meta( $pago_id ),
+				__( 'El importe mínimo es de 0,50 €.', 'convoca-gateway' ),
+				$raw_amount,
+				$email
+			);
+		}
+
+		if ( '' !== $email && ! filter_var( $email, FILTER_VALIDATE_EMAIL ) ) {
+			return $this->render_donation_form(
+				$pago_id,
+				CPT_Pago::get_meta( $pago_id ),
+				__( 'El email no es válido.', 'convoca-gateway' ),
+				$raw_amount,
+				$email
+			);
+		}
+
+		if ( ! in_array( $method, array( 'tarjeta', 'bizum', 'transferencia' ), true ) ) {
+			return $this->render_donation_form(
+				$pago_id,
+				CPT_Pago::get_meta( $pago_id ),
+				__( 'Elige un método de pago.', 'convoca-gateway' ),
+				$raw_amount,
+				$email
+			);
+		}
+
+		$concepto = get_post_meta( $pago_id, '_convoca_product_desc', true );
+		$concepto = $concepto ?: __( 'Donativo', 'convoca-gateway' );
+
+		$pago = CPT_Pago::create_link_payment(
+			array(
+				'amount'         => $amount,
+				'concepto'       => $concepto,
+				'method'         => $method,
+				'payer_email'    => $email,
+				// Donativo: el recibo se envía siempre que haya email, sin depender
+				// del aviso general de confirmaciones del plugin.
+				'receipt_always' => ( '' !== $email ) ? '1' : '',
+				'es_donacion'    => '1',
+				'expires_at'     => 'never',
+				'origin'         => 'donativo',
+				'origin_id'      => $pago_id,
+			)
+		);
+
+		if ( is_wp_error( $pago ) ) {
+			return $this->render_donation_form( $pago_id, CPT_Pago::get_meta( $pago_id ), $pago->get_error_message(), $raw_amount, $email );
+		}
+
+		\Convoca\Core\Logger::info(
+			sprintf(
+				'Donativo desde el enlace #%d: pago #%d por %s€ (%s).',
+				$pago_id,
+				$pago,
+				number_format( $amount, 2, ',', '.' ),
+				$method
+			),
+			'Gateway/Donation',
+			$pago
+		);
+
+		$token = get_post_meta( $pago, '_convoca_link_key', true );
+		$url   = add_query_arg( 'convoca_gateway_method', $method, self::get_payment_link( $pago, $token ) );
+
+		return '<script>window.location.href="' . esc_url_raw( $url ) . '";</script>' .
+			'<div class="convoca-alert convoca-alert--info">' .
+			esc_html__( 'Redirigiendo al pago seguro... Si no eres redirigido,', 'convoca-gateway' ) .
+			' <a href="' . esc_url( $url ) . '">' . esc_html__( 'haz clic aquí', 'convoca-gateway' ) . '</a>.</div>';
 	}
 
 	/**
