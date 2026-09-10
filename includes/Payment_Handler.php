@@ -385,7 +385,11 @@ class Payment_Handler {
 		// crea un pago independiente, de modo que el recibo y la conciliación son por
 		// donativo y no por enlace.
 		if ( ! empty( $meta['open_amount'] ) ) {
-			return isset( $_POST['convoca_donation_method'] )
+			// Se despacha por el nonce del propio formulario: el de donativo es el
+			// único que lo trae, y el handler lo verifica antes de nada.
+			$aportando = isset( $_POST['convoca_donation_nonce'] );
+
+			return $aportando
 				? $this->handle_donation_submission( $pago_id )
 				: $this->render_donation_form( $pago_id, $meta );
 		}

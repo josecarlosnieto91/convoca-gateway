@@ -51,6 +51,30 @@ namespace {
 			echo '<input type="hidden" name="' . $name . '">';
 		}
 	}
+	if ( ! function_exists( 'wp_verify_nonce' ) ) {
+		function wp_verify_nonce( $nonce, $action = -1 ) {
+			return 1;
+		}
+	}
+	if ( ! class_exists( 'WP_Post' ) ) {
+		class WP_Post {
+			public $ID;
+			public $post_type = 'pago';
+			public function __construct( $id = 0 ) {
+				$this->ID = (int) $id;
+			}
+		}
+	}
+	if ( ! function_exists( 'get_post' ) ) {
+		function get_post( $post = null ) {
+			return new WP_Post( (int) $post );
+		}
+	}
+	if ( ! function_exists( 'get_permalink' ) ) {
+		function get_permalink( $post = 0 ) {
+			return 'https://example.com/pago/';
+		}
+	}
 	if ( ! function_exists( 'sanitize_key' ) ) {
 		function sanitize_key( $key ) {
 			return preg_replace( '/[^a-z0-9_\-]/', '', strtolower( (string) $key ) );
@@ -341,6 +365,48 @@ namespace Convoca\Gateway\Tests {
 
 			$manual = $this->call( 'render_manual_form' );
 			$this->assertDoesNotMatchRegularExpression( '/>\s+</', $manual );
+		}
+		// ── El despacho de la donación no debe depender del nombre del campo ──
+
+		public function test_donation_post_from_the_page_creates_the_payment(): void {
+			update_post_meta( 700, '_convoca_open_amount', '1' );
+			update_post_meta( 700, '_convoca_link_key', 'token-de-prueba' );
+			update_post_meta( 700, '_convoca_product_desc', 'Donativo' );
+			update_post_meta( 700, '_convoca_expires_at', 0 );
+
+			$_POST = array(
+				'convoca_donation_nonce'  => 'nonce-valido',
+				'convoca_donation_amount' => '9,90',
+				'convoca_donation_email'  => 'aporta@example.com',
+				'convoca_gateway_method'  => 'tarjeta',
+			);
+
+			$html = $this->call(
+				'render_link_payment_page',
+				array( 700, 'token-de-prueba', 0 )
+			);
+
+			$this->assertStringContainsString( 'window.location.href', $html, 'El POST del donativo debe despacharse al handler.' );
+			$this->assertCount( 1, $GLOBALS['__gw_inserted'], 'Cada aportación crea su pago.' );
+
+			$hijo = array_key_last( $GLOBALS['__gw_inserted'] );
+			$this->assertSame( 990, (int) get_post_meta( $hijo, '_convoca_amount_cents', true ) );
+			$this->assertSame( 'donativo', get_post_meta( $hijo, '_convoca_origin', true ) );
+			$this->assertSame( 700, (int) get_post_meta( $hijo, '_convoca_origin_id', true ) );
+			$this->assertSame( 'aporta@example.com', get_post_meta( $hijo, '_convoca_payer_email', true ) );
+			$this->assertSame( '1', get_post_meta( $hijo, '_convoca_receipt_always', true ) );
+		}
+
+		public function test_donation_page_without_post_still_shows_the_picker(): void {
+			update_post_meta( 701, '_convoca_open_amount', '1' );
+			update_post_meta( 701, '_convoca_link_key', 'token-de-prueba' );
+			update_post_meta( 701, '_convoca_product_desc', 'Donativo' );
+			update_post_meta( 701, '_convoca_expires_at', 0 );
+
+			$html = $this->call( 'render_link_payment_page', array( 701, 'token-de-prueba', 0 ) );
+
+			$this->assertStringContainsString( 'Selecciona un método de pago', $html );
+			$this->assertEmpty( $GLOBALS['__gw_inserted'], 'Sin envío no debe crearse nada.' );
 		}
 	}
 }
