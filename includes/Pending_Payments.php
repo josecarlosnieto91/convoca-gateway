@@ -125,7 +125,7 @@ class Pending_Payments {
 						),
 					),
 				),
-				),
+			),
 		);
 
 		return array_map( 'intval', $ids );
