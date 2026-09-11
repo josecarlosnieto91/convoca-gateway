@@ -261,19 +261,9 @@ class Email_Notifications {
 	 * @return bool
 	 */
 	public static function should_remind( array $meta, int $now ): bool {
-		// Ya se cobró (o se anuló): no hay nada que recordar.
-		if ( 'pending' !== (string) ( $meta['_convoca_status'] ?? '' ) ) {
-			return false;
-		}
-
-		// Un enlace es una plantilla, no un cobro: no hay nada que recordarle a nadie.
-		if ( 'link_payment' === (string) ( $meta['_convoca_origin'] ?? '' ) ) {
-			return false;
-		}
-
-		// Un importe de cero no es un pago que se pueda completar (una plantilla de
-		// donativo antes de usarse, por ejemplo).
-		if ( (int) ( $meta['_convoca_amount_cents'] ?? 0 ) <= 0 ) {
+		// Lo que hace que un pago esté a medias lo decide una sola función, la misma
+		// que alimenta el panel de pagos sin terminar.
+		if ( ! Pending_Payments::is_stuck( $meta, $now ) ) {
 			return false;
 		}
 
@@ -290,12 +280,6 @@ class Email_Notifications {
 		// Si el enlace ya caducó, el botón no llevaría a ninguna parte.
 		$expira = (int) ( $meta['_convoca_expires_at'] ?? 0 );
 		if ( $expira > 0 && $expira < $now ) {
-			return false;
-		}
-
-		// Todavía está a tiempo de terminarlo sin que le demos la lata.
-		$creado = self::created_ts( $meta );
-		if ( 0 === $creado || ( $now - $creado ) < self::REMINDER_AFTER ) {
 			return false;
 		}
 

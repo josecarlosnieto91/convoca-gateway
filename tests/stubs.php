@@ -185,6 +185,18 @@ namespace {
 	function wp_get_attachment_image_url( $id, $size = "thumbnail" ) { return ""; }
 	function nocache_headers() { return true; }
 	function status_header( $code ) { $GLOBALS["__gw_status"] = $code; return true; }
+	// Por defecto concede el permiso (como antes); si una prueba escribe en
+	// __gw_caps, manda lo que ella diga. Así se puede probar el caso sin permiso
+	// sin cambiar lo que esperan las demás pruebas.
+	function current_user_can( $cap, ...$args ) {
+		if ( isset( $GLOBALS['__gw_caps'][ $cap ] ) ) {
+			return (bool) $GLOBALS['__gw_caps'][ $cap ];
+		}
+		return true;
+	}
+	function wp_add_dashboard_widget( $id, $name, $cb, $control = null ) { $GLOBALS['__gw_widgets'][ $id ] = $cb; return true; }
+	function get_edit_post_link( $id, $context = 'display' ) { return 'https://example.com/wp-admin/post.php?post=' . (int) $id . '&action=edit'; }
+	function _n( $single, $plural, $number, $domain = null ) { return 1 === (int) $number ? $single : $plural; }
 	function get_the_date( $format = '', $post = null ) { return '01/01/2026 12:00'; }
 	function get_bloginfo( $show = 'name' ) { return 'Entidad de prueba'; }
 
@@ -217,12 +229,10 @@ namespace {
 			'user_login'   => 'admin',
 		);
 	}
-	function current_user_can( $cap, ...$args ) { return true; }
 	function wp_verify_nonce( $nonce, $action = -1 ) { return 1; }
 	function wp_nonce_field( $action, $name = '_wpnonce' ) {
 		echo '<input type="hidden" name="' . $name . '">';
 	}
-	function _n( $single, $plural, $number, $domain = null ) { return 1 === (int) $number ? $single : $plural; }
 	function checked( $checked, $current = true, $display = true ) {
 		$r = ( $checked == $current ) ? " checked='checked'" : '';
 		if ( $display ) {
