@@ -40,6 +40,20 @@ This plugin connects to the Redsys payment gateway to process transactions. Paym
 * Un enlace de cuota o de inscripción se cierra en cuanto su pago se confirma: deja de admitir pagos y no se genera otro enlace para el mismo pago. Si el intento es erróneo, el enlace sigue vivo para reintentar.
 * Los enlaces de donativo y las plantillas del generador no se cierran al cobrarse: siguen vivos y solo caducan si tienen fecha de caducidad, como hasta ahora.
 
+= 2.12.1 =
+* Fix: la notificación de Redsys no se aplicaba nunca — la transacción se descartaba sin COMMIT y el pago quedaba pendiente en silencio pese a responder OK. Prueba que vigila que la transacción acabe en COMMIT.
+
+= 2.12.0 =
+* Nuevo: panel en el escritorio con los pagos empezados que no se terminaron (concepto, importe, método, fecha y correo, con enlace al pago), incluidos los antiguos sin marca de tiempo que llevaban meses colgados.
+* Traducción al inglés de las cadenas del recibo y del panel.
+
+= 2.11.1 =
+* El recibo es ahora un documento propio y legible: fuera del tema, con la entidad y sus datos fiscales, el pagador, el método, la referencia y el estado, márgenes de impresión reales y el botón de imprimir fuera del papel.
+
+= 2.11.0 =
+* Nuevo: recordatorio por correo, una sola vez, a quien dejó su email y empezó un pago sin completarlo (media hora después, con botón para retomarlo).
+* El marcador {producto} de los correos usa el concepto que ve quien paga, no el nombre interno.
+
 = 2.10.0 =
 * El pago de una cuota o una inscripción guarda el correo de contacto que deja la persona, y su URL lleva token con caducidad configurable (7 días por defecto) en vez de la firma de 24 horas.
 * Recibo automático de cuotas e inscripciones: funcionalidad PRO activada por defecto, con su propio interruptor en Ajustes → Correos.
