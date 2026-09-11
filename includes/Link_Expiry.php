@@ -35,6 +35,19 @@ class Link_Expiry {
 	/** Default advance notice before a link expires, in hours. */
 	public const DEFAULT_NOTICE_HOURS = 24;
 
+	/**
+	 * Orígenes cuyo enlace se cierra en cuanto el pago se confirma.
+	 *
+	 * Members y Enroll crean un pago con su propio enlace, para una sola cuota o
+	 * una sola inscripción: cobrado ese pago, el enlace ya ha hecho su trabajo y
+	 * deja de admitir pagos. Los enlaces del generador (donativos y plantillas)
+	 * no se cierran nunca así: siguen vivos y solo caducan por fecha.
+	 */
+	public const CLOSE_ON_PAYMENT_ORIGINS = array( 'members', 'enroll' );
+
+	/** Meta: instante en que el enlace se cerró por cobro (vacío = abierto). */
+	public const CLOSED_AT_META = '_convoca_link_closed_at';
+
 	/** Seconds in a day (avoids coupling the class to the WP constant in tests). */
 	private const SECONDS_PER_DAY = 86400;
 
@@ -99,6 +112,10 @@ class Link_Expiry {
 			return new \WP_Error( 'pago_not_found', __( 'Pago no encontrado.', 'convoca-gateway' ) );
 		}
 
+		if ( self::is_closed( $pago_id ) ) {
+			return new \WP_Error( 'link_closed', __( 'Este pago ya se ha cobrado: su enlace está cerrado y no se genera otro.', 'convoca-gateway' ) );
+		}
+
 		$expires_ts = self::compute_expiry_timestamp( self::default_expiry_days() );
 		update_post_meta( $pago_id, '_convoca_expires_at', $expires_ts );
 
@@ -108,6 +125,69 @@ class Link_Expiry {
 		$token = get_post_meta( $pago_id, '_convoca_link_key', true );
 
 		return Payment_Handler::get_payment_link( $pago_id, is_string( $token ) ? $token : '', $expires_ts );
+	}
+
+	/**
+	 * Whether the payment link is closed because its payment was already collected.
+	 *
+	 * @param int $pago_id Payment post ID.
+	 * @return bool
+	 */
+	public static function is_closed( int $pago_id ): bool {
+		return self::closed_at( $pago_id ) > 0;
+	}
+
+	/**
+	 * When the link was closed after collection (0 while it is still open).
+	 *
+	 * @param int $pago_id Payment post ID.
+	 * @return int Timestamp, or 0 when open.
+	 */
+	public static function closed_at( int $pago_id ): int {
+		return (int) get_post_meta( $pago_id, self::CLOSED_AT_META, true );
+	}
+
+	/**
+	 * Close the link of a payment that has just been collected.
+	 *
+	 * Solo para orígenes que cobran una vez (Members, Enroll). Un pago fallido no
+	 * pasa por aquí, así que su enlace sigue vivo para reintentar. No se toca
+	 * `_convoca_expires_at`: una cosa es «caducado por fecha» y otra «cobrado».
+	 *
+	 * @param int      $pago_id Payment post ID.
+	 * @param string   $origin  Origen del pago (members|enroll|link_payment|…).
+	 * @param int|null $now     Base timestamp (defaults to now).
+	 * @return bool True cuando el enlace queda cerrado (o ya lo estaba).
+	 */
+	public static function close_after_payment( int $pago_id, string $origin, ?int $now = null ): bool {
+		if ( ! in_array( $origin, self::CLOSE_ON_PAYMENT_ORIGINS, true ) ) {
+			return false;
+		}
+
+		if ( self::is_closed( $pago_id ) ) {
+			return true;
+		}
+
+		update_post_meta( $pago_id, self::CLOSED_AT_META, $now ?? time() );
+
+		\Convoca\Core\Logger::info(
+			sprintf( 'Enlace cerrado tras el cobro (origen: %s).', $origin ),
+			'Gateway/LinkExpiry',
+			$pago_id
+		);
+
+		return true;
+	}
+
+	/**
+	 * Hook `convoca_gateway_payment_completed`: cierra el enlace de un pago que
+	 * cobra una sola vez. El hook de pago fallido NO llama aquí, por diseño.
+	 *
+	 * @param int    $pago_id Payment post ID.
+	 * @param string $origin  Origen del pago.
+	 */
+	public static function on_payment_completed( $pago_id, $origin = '' ): void {
+		self::close_after_payment( (int) $pago_id, (string) $origin );
 	}
 
 	/**

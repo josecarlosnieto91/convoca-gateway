@@ -4,7 +4,7 @@ Tags: payments, redsys, donations, fees, tpv
 Requires at least: 6.4
 Tested up to: 7.1
 Requires PHP: 8.1
-Stable tag: 2.12.1
+Stable tag: 2.13.0
 License: GPL-2.0-or-later
 License URI: https://www.gnu.org/licenses/gpl-2.0.html
 
@@ -35,6 +35,10 @@ This plugin connects to the Redsys payment gateway to process transactions. Paym
 4. Configure your Redsys account in Settings > Convoca Gateway
 
 == Changelog ==
+
+= 2.13.0 =
+* Un enlace de cuota o de inscripción se cierra en cuanto su pago se confirma: deja de admitir pagos y no se genera otro enlace para el mismo pago. Si el intento es erróneo, el enlace sigue vivo para reintentar.
+* Los enlaces de donativo y las plantillas del generador no se cierran al cobrarse: siguen vivos y solo caducan si tienen fecha de caducidad, como hasta ahora.
 
 = 2.10.0 =
 * El pago de una cuota o una inscripción guarda el correo de contacto que deja la persona, y su URL lleva token con caducidad configurable (7 días por defecto) en vez de la firma de 24 horas.

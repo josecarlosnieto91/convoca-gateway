@@ -389,6 +389,13 @@ class Payment_Handler {
 			return $this->render_expired_notice( $pago_id );
 		}
 
+		// Cobrado: el enlace de una cuota o una inscripción se cierra al confirmarse
+		// su pago y ya no admite más. Los enlaces de donativo y las plantillas no se
+		// cierran así (siguen vivos hasta su fecha, si la tienen).
+		if ( Link_Expiry::is_closed( $pago_id ) ) {
+			return $this->render_collected_notice( $pago_id );
+		}
+
 		$meta = CPT_Pago::get_meta( $pago_id );
 
 		// Enlace de donativo: es reutilizable (un pago no lo consume) y el importe lo
@@ -2141,6 +2148,27 @@ class Payment_Handler {
 		</style>
 		<?php
 		return ob_get_clean();
+	}
+
+	/**
+	 * Aviso de un enlace cerrado porque su pago ya se cobró.
+	 *
+	 * Sin formulario de «solicitar nuevo enlace» a propósito: el pago está hecho,
+	 * no hay nada que volver a pagar.
+	 */
+	private function render_collected_notice( int $pago_id ): string {
+		$closed_at = Link_Expiry::closed_at( $pago_id );
+		$paid_at   = get_post_meta( $pago_id, '_convoca_paid_at', true );
+		$fecha     = $closed_at > 0 ? wp_date( 'd/m/Y H:i', $closed_at ) : '';
+		if ( '' === $fecha && ! empty( $paid_at ) ) {
+			$fecha = wp_date( 'd/m/Y H:i', (int) strtotime( (string) $paid_at ) );
+		}
+
+		return '<div class="convoca-alert convoca-alert--success">'
+			. esc_html__( '✅ Este enlace ya se ha cobrado', 'convoca-gateway' )
+			. ( $fecha ? esc_html( ' (' . $fecha . ')' ) : '' )
+			. '. ' . esc_html__( 'El enlace queda cerrado y no admite más pagos.', 'convoca-gateway' )
+			. '</div>';
 	}
 
 	/**
