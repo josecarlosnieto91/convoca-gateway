@@ -8,3 +8,8 @@
 # Translation files (user-generated)
 *.po
 *.mo
+
+# Las traducciones al inglés sí viajan: el plugin está escrito en español, así que sin su
+# .mo la interfaz en inglés no existe. Solo esta variante.
+!languages/*-en_US.po
+!languages/*-en_US.mo
