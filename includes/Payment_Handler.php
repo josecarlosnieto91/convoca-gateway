@@ -2218,5 +2218,4 @@ class Payment_Handler {
 		return '<script>window.location.href="' . esc_url_raw( $url ) . '";</script>'
 			. '<div class="convoca-alert convoca-alert--info">' . esc_html__( 'Generando nuevo enlace… Si no eres redirigido, haz clic aquí.', 'convoca-gateway' ) . ' <a href="' . esc_url( $url ) . '">' . esc_html__( 'Continuar', 'convoca-gateway' ) . '</a></div>';
 	}
-
-	}
+}
