@@ -86,6 +86,48 @@ namespace Convoca\Gateway\Tests {
 			return (string) $this->privado( 'render_link_payment_page', array( $id, 'token-de-prueba', $expira ) );
 		}
 
+		// — El protocolo de la transacción ————————————————————————————————
+
+		public function test_una_notificacion_confirmada_confirma_la_transaccion(): void {
+			// El fallo que se coló en producción: la profundidad del savepoint no se
+			// decrementaba en el camino de éxito, así que el COMMIT no llegaba a
+			// ejecutarse y MySQL descartaba el cambio al cerrar la conexión. La
+			// notificación respondía «OK» y el pago seguía pendiente, en silencio.
+			$id    = $this->pago( 701, 'pending' );
+			$order = get_post_meta( $id, '_convoca_order_id', true );
+
+			$params = array(
+				'Ds_Order'      => $order,
+				'Ds_Amount'     => '2500',
+				'Ds_Currency'   => '978',
+				'Ds_Response'   => '0000',
+				'Ds_MerchantCode' => '999999999',
+				'Ds_AuthorisationCode' => '123456',
+			);
+			$b64  = base64_encode( (string) json_encode( $params ) );
+			$post = array(
+				'Ds_SignatureVersion'   => 'HMAC_SHA256_V1',
+				'Ds_MerchantParameters' => $b64,
+				'Ds_Signature'          => \Convoca\Gateway\Redsys_Client::sign( $b64, $order ),
+			);
+
+			$_SERVER['REMOTE_ADDR'] = '195.76.9.187';
+			$GLOBALS['__gw_sql']    = array();
+			// La búsqueda del pago va a la base de datos: se le da el id para esta prueba.
+			$GLOBALS['__gw_get_var'] = $id;
+
+			$handler = ( new \ReflectionClass( \Convoca\Gateway\Payment_Handler::class ) )->newInstanceWithoutConstructor();
+			$result  = $handler->process_notification( $post );
+
+			$this->assertTrue( $result, 'La notificación se da por buena.' );
+			$this->assertSame( 'paid', get_post_meta( $id, '_convoca_status', true ), 'Y el pago queda cobrado.' );
+
+			$transacciones = array_values( array_filter( $GLOBALS['__gw_sql'], fn( $q ) => preg_match( '/^(START TRANSACTION|COMMIT|ROLLBACK)/i', (string) $q ) ) );
+			$this->assertNotEmpty( $transacciones, 'La notificación trabaja dentro de una transacción.' );
+			$this->assertSame( 'START TRANSACTION', strtoupper( trim( (string) end( $transacciones ) ) ) === 'COMMIT' ? 'START TRANSACTION' : 'SIN COMMIT', 'La última sentencia de la transacción debe confirmarla.' );
+			$this->assertSame( 'COMMIT', strtoupper( trim( (string) end( $transacciones ) ) ), 'La transacción se confirma: sin COMMIT el cambio se pierde.' );
+		}
+
 		// — La respuesta de Redsys ————————————————————————————————————————
 
 		public function test_solo_la_autorizacion_de_compra_da_el_pago_por_hecho(): void {

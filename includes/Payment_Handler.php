@@ -1926,6 +1926,10 @@ class Payment_Handler {
 				\Convoca\Core\Utils::do_action( 'convoca_gateway_payment_failed', 'convoca_payment_failed', $pago_id, $response_code );
 			}
 
+			// Sin este decremento la profundidad se quedaba en 1, el COMMIT no se
+			// ejecutaba nunca y la transacción se descartaba al cerrar la conexión:
+			// la notificación se daba por buena («OK») y el pago seguía pendiente.
+			--$savepoint_depth;
 			if ( $savepoint_depth === 0 ) {
 				$wpdb->query( 'COMMIT' );
 			}

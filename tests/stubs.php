@@ -38,9 +38,9 @@ namespace {
 	// ── Mock de $wpdb ─────────────────────────────────────────────────
 	$GLOBALS['wpdb'] = new class {
 		public $prefix = 'wp_';
-		public function get_var( $query ) { return null; }
+		public function get_var( $query ) { return $GLOBALS['__gw_get_var'] ?? null; }
 		public function get_results( $query ) { return array(); }
-		public function query( $query ) { return true; }
+		public function query( $query ) { $GLOBALS['__gw_sql'][] = $query; return true; }
 		public function prepare( $query, ...$args ) { return $query; }
 	};
 

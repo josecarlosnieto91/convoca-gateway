@@ -18,6 +18,11 @@ if ( ! class_exists( 'Convoca\\Core\\Logger' ) ) {
 	require_once __DIR__ . '/StubLogger.php';
 }
 
+// Doble de Convoca\Core\Utils (el manejador de notificaciones lo usa para sus ganchos).
+if ( ! class_exists( 'Convoca\\Core\\Utils' ) ) {
+	require_once __DIR__ . '/StubCoreUtils.php';
+}
+
 if ( file_exists( dirname( __DIR__ ) . '/vendor/autoload.php' ) ) {
 	require_once dirname( __DIR__ ) . '/vendor/autoload.php';
 }
