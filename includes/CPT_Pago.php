@@ -298,6 +298,22 @@ class CPT_Pago {
 	 * @param string $origin Origen guardado en el pago.
 	 * @return string
 	 */
+	/**
+	 * Nombre legible de un método de pago, para pantallas, correos y recibos.
+	 *
+	 * @param string $method Método guardado en el pago (tarjeta, bizum, transferencia…).
+	 * @return string
+	 */
+	public static function method_label( string $method ): string {
+		return match ( $method ) {
+			'tarjeta'       => __( 'Tarjeta', 'convoca-gateway' ),
+			'bizum'         => __( 'Bizum', 'convoca-gateway' ),
+			'transferencia' => __( 'Transferencia', 'convoca-gateway' ),
+			'any'           => __( 'Cualquiera', 'convoca-gateway' ),
+			default         => '' !== $method ? ucfirst( $method ) : '',
+		};
+	}
+
 	public static function origin_label( string $origin ): string {
 		return match ( $origin ) {
 			'enroll'   => __( 'Inscripción', 'convoca-gateway' ),

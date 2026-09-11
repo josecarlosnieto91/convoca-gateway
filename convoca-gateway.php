@@ -109,6 +109,9 @@ add_action(
 	}
 );
 
+/* ── Recibo: documento propio, sin pasar por el tema ── */
+add_action( 'template_redirect', array( \Convoca\Gateway\Receipt_View::class, 'maybe_render' ), 0 );
+
 /* ── REST API Notifications ───────────────────── */
 add_action(
 	'rest_api_init',

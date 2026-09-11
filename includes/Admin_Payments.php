@@ -336,7 +336,7 @@ class Admin_Payments extends \WP_List_Table {
 	 */
 	public function column_method( $item ): string {
 		$meta = CPT_Pago::get_meta( $item->ID );
-		return ucfirst( $meta['method'] );
+		return CPT_Pago::method_label( (string) $meta['method'] );
 	}
 
 	/**

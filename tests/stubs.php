@@ -180,6 +180,11 @@ namespace {
 		$GLOBALS['__gw_emails'][] = compact( 'to', 'subject', 'message' );
 		return true;
 	}
+	function apply_filters( $tag, $value, ...$args ) { return $value; }
+	function get_theme_mod( $name, $default = false ) { return $default; }
+	function wp_get_attachment_image_url( $id, $size = "thumbnail" ) { return ""; }
+	function nocache_headers() { return true; }
+	function status_header( $code ) { $GLOBALS["__gw_status"] = $code; return true; }
 	function get_the_date( $format = '', $post = null ) { return '01/01/2026 12:00'; }
 	function get_bloginfo( $show = 'name' ) { return 'Entidad de prueba'; }
 
