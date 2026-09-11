@@ -39,7 +39,7 @@ convoca-core, WordPress 6.4+, PHP 8.1+, Cuenta Redsys activa
 
 ## Version
 
-2.6.6
+2.13.0
 
 ## Changelog
 
