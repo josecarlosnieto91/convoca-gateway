@@ -119,7 +119,7 @@ class Email_Notifications {
 	/**
 	 * Default email templates (used when the setting is empty).
 	 *
-	 * @return array{email_success_subject:string,email_success_body:string,email_failed_subject:string,email_failed_body:string}
+	 * @return array{email_success_subject:string,email_success_body:string,email_pending_subject:string,email_pending_body:string,email_failed_subject:string,email_failed_body:string}
 	 */
 	public static function default_templates(): array {
 		return array(
@@ -132,6 +132,16 @@ class Email_Notifications {
                        <li><strong>' . __( 'Fecha', 'convoca-gateway' ) . ':</strong> {fecha}</li>
                    </ul>
                    <p>' . __( 'Puedes descargar tu recibo aquí:', 'convoca-gateway' ) . ' <a href="{recibo_url}">{recibo_url}</a></p>',
+			'email_pending_subject' => __( 'Tu pago de {importe} quedó sin completar', 'convoca-gateway' ),
+			'email_pending_body'    => '<h2>' . __( 'Un pago se quedó a medias', 'convoca-gateway' ) . '</h2>
+                   <p>' . __( 'Empezaste un pago de {importe} para {producto}, pero no llegó a completarse.', 'convoca-gateway' ) . '</p>
+                   <p><strong>' . __( 'No se te ha cobrado nada.', 'convoca-gateway' ) . '</strong></p>
+                   <p>' . __( 'Si lo dejaste a medias sin querer, puedes retomarlo donde lo dejaste:', 'convoca-gateway' ) . '</p>
+                   <p style="margin:24px 0;">
+                       <a href="{enlace_pago}" style="display:inline-block;padding:13px 24px;background:#e8590c;color:#ffffff;border-radius:8px;text-decoration:none;font-weight:600;font-family:Arial,Helvetica,sans-serif;">' . __( 'Completar el pago', 'convoca-gateway' ) . '</a>
+                   </p>
+                   <p>' . __( 'Y si ya lo hiciste por otra vía, o simplemente cambiaste de idea, ignora este mensaje: no vamos a insistirte.', 'convoca-gateway' ) . '</p>
+                   <p style="font-size:13px;color:#64748b;margin-top:24px;">' . __( 'Si el botón no te funciona, copia esta dirección en tu navegador:', 'convoca-gateway' ) . '<br>{enlace_pago}</p>',
 			'email_failed_subject'  => __( 'Problema con tu pago: {producto}', 'convoca-gateway' ),
 			'email_failed_body'     => '<h2>' . __( 'Error en el pago', 'convoca-gateway' ) . '</h2>
                    <p>' . __( 'No hemos podido procesar tu pago para {producto}.', 'convoca-gateway' ) . '</p>
@@ -164,6 +174,239 @@ class Email_Notifications {
 		$settings = get_option( 'convoca_gateway_settings', array() );
 
 		return '1' === (string) ( $settings['auto_receipt_fees'] ?? '1' );
+	}
+
+	/** Minutos que se espera antes de recordar un pago sin terminar. */
+	public const REMINDER_AFTER = 1800;
+
+	/** Evento de cron del recordatorio. */
+	public const REMINDER_HOOK = 'convoca_gateway_pending_reminder';
+
+	/** Frecuencia propia: cada cuarto de hora, para que el aviso salga a los 30 minutos. */
+	public const REMINDER_SCHEDULE = 'convoca_gateway_quarter_hourly';
+
+	/**
+	 * Añade la frecuencia de cuarto de hora al listado de WordPress.
+	 *
+	 * @param array $schedules Frecuencias registradas.
+	 * @return array
+	 */
+	public static function register_schedule( array $schedules ): array {
+		$schedules[ self::REMINDER_SCHEDULE ] = array(
+			'interval' => 900, // phpcs:ignore WordPress.WP.CronInterval.ChangeDetected -- 15 minutos es justo el retardo que el aviso necesita para salir a la media hora.
+			'display'  => __( 'Cada 15 minutos (Convoca)', 'convoca-gateway' ),
+		);
+
+		return $schedules;
+	}
+
+	/**
+	 * Programa el barrido de pagos sin terminar.
+	 */
+	public static function schedule_reminders(): void {
+		if ( ! wp_next_scheduled( self::REMINDER_HOOK ) ) {
+			wp_schedule_event( time() + 900, self::REMINDER_SCHEDULE, self::REMINDER_HOOK );
+		}
+	}
+
+	/**
+	 * Retira el barrido.
+	 */
+	public static function unschedule_reminders(): void {
+		wp_clear_scheduled_hook( self::REMINDER_HOOK );
+	}
+
+	/**
+	 * Avisa a quien dejó su correo de un pago que se quedó a medias.
+	 *
+	 * Se manda una sola vez por pago: la promesa del mensaje («no vamos a insistirte»)
+	 * solo se sostiene si es verdad. Sin correo no se puede avisar, y si el enlace ya
+	 * caducó no se manda un botón que no llevaría a ninguna parte.
+	 *
+	 * @param int      $pago_id Pago pendiente.
+	 * @param int|null $now     Base de tiempo (pruebas).
+	 * @return bool True si el correo salió.
+	 */
+	/**
+	 * Cuándo se creó el pago, en marca de tiempo.
+	 *
+	 * Los pagos nuevos traen `created_ts`. Los antiguos solo tienen la fecha local
+	 * (`current_time('mysql')`), así que se interpreta con el desfase del sitio. Un
+	 * pago sin fecha reconocible no se recuerda: mejor no avisar que avisar mal.
+	 *
+	 * @param array $meta Meta del pago.
+	 * @return int 0 si no se puede saber.
+	 */
+	public static function created_ts( array $meta ): int {
+		$ts = (int) ( $meta['_convoca_created_ts'] ?? 0 );
+		if ( $ts > 0 ) {
+			return $ts;
+		}
+
+		$fecha = (string) ( $meta['_convoca_created_at'] ?? '' );
+		if ( '' === $fecha ) {
+			return 0;
+		}
+
+		$desfase = (float) ( get_option( 'gmt_offset', 0 ) );
+
+		return (int) strtotime( $fecha ) - (int) ( $desfase * HOUR_IN_SECONDS );
+	}
+
+	/**
+	 * ¿Toca recordar este pago? Reglas, todas juntas y sin consultar nada.
+	 *
+	 * @param array $meta Meta del pago.
+	 * @param int   $now  Momento actual.
+	 * @return bool
+	 */
+	public static function should_remind( array $meta, int $now ): bool {
+		// Ya se cobró (o se anuló): no hay nada que recordar.
+		if ( 'pending' !== (string) ( $meta['_convoca_status'] ?? '' ) ) {
+			return false;
+		}
+
+		// Un enlace es una plantilla, no un cobro: no hay nada que recordarle a nadie.
+		if ( 'link_payment' === (string) ( $meta['_convoca_origin'] ?? '' ) ) {
+			return false;
+		}
+
+		// Un importe de cero no es un pago que se pueda completar (una plantilla de
+		// donativo antes de usarse, por ejemplo).
+		if ( (int) ( $meta['_convoca_amount_cents'] ?? 0 ) <= 0 ) {
+			return false;
+		}
+
+		// Sin correo no hay a quién avisar.
+		if ( '' === self::reminder_email( $meta ) ) {
+			return false;
+		}
+
+		// Un aviso, no una campaña.
+		if ( '' !== (string) ( $meta['_convoca_reminder_sent'] ?? '' ) ) {
+			return false;
+		}
+
+		// Si el enlace ya caducó, el botón no llevaría a ninguna parte.
+		$expira = (int) ( $meta['_convoca_expires_at'] ?? 0 );
+		if ( $expira > 0 && $expira < $now ) {
+			return false;
+		}
+
+		// Todavía está a tiempo de terminarlo sin que le demos la lata.
+		$creado = self::created_ts( $meta );
+		if ( 0 === $creado || ( $now - $creado ) < self::REMINDER_AFTER ) {
+			return false;
+		}
+
+		return true;
+	}
+
+	/**
+	 * El correo al que se avisa: el de quien paga y, si no lo hay, el del enlace.
+	 *
+	 * @param array $meta Meta del pago.
+	 * @return string Cadena vacía si no hay ninguno válido.
+	 */
+	public static function reminder_email( array $meta ): string {
+		foreach ( array( '_convoca_payer_email', '_convoca_recipient_email' ) as $clave ) {
+			$email = (string) ( $meta[ $clave ] ?? '' );
+			if ( '' !== $email && is_email( $email ) ) {
+				return $email;
+			}
+		}
+
+		return '';
+	}
+
+	/**
+	 * Recuerda a quien dejó su correo que dejó un pago a medias.
+	 *
+	 * @param int      $pago_id Pago.
+	 * @param int|null $now     Base de tiempo (pruebas).
+	 * @return bool True si el correo salió.
+	 */
+	public static function send_pending_reminder( int $pago_id, ?int $now = null ): bool {
+		$now  = $now ?? time();
+		$meta = array();
+		foreach ( array( '_convoca_status', '_convoca_payer_email', '_convoca_recipient_email', '_convoca_reminder_sent', '_convoca_expires_at', '_convoca_created_ts', '_convoca_created_at', '_convoca_origin', '_convoca_amount_cents' ) as $clave ) {
+			$meta[ $clave ] = get_post_meta( $pago_id, $clave, true );
+		}
+
+		if ( ! self::should_remind( $meta, $now ) ) {
+			return false;
+		}
+
+		$settings = get_option( 'convoca_gateway_settings', array() );
+		$defaults = self::default_templates();
+
+		$subject = (string) ( $settings['email_pending_subject'] ?? '' );
+		$body    = (string) ( $settings['email_pending_body'] ?? '' );
+		$subject = '' !== $subject ? $subject : (string) $defaults['email_pending_subject'];
+		$body    = '' !== $body ? $body : (string) $defaults['email_pending_body'];
+
+		$instancia = new self();
+		$vars      = $instancia->get_template_vars( $pago_id );
+
+		return $instancia->deliver(
+			self::reminder_email( $meta ),
+			str_replace( array_keys( $vars ), array_values( $vars ), $subject ),
+			str_replace( array_keys( $vars ), array_values( $vars ), $body )
+		);
+	}
+
+	/**
+	 * Busca los pagos empezados que nunca terminaron y avisa una vez a cada uno.
+	 *
+	 * El corte se hace en la consulta por la marca de tiempo numérica, para no
+	 * depender de la zona horaria; las reglas de verdad viven en `should_remind()`.
+	 *
+	 * @param int|null $now Base de tiempo (pruebas).
+	 * @return int Cuántos avisos salieron.
+	 */
+	public static function maybe_send_pending_reminders( ?int $now = null ): int {
+		$now = $now ?? time();
+
+		$pagos = get_posts(
+			array(
+				'post_type'      => 'pago',
+				'post_status'    => 'any',
+				'posts_per_page' => 50,
+				'fields'         => 'ids',
+				'meta_query'     => array( // phpcs:ignore WordPress.DB.SlowDBQuery.slow_db_query_meta_query
+					'relation' => 'AND',
+					array(
+						'key'   => '_convoca_status',
+						'value' => 'pending',
+					),
+					array(
+						'key'     => '_convoca_created_ts',
+						'value'   => $now - self::REMINDER_AFTER,
+						'compare' => '<=',
+						'type'    => 'NUMERIC',
+					),
+					array(
+						'key'     => '_convoca_reminder_sent',
+						'compare' => 'NOT EXISTS',
+					),
+				),
+			)
+		);
+
+		$enviados = 0;
+
+		foreach ( $pagos as $id ) {
+			$id = (int) $id;
+
+			if ( self::send_pending_reminder( $id, $now ) ) {
+				++$enviados;
+			}
+
+			// Se haya podido avisar o no, no se vuelve a mirar: un aviso, no una campaña.
+			update_post_meta( $id, '_convoca_reminder_sent', $now );
+		}
+
+		return $enviados;
 	}
 
 	private function maybe_send( int $payment_id, string $type, array $extra = array() ): void {
@@ -211,6 +454,25 @@ class Email_Notifications {
 	/**
 	 * Build variables for replacement.
 	 */
+	/**
+	 * Cómo se llama el pago para quien lo hace: el concepto que él ve, no el
+	 * nombre interno (`donativo`, `members_cuota`). Si el pago no trae concepto,
+	 * se usa el nombre legible de su origen.
+	 *
+	 * @param int    $payment_id Pago.
+	 * @param string $origin     Origen del pago.
+	 * @return string
+	 */
+	private static function producto_legible( int $payment_id, string $origin ): string {
+		$descripcion = (string) get_post_meta( $payment_id, '_convoca_product_desc', true );
+
+		if ( '' !== trim( $descripcion ) ) {
+			return $descripcion;
+		}
+
+		return CPT_Pago::origin_label( $origin );
+	}
+
 	private function get_template_vars( int $payment_id, array $extra = array() ): array {
 		$amount_cents = (int) get_post_meta( $payment_id, '_convoca_amount_cents', true );
 		$method       = get_post_meta( $payment_id, '_convoca_method', true );
@@ -239,7 +501,7 @@ class Email_Notifications {
 			'{importe}'            => CPT_Pago::format_amount( $amount_cents ),
 			'{metodo}'             => ucfirst( (string) $method ),
 			'{fecha}'              => get_the_date( 'd/m/Y H:i', $payment_id ),
-			'{producto}'           => (string) $origin,
+			'{producto}'           => esc_html( self::producto_legible( $payment_id, (string) $origin ) ),
 			'{enlace_pago}'        => $payment_url,
 			'{enlace_inscripcion}' => $enroll_url ?: '',
 			'{motivo}'             => $motivo,

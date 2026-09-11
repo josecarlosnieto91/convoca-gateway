@@ -3,7 +3,7 @@
  * Plugin Name:       Convoca Gateway — Payment Gateway
  * Plugin URI:        https://getconvoca.app
  * Description:       Redsys payment gateway (card + Bizum).
- * Version:           2.10.0
+ * Version:           2.11.0
  * Requires at least: 6.4
  * Requires PHP:      8.1
  * Tested up to:      7.1
@@ -176,11 +176,22 @@ register_activation_hook(
 		flush_rewrite_rules();
 		add_option( 'convoca_gateway_db_version', CONVOCA_GATEWAY_DB_VERSION, '', false );
 		Link_Expiry::schedule();
+		Email_Notifications::schedule_reminders();
 	}
 );
 
 /* ── Cron: aviso de caducidad de enlaces (D21b) ── */
 add_action( 'convoca_gateway_expiry_notice', array( \Convoca\Gateway\Link_Expiry::class, 'run_expiry_notices' ) );
+
+/* ── Cron: recordatorio de pagos que se quedaron a medias ── */
+// phpcs:ignore WordPress.WP.CronInterval.ChangeDetected -- añade una frecuencia propia; no toca las de WordPress ni las de otros plugins.
+add_filter( 'cron_schedules', array( \Convoca\Gateway\Email_Notifications::class, 'register_schedule' ) );
+add_action( 'convoca_gateway_pending_reminder', array( \Convoca\Gateway\Email_Notifications::class, 'maybe_send_pending_reminders' ) );
+
+// El cron también se asegura en cada arranque: al actualizar el plugin (que es lo
+// normal en un sitio en marcha) el gancho de activación no corre, y sin esto el
+// recordatorio no se programaría nunca en las instalaciones existentes.
+add_action( 'init', array( \Convoca\Gateway\Email_Notifications::class, 'schedule_reminders' ) );
 
 /* ── Recibos/justificantes: numeración anual al completar pago (D23/D24) ── */
 add_action( 'convoca_gateway_payment_completed', array( \Convoca\Gateway\Receipt_Generator::class, 'maybe_generate' ), 5, 1 );

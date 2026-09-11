@@ -173,6 +173,7 @@ class CPT_Pago {
 			'redsys_response'  => '',
 			'redsys_auth_code' => '',
 			'created_at'       => current_time( 'mysql' ),
+			'created_ts'       => time(),
 			'paid_at'          => '',
 		);
 
@@ -288,6 +289,26 @@ class CPT_Pago {
 	/**
 	 * Format amount as EUR string.
 	 */
+	/**
+	 * Nombre legible de un origen de pago, para pantallas y correos.
+	 *
+	 * Fuente única: el listado de pagos y los avisos por correo usan la misma.
+	 * Antes los correos enseñaban el nombre interno (`members_cuota`).
+	 *
+	 * @param string $origin Origen guardado en el pago.
+	 * @return string
+	 */
+	public static function origin_label( string $origin ): string {
+		return match ( $origin ) {
+			'enroll'   => __( 'Inscripción', 'convoca-gateway' ),
+			'members'  => __( 'Socio/a', 'convoca-gateway' ),
+			'manual'   => __( 'Formulario web', 'convoca-gateway' ),
+			'enlace'   => __( 'Cobro con enlace', 'convoca-gateway' ),
+			'donativo' => __( 'Donación', 'convoca-gateway' ),
+			default    => $origin,
+		};
+	}
+
 	public static function format_amount( int $cents ): string {
 		return number_format( $cents / 100, 2, ',', '.' ) . ' €';
 	}
@@ -355,6 +376,7 @@ class CPT_Pago {
 			'redsys_response'  => '',
 			'redsys_auth_code' => '',
 			'created_at'       => current_time( 'mysql' ),
+			'created_ts'       => time(),
 			'paid_at'          => '',
 		);
 

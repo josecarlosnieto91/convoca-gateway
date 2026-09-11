@@ -40,6 +40,11 @@ if (
 // Clear scheduled hooks.
 wp_clear_scheduled_hook( 'convoca_gateway_cleanup_pending' );
 wp_clear_scheduled_hook( 'convoca_gateway_retry_notifications' );
+// Estos dos son los cron vivos: el de caducidad de enlaces y el recordatorio de
+// pagos sin terminar. Los dos de arriba son de versiones antiguas y se dejan para
+// que una instalación que venga de ellas no se quede con un evento huérfano.
+wp_clear_scheduled_hook( 'convoca_gateway_expiry_notice' );
+wp_clear_scheduled_hook( 'convoca_gateway_pending_reminder' );
 
 // Delete options.
 delete_option( 'convoca_gateway_redsys_config' );

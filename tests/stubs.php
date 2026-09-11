@@ -187,7 +187,12 @@ namespace {
 	function absint( $v ) { return abs( (int) $v ); }
 	function wp_unslash( $value ) { return is_string( $value ) ? stripslashes( $value ) : $value; }
 	function sanitize_text_field( $str ) { return trim( strip_tags( (string) $str ) ); }
+	if ( ! defined( 'HOUR_IN_SECONDS' ) ) {
+		define( 'HOUR_IN_SECONDS', 3600 );
+	}
+
 	function sanitize_email( $email ) { return filter_var( (string) $email, FILTER_SANITIZE_EMAIL ); }
+	function is_email( $email ) { return false !== filter_var( (string) $email, FILTER_VALIDATE_EMAIL ); }
 	function sanitize_key( $key ) { return preg_replace( '/[^a-z0-9_\-]/', '', strtolower( (string) $key ) ); }
 	function esc_html__( $text, $domain = null ) { return $text; }
 	function esc_html_e( $text, $domain = null ) { echo $text; }

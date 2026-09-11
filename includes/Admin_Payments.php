@@ -356,14 +356,7 @@ class Admin_Payments extends \WP_List_Table {
 	 */
 	public function column_origin( $item ): string {
 		$meta = CPT_Pago::get_meta( $item->ID );
-		return match ( $meta['origin'] ) {
-			'enroll'       => __( 'Inscripción', 'convoca-gateway' ),
-			'members'      => __( 'Socio/a', 'convoca-gateway' ),
-			'manual'       => __( 'Formulario web', 'convoca-gateway' ),
-			'enlace'       => __( 'Cobro con enlace', 'convoca-gateway' ),
-			'donativo'     => __( 'Donación', 'convoca-gateway' ),
-			default        => $meta['origin'],
-		};
+		return CPT_Pago::origin_label( (string) $meta['origin'] );
 	}
 
 	/**
