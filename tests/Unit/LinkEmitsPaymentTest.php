@@ -7,31 +7,8 @@
  * plantilla. Ahora cada uso deja su registro (uno o más por enlace), el enlace se
  * queda intacto y el listado de pagos solo muestra cobros.
  *
- * No define dobles: los pone el resto del harness (PHPUnit incluye todos los ficheros
- * antes de ejecutar).
+ * Los dobles de WordPress los pone tests/stubs.php (cargado por el bootstrap).
  */
-
-namespace {
-	if ( ! function_exists( 'get_rest_url' ) ) {
-		function get_rest_url( $path = '', $scheme = 'rest' ) {
-			return 'https://example.com/wp-json' . $path;
-		}
-	}
-	if ( ! function_exists( 'wp_enqueue_script' ) ) {
-		function wp_enqueue_script( ...$args ) {
-			return true;
-		}
-	}
-	if ( ! function_exists( 'add_query_arg' ) ) {
-		function add_query_arg( $args, $url = '' ) {
-			if ( ! is_array( $args ) ) {
-				return $url;
-			}
-
-			return $url . ( str_contains( (string) $url, '?' ) ? '&' : '?' ) . http_build_query( $args );
-		}
-	}
-}
 
 namespace Convoca\Gateway\Tests {
 	use PHPUnit\Framework\TestCase;

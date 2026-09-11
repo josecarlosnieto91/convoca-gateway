@@ -11,19 +11,6 @@ if ( ! defined( 'ABSPATH' ) ) {
 
 use PHPUnit\Framework\TestCase;
 
-// Mock WordPress functions
-if (!function_exists('get_option')) {
-    function get_option($key, $default = false) { return $default; }
-    function get_page_by_title($title) { return null; }
-    function is_ssl() { return true; }
-    function home_url($path = '') { return "https://example.com$path"; }
-    function __($s, $domain) { return $s; }
-    function esc_html($s) { return $s; }
-    function esc_attr($s) { return $s; }
-    function esc_url($s) { return $s; }
-    function admin_url($path) { return "/wp-admin/$path"; }
-}
-
 require_once dirname(__DIR__, 2) . '/includes/Diagnostic.php';
 
 class DiagnosticTest extends TestCase

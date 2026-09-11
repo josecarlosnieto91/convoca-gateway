@@ -6,63 +6,6 @@
  * keeps the same order" behaviour can be asserted without a full WordPress.
  */
 
-// ── Minimal in-memory meta store (GLOBAL namespace, like WordPress) ──
-namespace {
-	if ( ! isset( $GLOBALS['__gw_meta'] ) ) {
-		$GLOBALS['__gw_meta'] = array();
-	}
-	if ( ! function_exists( 'get_post_meta' ) ) {
-		function get_post_meta( $id, $key = '', $single = false ) {
-			$vals = $GLOBALS['__gw_meta'][ (int) $id ][ $key ] ?? null;
-			if ( $single ) {
-				return $vals ?? '';
-			}
-			return null === $vals ? array() : ( is_array( $vals ) ? $vals : array( $vals ) );
-		}
-	}
-	if ( ! function_exists( 'update_post_meta' ) ) {
-		function update_post_meta( $id, $key, $value ) {
-			$GLOBALS['__gw_meta'][ (int) $id ][ $key ] = $value;
-			return true;
-		}
-	}
-	if ( ! function_exists( 'delete_post_meta' ) ) {
-		function delete_post_meta( $id, $key ) {
-			unset( $GLOBALS['__gw_meta'][ (int) $id ][ $key ] );
-			return true;
-		}
-	}
-	if ( ! function_exists( 'get_post' ) ) {
-		function get_post( $id = null, $output = null, $filter = null ) {
-			$id = (int) $id;
-			// Convention: an ID without meta entry simulates "post not found".
-			if ( ! isset( $GLOBALS['__gw_meta'][ $id ] ) ) {
-				return null;
-			}
-			return (object) array(
-				'ID'          => $id,
-				'post_type'   => 'pago',
-				'post_status' => 'publish',
-			);
-		}
-	}
-	if ( ! function_exists( 'add_query_arg' ) ) {
-		function add_query_arg( $args, $url = '' ) {
-			if ( ! is_array( $args ) ) {
-				return $url;
-			}
-			$sep = ( false === strpos( $url, '?' ) ) ? '?' : '&';
-
-			return $url . $sep . http_build_query( $args );
-		}
-	}
-	if ( ! function_exists( 'set_url_scheme' ) ) {
-		function set_url_scheme( $url, $scheme = null ) {
-			return $url;
-		}
-	}
-}
-
 namespace Convoca\Gateway\Tests {
 	use PHPUnit\Framework\TestCase;
 

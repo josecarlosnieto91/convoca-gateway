@@ -7,41 +7,8 @@
  * verdad). Aquí se fija que la consulta los excluye y que los orígenes se leen en
  * castellano.
  *
- * No define dobles propios más allá de WP_List_Table y WP_Query: los demás los pone
- * AdminRecordActionsTest.
+ * Los dobles de WordPress los pone tests/stubs.php (cargado por el bootstrap).
  */
-
-namespace {
-	if ( ! class_exists( 'WP_List_Table' ) ) {
-		class WP_List_Table {
-			public $items = array();
-			public function __construct( $args = array() ) {}
-			public function row_actions( $actions, $always = false ) {
-				return '<span class="row-actions">' . implode( ' | ', $actions ) . '</span>';
-			}
-			public function get_pagenum() {
-				return 1;
-			}
-			public function set_pagination_args( $args ) {}
-		}
-	}
-	if ( ! class_exists( 'WP_Query' ) ) {
-		/** Guarda los argumentos de la consulta para poder comprobarlos. */
-		class WP_Query {
-			public static $ultimo = array();
-			public $posts = array();
-			public $found_posts = 0;
-			public function __construct( $args = array() ) {
-				self::$ultimo = $args;
-			}
-		}
-	}
-	if ( ! function_exists( 'esc_attr__' ) ) {
-		function esc_attr__( $text, $domain = null ) {
-			return $text;
-		}
-	}
-}
 
 namespace Convoca\Gateway\Tests {
 	use PHPUnit\Framework\TestCase;

@@ -5,68 +5,6 @@
  * dependiendo de ese ajuste.
  */
 
-namespace {
-	if ( ! isset( $GLOBALS['__gw_meta'] ) ) {
-		$GLOBALS['__gw_meta'] = array();
-	}
-	if ( ! isset( $GLOBALS['__gw_emails'] ) ) {
-		$GLOBALS['__gw_emails'] = array();
-	}
-	if ( ! function_exists( 'get_post_meta' ) ) {
-		function get_post_meta( $id, $key = '', $single = false ) {
-			$vals = $GLOBALS['__gw_meta'][ (int) $id ][ $key ] ?? null;
-			if ( $single ) {
-				return $vals ?? '';
-			}
-
-			return null === $vals ? array() : ( is_array( $vals ) ? $vals : array( $vals ) );
-		}
-	}
-	if ( ! function_exists( 'update_post_meta' ) ) {
-		function update_post_meta( $id, $key, $value ) {
-			$GLOBALS['__gw_meta'][ (int) $id ][ $key ] = $value;
-			return true;
-		}
-	}
-	if ( ! function_exists( 'add_action' ) ) {
-		function add_action( $hook, $callback, $priority = 10, $args = 1 ) {
-			return true;
-		}
-	}
-	if ( ! function_exists( 'wp_mail' ) ) {
-		function wp_mail( $to, $subject, $message, $headers = '', $attachments = array() ) {
-			$GLOBALS['__gw_emails'][] = compact( 'to', 'subject', 'message' );
-
-			return true;
-		}
-	}
-	if ( ! function_exists( 'wp_generate_password' ) ) {
-		function wp_generate_password( $length = 12, $special = true, $extra = false ) {
-			return substr( str_repeat( 'a1B2c3D4e5F6g7H8', 8 ), 0, $length );
-		}
-	}
-	if ( ! function_exists( 'get_the_date' ) ) {
-		function get_the_date( $format = '', $post = null ) {
-			return '01/01/2026 12:00';
-		}
-	}
-	if ( ! function_exists( 'get_bloginfo' ) ) {
-		function get_bloginfo( $show = 'name' ) {
-			return 'Entidad de prueba';
-		}
-	}
-	if ( ! function_exists( 'set_url_scheme' ) ) {
-		function set_url_scheme( $url, $scheme = null ) {
-			return $url;
-		}
-	}
-	if ( ! function_exists( 'get_permalink' ) ) {
-		function get_permalink( $post = 0 ) {
-			return 'https://example.com/pago/';
-		}
-	}
-}
-
 namespace Convoca\Gateway\Tests {
 	use PHPUnit\Framework\TestCase;
 
