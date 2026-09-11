@@ -9,18 +9,6 @@
  * devolución o una anulación, que no deben dar por pagada una cuota.
  */
 
-namespace {
-	if ( ! function_exists( 'add_query_arg' ) ) {
-		function add_query_arg( $args, $url = '' ) {
-			if ( ! is_array( $args ) ) {
-				return $url;
-			}
-
-			return $url . ( str_contains( (string) $url, '?' ) ? '&' : '?' ) . http_build_query( $args );
-		}
-	}
-}
-
 namespace Convoca\Gateway\Tests {
 
 	use PHPUnit\Framework\TestCase;
