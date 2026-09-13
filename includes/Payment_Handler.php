@@ -1951,6 +1951,16 @@ class Payment_Handler {
 			return new \WP_Error( 'processing_error', 'Error al procesar el pago' );
 		}
 
+		// Un aviso ACEPTADO también se registra. Sin esto no se podía distinguir «Redsys no ha
+		// avisado» de «el aviso se ha perdido», y la única forma de saber que el cobro se cerró
+		// era que el cliente volviera al navegador. Con esta línea, la siguiente prueba de pago
+		// responde la pregunta sin discusión.
+		\Convoca\Core\Logger::info(
+			'Aviso de Redsys aceptado (Order ' . $order_id . ') desde ' . ( wp_unslash( $_SERVER['REMOTE_ADDR'] ?? 'unknown' ) ) . '.',
+			'Gateway/Notification',
+			$pago_id
+		);
+
 		return true;
 	}
 
@@ -1958,8 +1968,10 @@ class Payment_Handler {
 	 * Process the synchronous browser return from Redsys (GET /pago-ok).
 	 *
 	 * The notification server-to-server (process_notification) is the source of
-	 * truth in production, but in sandbox/test environments it often never
-	 * arrives — only the browser redirect with Ds_* params does. This method
+	 * truth. Este retorno es una red de seguridad, NO la vía principal: un cobro no puede
+	 * depender de que el cliente vuelva a la pestaña. (Antes este comentario decía que en
+	 * producción el aviso «often never arrives»; es falso, y fue justo la creencia que dejó
+	 * pasar el fallo del COMMIT.) This method
 	 * validates the HMAC signature of the return (same as a notification, but
 	 * without IP restrictions since the user's browser IP is arbitrary) and, if
 	 * the payment is approved and not yet paid, applies the confirmation.
