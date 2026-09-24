@@ -177,7 +177,7 @@
 ## v2.6.2 (2026-06-24)
 
 ### 🐛 Fixes
-- Corregido email inconsistente en pago-error (usaba getconvoca.app → ahora biodevas.org)
+- Corregido email inconsistente en pago-error (usaba el dominio de la tienda → ahora el del propio sitio)
 
 ### ✨ Improvements
 - Mejoras en notificaciones automáticas de pago
