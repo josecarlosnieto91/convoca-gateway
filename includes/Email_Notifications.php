@@ -512,6 +512,17 @@ class Email_Notifications {
 			sprintf( 'From: %s <%s>', $sender_name, $sender_email ),
 		);
 
-		return wp_mail( $to, $subject, $body, $headers );
+		// Pasa por el punto de salida único de Core: envoltorio de Convoca y copia a la
+		// asociación si el ajuste está marcado (issue convoca-core#6). El `From` propio se respeta.
+		return \Convoca\Core\Mailer::send(
+			$to,
+			$subject,
+			$body,
+			array(
+				'plugin'   => 'convoca-gateway',
+				'template' => 'notificacion_pago',
+				'headers'  => $headers,
+			)
+		);
 	}
 }
