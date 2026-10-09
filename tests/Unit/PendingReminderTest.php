@@ -170,7 +170,7 @@ namespace Convoca\Gateway\Tests {
 			$this->assertCount( 1, $GLOBALS['__gw_emails'] );
 
 			$correo = $GLOBALS['__gw_emails'][0];
-			$this->assertSame( 'socia@example.com', $correo['to'] );
+			$this->assertSame( array( 'socia@example.com' ), $correo['to'] );
 			$this->assertStringContainsString( '12,00 €', $correo['subject'] );
 			$this->assertStringContainsString( '12,00 €', $correo['message'] );
 			$this->assertStringContainsString( 'Donativo', $correo['message'] );

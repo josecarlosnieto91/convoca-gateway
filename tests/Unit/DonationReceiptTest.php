@@ -38,7 +38,7 @@ namespace Convoca\Gateway\Tests {
 			( new \Convoca\Gateway\Email_Notifications() )->send_success_email( 501, 'donativo', 77, array() );
 
 			$this->assertCount( 1, $GLOBALS['__gw_emails'], 'El donante debe recibir su recibo aunque el aviso general esté apagado.' );
-			$this->assertSame( 'dona@example.com', $GLOBALS['__gw_emails'][0]['to'] );
+			$this->assertSame( array( 'dona@example.com' ), $GLOBALS['__gw_emails'][0]['to'] );
 		}
 
 		public function test_donation_without_email_sends_nothing(): void {
@@ -66,7 +66,7 @@ namespace Convoca\Gateway\Tests {
 			( new \Convoca\Gateway\Email_Notifications() )->send_success_email( 504, 'link_payment', 0, array() );
 
 			$this->assertCount( 1, $GLOBALS['__gw_emails'] );
-			$this->assertSame( 'quien@paga.example', $GLOBALS['__gw_emails'][0]['to'] );
+			$this->assertSame( array( 'quien@paga.example' ), $GLOBALS['__gw_emails'][0]['to'] );
 		}
 	}
 }
