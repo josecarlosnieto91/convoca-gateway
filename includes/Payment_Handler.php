@@ -853,7 +853,7 @@ class Payment_Handler {
 	 *
 	 * WordPress pasa el contenido por wpautop: un salto entre dos etiquetas se
 	 * convierte en <br> (o en <p>) y desmonta la rejilla de las tarjetas. Pasó
-	 * en la página de pago de demo, que usa el editor clásico; en Lugg, con
+	 * en la página de pago de demo, que usa el editor clásico; en Ejemplo, con
 	 * bloques, no se reproducía.
 	 */
 	private function compact_html( string $html ): string {
