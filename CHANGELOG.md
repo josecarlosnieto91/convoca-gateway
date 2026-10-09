@@ -1,5 +1,19 @@
 # Changelog — convoca-gateway
 
+## v2.13.2 (2026-10-09)
+
+### ✨ Features
+- Las notificaciones de pago pasan por el punto único `Convoca\Core\Mailer` (envoltorio y copia), respetando el remitente propio que ya ponía el plugin.
+
+### 🐛 Fixes
+- Enlaces muertos del panel de pagos: «Ver todos los pagos» apuntaba a `edit.php?post_type=pago` (un tipo de contenido con `show_ui=false`, la URL da error) y el botón de Configuración a `options-general.php` cuando la página es un submenú de Pagos. Los dos van ya a `admin.php`, donde están registrados de verdad.
+
+### 🧪 Tests
+- Doble fiel de `Convoca\Core\Mailer` para la suite. Un solo bootstrap: se elimina `tests/bootstrap-unit.php`, que duplicaba el arranque con otro juego de dobles y hacía fallar la suite en cualquier runner que lo prefiriera.
+
+### 📦 Infrastructure
+- Higiene del producto: retirados el nombre del cliente y el de la asociación de textos y muestras; el changelog deja de nombrar el dominio del cliente.
+
 ## v2.13.0 (2026-09-11)
 
 ### ✨ Features
