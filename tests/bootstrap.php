@@ -16,6 +16,7 @@ require_once __DIR__ . '/stubs.php';
 // Mock Convoca\Core\Logger (clase del core, no de WordPress).
 if ( ! class_exists( 'Convoca\\Core\\Logger' ) ) {
 	require_once __DIR__ . '/StubLogger.php';
+require_once __DIR__ . '/StubMailer.php';
 }
 
 // Doble de Convoca\Core\Utils (el manejador de notificaciones lo usa para sus ganchos).

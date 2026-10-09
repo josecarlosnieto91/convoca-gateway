@@ -41,3 +41,8 @@ class License_Manager
 {
     public static function has_pro( mixed ...$args ): mixed { return null; }
 }
+
+class Mailer
+{
+    public static function send( mixed ...$args ): mixed { return true; }
+}
