@@ -214,7 +214,7 @@ class Pending_Payments {
 
 		printf(
 			'<p><a href="%s" class="button">%s</a></p>',
-			esc_url( admin_url( 'edit.php?post_type=pago' ) ),
+			esc_url( admin_url( 'admin.php?page=conv-gateway-payments' ) ),
 			esc_html__( 'Ver todos los pagos', 'convoca-gateway' )
 		);
 	}

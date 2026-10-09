@@ -125,8 +125,8 @@ class Dashboard_Widget {
 			</div>
 
 			<p class="conv-gateway-footer-links">
-				<a href="<?php echo esc_url( admin_url( 'edit.php?post_type=pago' ) ); ?>" class="button"><?php esc_html_e( 'Ver todos los pagos', 'convoca-gateway' ); ?></a>
-				<a href="<?php echo esc_url( admin_url( 'options-general.php?page=conv-gateway-settings' ) ); ?>" class="button"><?php esc_html_e( 'Configuración', 'convoca-gateway' ); ?></a>
+				<a href="<?php echo esc_url( admin_url( 'admin.php?page=conv-gateway-payments' ) ); ?>" class="button"><?php esc_html_e( 'Ver todos los pagos', 'convoca-gateway' ); ?></a>
+				<a href="<?php echo esc_url( admin_url( 'admin.php?page=conv-gateway-settings' ) ); ?>" class="button"><?php esc_html_e( 'Configuración', 'convoca-gateway' ); ?></a>
 			</p>
 		</div>
 
