@@ -4,7 +4,7 @@ Tags: payments, redsys, donations, fees, tpv
 Requires at least: 6.4
 Tested up to: 7.1
 Requires PHP: 8.1
-Stable tag: 2.13.2
+Stable tag: 2.13.3
 License: GPL-2.0-or-later
 License URI: https://www.gnu.org/licenses/gpl-2.0.html
 
@@ -35,6 +35,9 @@ This plugin connects to the Redsys payment gateway to process transactions. Paym
 4. Configure your Redsys account in Settings > Convoca Gateway
 
 == Changelog ==
+
+= 2.13.3 =
+* El correo de confirmación del pago dejó de registrar un aviso de deprecación en cada cobro: el oyente escuchaba un nombre de hook retirado en la 1.1.0. No cambia lo que se envía.
 
 = 2.13.0 =
 * Un enlace de cuota o de inscripción se cierra en cuanto su pago se confirma: deja de admitir pagos y no se genera otro enlace para el mismo pago. Si el intento es erróneo, el enlace sigue vivo para reintentar.
