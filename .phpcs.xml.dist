@@ -139,4 +139,29 @@
   <rule ref="WordPress.PHP.IniSet">
     <exclude name="WordPress.PHP.IniSet.memory_limit_Disallowed"/>
   </rule>
+  <!--
+    Exclusiones con motivo. No son un silenciador: declaran que se acepta y por que.
+    1. DirectDatabaseQuery (723 avisos): los plugins consultan TABLAS PROPIAS
+       (convoca_inscripciones, convoca_pagos...) con agregados y JOIN que la API de
+       WP no cubre. NoCaching tampoco aplica: son datos por-usuario y por-peticion.
+    2. SlowDBQuery (159): el modelo de datos es CPT + postmeta; la consulta por
+       meta_key/meta_value es la unica via, no una eleccion.
+    3. UnusedFunctionParameter (108): callbacks de WordPress cuya firma impone el
+       propio hook ($items,$args / $post_id,$post / $column_name,$post_id).
+  -->
+  <rule ref="WordPress.DB.DirectDatabaseQuery">
+    <exclude name="WordPress.DB.DirectDatabaseQuery.DirectQuery"/>
+    <exclude name="WordPress.DB.DirectDatabaseQuery.NoCaching"/>
+    <exclude name="WordPress.DB.DirectDatabaseQuery.SchemaChange"/>
+  </rule>
+  <rule ref="WordPress.DB.SlowDBQuery">
+    <exclude name="WordPress.DB.SlowDBQuery.slow_db_query_meta_query"/>
+    <exclude name="WordPress.DB.SlowDBQuery.slow_db_query_meta_key"/>
+    <exclude name="WordPress.DB.SlowDBQuery.slow_db_query_meta_value"/>
+    <exclude name="WordPress.DB.SlowDBQuery.slow_db_query_tax_query"/>
+  </rule>
+  <rule ref="Generic.CodeAnalysis.UnusedFunctionParameter">
+    <exclude name="Generic.CodeAnalysis.UnusedFunctionParameter.Found"/>
+    <exclude name="Generic.CodeAnalysis.UnusedFunctionParameter.FoundAfterLastUsed"/>
+  </rule>
 </ruleset>
