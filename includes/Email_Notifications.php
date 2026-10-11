@@ -30,8 +30,8 @@ if ( ! defined( 'ABSPATH' ) ) {
 class Email_Notifications {
 
 	public function __construct() {
-		add_action( 'convoca_payment_completed', array( $this, 'send_success_email' ), 10, 4 );
-		add_action( 'convoca_payment_failed', array( $this, 'send_failed_email' ), 10, 2 );
+		add_action( 'convoca_gateway_payment_completed', array( $this, 'send_success_email' ), 10, 4 );
+		add_action( 'convoca_gateway_payment_failed', array( $this, 'send_failed_email' ), 10, 2 );
 	}
 
 	/**

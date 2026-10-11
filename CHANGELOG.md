@@ -1,5 +1,14 @@
 # Changelog — convoca-gateway
 
+## v2.13.3 (2026-10-11)
+
+### Corregido
+- **Cada cobro dejaba un aviso de deprecación en el log** (cierra #2). `Email_Notifications`
+  escuchaba `convoca_payment_completed` y `convoca_payment_failed`, nombres retirados en la
+  1.1.0. Ahora escucha `convoca_gateway_payment_completed` y `convoca_gateway_payment_failed`.
+  Medido en la demo: eran 28 líneas `PHP Deprecated` de este par en `debug.log`; el correo de
+  confirmación del pago no cambia de comportamiento (mismos argumentos y misma prioridad).
+
 ## v2.13.2 (2026-10-09)
 
 ### ✨ Features
