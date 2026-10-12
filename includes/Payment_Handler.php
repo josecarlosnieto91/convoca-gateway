@@ -1438,7 +1438,7 @@ class Payment_Handler {
 			$upload_dir = wp_upload_dir();
 			$old_path   = str_replace( $upload_dir['baseurl'], $upload_dir['basedir'], $old_url );
 			if ( file_exists( $old_path ) ) {
-				@wp_delete_file( $old_path );
+				wp_delete_file( $old_path );
 			}
 		}
 

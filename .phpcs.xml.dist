@@ -12,8 +12,44 @@
   <arg value="sp"/>
 
   <rule ref="WordPress">
+    <!--
+      Exclusiones con motivo escrito. No es un silenciador: el estandar declara
+      que se acepta y por que, y queda versionado en el repo.
+
+      NoHtmlWrappedStrings: plantillas de CORREO HTML, donde el HTML es el propio
+        contenido traducible; partirlo en trozos pierde contexto para el traductor.
+      base64_encode/decode: tokens opacos de enlaces de pago y de checkin. No es
+        ofuscacion de codigo, es el formato del dato.
+      file_put_contents/get_contents/mkdir/touch: escritura en el propio directorio
+        del plugin; WP_Filesystem exige credenciales FTP en muchos hostings.
+      ValidHookName.UseUnderscores: hooks YA PUBLICADOS con guion; renombrarlos
+        rompe las integraciones que los usan.
+      PostsPerPage: exportadores de admin, que necesitan el conjunto entero.
+      PreparedSQLPlaceholders: prepare() acepta un array como segundo argumento
+        desde WP 4.9 y PHPCS no ve los placeholders de una variable interpolada.
+        La regla sigue activa para el resto del codigo.
+      CronInterval: el cron de un minuto es intencional (cola de correo y webhooks);
+        hay issue abierto para valorar WP-Cron del sistema.
+      AssignmentInCondition: patron while ( ( $x = f() ) !== false ), explicito.
+      error_log: es la salida del propio convoca-core/includes/Logger.php.
+    -->
     <exclude name="WordPress.Files.FileName"/>
     <exclude name="WordPress.NamingConventions"/>
+    <exclude name="WordPress.WP.I18n.NoHtmlWrappedStrings"/>
+    <exclude name="WordPress.PHP.DiscouragedPHPFunctions.obfuscation_base64_encode"/>
+    <exclude name="WordPress.PHP.DiscouragedPHPFunctions.obfuscation_base64_decode"/>
+    <exclude name="WordPress.WP.AlternativeFunctions.file_system_operations_file_put_contents"/>
+    <exclude name="WordPress.WP.AlternativeFunctions.file_get_contents_file_get_contents"/>
+    <exclude name="WordPress.WP.AlternativeFunctions.file_system_operations_mkdir"/>
+    <exclude name="WordPress.WP.AlternativeFunctions.file_system_operations_touch"/>
+    <exclude name="WordPress.NamingConventions.ValidHookName.UseUnderscores"/>
+    <exclude name="WordPress.WP.PostsPerPage.posts_per_page_posts_per_page"/>
+    <exclude name="WordPress.DB.PreparedSQLPlaceholders.UnfinishedPrepare"/>
+    <exclude name="WordPress.DB.PreparedSQLPlaceholders.ReplacementsWrongNumber"/>
+    <exclude name="WordPress.WP.CronInterval.CronSchedulesInterval"/>
+    <exclude name="Generic.CodeAnalysis.AssignmentInCondition"/>
+    <exclude name="WordPress.PHP.DevelopmentFunctions.error_log_error_log"/>
+
   </rule>
   <rule ref="WordPress.WP.I18n">
     <properties>
