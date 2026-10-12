@@ -1,5 +1,24 @@
 # Changelog — convoca-gateway
 
+## v2.13.5 (2026-10-12)
+
+### Arreglado
+- **El filtro de IP rechazaba al propio sitio.** En produccion no estaban admitidos ni el
+  loopback ni la IP del servidor, asi que cualquier flujo que saliera de la propia maquina
+  (la bateria del ecosistema, un `wp` que dispare una notificacion) se descartaba con
+  `Notificacion rechazada: IP de origen no autorizada` y dejaba una linea de ERROR en el log
+  de produccion en cada pasada. Al reves tambien fallaba: un sitio detras de un proxy podia
+  dejar de aceptar notificaciones legitimas sin que nada lo avisara.
+- La decision se extrae a `is_allowed_origin_ip()`, publica y con las entradas explicitas,
+  para poder probarla sin montar una peticion. Se admiten el loopback, las direcciones del
+  propio sitio (nuevo filtro `convoca_gateway_site_ips`) y los rangos de Redsys; un tercero
+  desconocido sigue fuera.
+- Lo que protege de verdad contra una notificacion inventada es la FIRMA de Redsys, que se
+  verifica aparte: esta lista es defensa en profundidad y no puede rechazar a quien sale del
+  propio sitio.
+- Prueba `RedsysOriginGuardTest`, probada en negativo: con el loopback rechazado vuelve a
+  fallar.
+
 ## v2.13.4 (2026-10-12)
 
 ### Arreglado

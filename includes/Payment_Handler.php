@@ -1771,27 +1771,51 @@ class Payment_Handler {
 	}
 
 	/**
-	 * Check if the notification comes from a known Redsys IP.
+	 * ¿Se admite una notificación que llega desde esta IP?
+	 *
+	 * La comprobación de IP es defensa en profundidad: lo que de verdad impide que alguien
+	 * invente una notificación de pago es la FIRMA de Redsys, que se verifica aparte. Por eso
+	 * aquí no se puede rechazar a quien sale del propio sitio.
+	 *
+	 * Antes esto rechazaba el loopback y la IP del propio servidor cuando el entorno era
+	 * `production`, así que cualquier flujo que se ejecutase desde la propia máquina (la
+	 * batería del ecosistema, un `wp` que dispare una notificación) se descartaba y dejaba
+	 * una línea de ERROR en el log de producción. Y al revés: un sitio detrás de un proxy, o
+	 * con la IP saliente cambiada, podía dejar de aceptar notificaciones legítimas sin aviso.
+	 *
+	 * Las entradas van explícitas para poder probar la decisión sin montar una petición.
+	 *
+	 * @param string   $ip       IP de origen (REMOTE_ADDR).
+	 * @param string[] $site_ips Direcciones del propio sitio (su loopback y sus IP).
+	 * @return bool True si la notificación se admite.
 	 */
-	private function is_redsys_ip(): bool {
-		$ip = wp_unslash( $_SERVER['REMOTE_ADDR'] ?? '' );
+	public function is_allowed_origin_ip( string $ip, array $site_ips = array() ): bool {
+		$ip = trim( $ip );
 
-		if ( empty( $ip ) ) {
+		if ( '' === $ip ) {
 			return false;
 		}
 
-		// Loopback SOLO en entornos no productivos (nunca ligado a WP_DEBUG).
-		$is_prod = ( Redsys_Client::settings()['environment'] ?? 'test' ) === 'production';
-		if ( ! $is_prod && in_array( $ip, array( '127.0.0.1', '::1', 'localhost' ), true ) ) {
+		// 1. Quien sale del propio sitio nunca es un tercero: se admite siempre, también en
+		// producción. `REMOTE_ADDR` no se puede falsificar (es la dirección del par de la
+		// conexión TCP), así que una petición desde el loopback viene de esta máquina.
+		$loopback = array( '127.0.0.1', '::1', 'localhost' );
+		if ( in_array( $ip, $loopback, true ) ) {
 			return true;
 		}
 
-		// Common Redsys IP ranges (Europe).
-		// Official docs mention specific IPs, but they often use 195.76.9.0/24.
+		// 2. Las direcciones del propio sitio, que el llamador pasa.
+		if ( in_array( $ip, array_filter( $site_ips ), true ) ) {
+			return true;
+		}
+
+		// 3. Rangos de Redsys (Europa). La documentación oficial cita IPs sueltas, pero en la
+		// práctica usan este rango.
 		if ( str_starts_with( $ip, '195.76.9.' ) ) {
 			return true;
 		}
 
+		// 4. Lista de IPs conocidas, ampliable por filtro si Redsys cambia sus rangos.
 		$allowed_ips = array(
 			'193.16.243.33',
 			'195.76.9.187',
@@ -1799,10 +1823,49 @@ class Payment_Handler {
 			'195.76.9.222',
 		);
 
-		// Allow extending the IP list via filter (e.g., if Redsys changes their ranges).
+		// 5. Lista de IPs conocidas de Redsys, ampliable por filtro si cambian sus rangos.
 		$allowed_ips = apply_filters( 'convoca_gateway_redsys_allowed_ips', $allowed_ips );
 
 		return in_array( $ip, $allowed_ips, true );
+	}
+
+	/**
+	 * Direcciones del propio sitio: su IP pública y la de la máquina.
+	 *
+	 * @return string[]
+	 */
+	private function site_ips(): array {
+		$ips = array();
+
+		if ( ! empty( $_SERVER['SERVER_ADDR'] ) ) {
+			$ips[] = wp_unslash( $_SERVER['SERVER_ADDR'] );
+		}
+
+		$host = gethostname();
+		if ( false !== $host ) {
+			$resolved = gethostbyname( $host );
+			if ( $resolved !== $host ) {
+				$ips[] = $resolved;
+			}
+		}
+
+		/**
+		 * Permite añadir direcciones del propio sitio (una IP saliente detrás de un proxy,
+		 * por ejemplo). No se puede usar para autorizar a un tercero: esto solo marca
+		 * "esta máquina es la nuestra".
+		 *
+		 * @param string[] $ips Direcciones detectadas.
+		 */
+		return apply_filters( 'convoca_gateway_site_ips', array_values( array_unique( $ips ) ) );
+	}
+
+	/**
+	 * Check if the notification comes from a known Redsys IP.
+	 */
+	private function is_redsys_ip(): bool {
+		$ip = wp_unslash( $_SERVER['REMOTE_ADDR'] ?? '' );
+
+		return $this->is_allowed_origin_ip( $ip, $this->site_ips() );
 	}
 
 	/**
