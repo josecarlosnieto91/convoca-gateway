@@ -33,6 +33,15 @@ if ( ! class_exists( 'WP_List_Table' ) ) {
 
 class Admin_Payments extends \WP_List_Table {
 
+	/**
+	 * Cabeceras de la tabla. WordPress la asigna de forma dinamica en prepare_items(),
+	 * y desde PHP 8.2 crear propiedades dinamicas esta deprecado: se declara aqui para
+	 * que el aviso no acabe en el registro de avisos del sitio (medido: salia en la
+	 * propia ejecucion de los tests y el CI lo daba por bueno).
+	 *
+	 * @var array
+	 */
+	protected $_column_headers = array();
 
 	public function __construct() {
 		add_action( 'admin_menu', array( $this, 'add_menu' ) );

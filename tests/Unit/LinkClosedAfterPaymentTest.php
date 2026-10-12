@@ -72,7 +72,6 @@ namespace Convoca\Gateway\Tests {
 
 		private function privado( string $metodo, array $args ) {
 			$ref = new \ReflectionMethod( \Convoca\Gateway\Payment_Handler::class, $metodo );
-			$ref->setAccessible( true );
 			$handler = ( new \ReflectionClass( \Convoca\Gateway\Payment_Handler::class ) )->newInstanceWithoutConstructor();
 
 			return $ref->invokeArgs( $handler, $args );

@@ -70,7 +70,6 @@ namespace Convoca\Gateway\Tests {
 		private function call( string $method, array $args = array() ) {
 			$reflection = new \ReflectionClass( \Convoca\Gateway\Payment_Handler::class );
 			$callable   = $reflection->getMethod( $method );
-			$callable->setAccessible( true );
 
 			return $callable->invokeArgs( $this->handler(), $args );
 		}

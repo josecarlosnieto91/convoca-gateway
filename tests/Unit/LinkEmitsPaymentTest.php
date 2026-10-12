@@ -68,7 +68,6 @@ namespace Convoca\Gateway\Tests {
 		/** Llama a un método privado del manejador de pagos. */
 		private function privado( string $metodo, array $args ) {
 			$ref = new \ReflectionMethod( \Convoca\Gateway\Payment_Handler::class, $metodo );
-			$ref->setAccessible( true );
 
 			// Sin constructor: registraría hooks de WordPress que aquí no existen.
 			$handler = ( new \ReflectionClass( \Convoca\Gateway\Payment_Handler::class ) )->newInstanceWithoutConstructor();

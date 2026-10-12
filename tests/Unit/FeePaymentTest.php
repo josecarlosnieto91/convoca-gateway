@@ -130,7 +130,6 @@ namespace Convoca\Gateway\Tests {
 			update_post_meta( $pago, '_convoca_status', 'paid' );
 
 			$ref = new \ReflectionMethod( \Convoca\Gateway\Payment_Handler::class, 'render_link_payment_page' );
-			$ref->setAccessible( true );
 			$handler = ( new \ReflectionClass( \Convoca\Gateway\Payment_Handler::class ) )->newInstanceWithoutConstructor();
 			$out     = (string) $ref->invokeArgs( $handler, array( $pago, $token, 0 ) );
 
@@ -167,7 +166,6 @@ namespace Convoca\Gateway\Tests {
 			update_post_meta( $pago, '_convoca_origin', $origen );
 
 			$ref = new \ReflectionMethod( \Convoca\Gateway\Email_Notifications::class, 'envia_recibo_de_cuota' );
-			$ref->setAccessible( true );
 
 			return (bool) $ref->invoke( null, $pago );
 		}
