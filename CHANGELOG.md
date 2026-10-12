@@ -1,5 +1,25 @@
 # Changelog — convoca-gateway
 
+## v2.13.4 (2026-10-12)
+
+### Arreglado
+- **PHPCS a 0 avisos y 0 errores** en todo el ecosistema, sin el silenciador
+  `ignore_warnings_on_exit` en el CI. Entre los avisos habia defectos reales:
+  un `var_dump` alcanzable por URL (`?debug=1`) que volcaba los metadatos de una
+  inscripcion sin escapar, una clase `CLI_Webhooks` declarada en dos ficheros
+  (fatal si se cargaban ambos) y 30 `wp_redirect` que pasan a `wp_safe_redirect`.
+- 11 `@` que ocultaban errores de PHP, sustituidos por comprobaciones reales: un `@`
+  no arregla nada, esconde el sintoma y deja el registro de avisos mintiendo.
+- 14 `error_log()` que solo escribian en el log del servidor pasan al `Logger` del
+  ecosistema, que ademas los muestra en el panel.
+- `urlencode()` -> `rawurlencode()` en 4 sitios (en una query string, `urlencode`
+  codifica el espacio como `+`), `in_array` con comparacion estricta, comparaciones
+  `===`, `current_time('timestamp')` y `serialize()` sustituido por `wp_json_encode`.
+
+### Notas
+- Sin cambios de comportamiento en los flujos de usuario: lo arreglado son avisos
+  del analizador, seguridad de redirecciones y registro de errores.
+
 ## v2.13.3 (2026-10-11)
 
 ### Corregido
