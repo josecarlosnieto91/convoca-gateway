@@ -34,3 +34,15 @@ playwright-report/
 test-results/
 .phpunit.result.cache
 __pycache__/
+
+# Ficheros de desarrollo que se colaban en el paquete (y por tanto en el sitio).
+# Detectados midiendo por HTTP lo que sirve el webroot, no por lo que uno espera ver.
+composer.json
+package.json
+package-lock.json
+playwright.config.js
+playwright.config.ts
+phpunit-unit.xml
+phpstan-stubs/
+*.stub.php
+wpml-config.xml
