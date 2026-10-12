@@ -39,7 +39,11 @@ class Admin_Payments extends \WP_List_Table {
 	 * que el aviso no acabe en el registro de avisos del sitio (medido: salia en la
 	 * propia ejecucion de los tests y el CI lo daba por bueno).
 	 *
-	 * @var array
+	 * El tipo es el mismo que declara `WP_List_Table` (array<int, array|string>|null): si
+	 * aqui se declarase `array` a secas, PHPStan lo caza como PHPDoc no covariante en la
+	 * propiedad sobrescrita (medido: el job de PHPStan del CI en rojo).
+	 *
+	 * @var array<int, array|string>|null
 	 */
 	// El nombre lo fija el contrato de WP_List_Table (WordPress la declara asi):
 	// renombrarla rompe la herencia. Excepcion declarada, no estandar relajado.
