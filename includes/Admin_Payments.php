@@ -41,8 +41,9 @@ class Admin_Payments extends \WP_List_Table {
 	 *
 	 * @var array
 	 */
-	// phpcs:ignore PSR2.Classes.PropertyDeclaration.Underscore -- el nombre lo fija el
-	// contrato de WP_List_Table (WordPress la declara asi): renombrarla rompe la herencia.
+	// El nombre lo fija el contrato de WP_List_Table (WordPress la declara asi):
+	// renombrarla rompe la herencia. Excepcion declarada, no estandar relajado.
+	// phpcs:ignore PSR2.Classes.PropertyDeclaration.Underscore
 	protected $_column_headers = array();
 
 	public function __construct() {
