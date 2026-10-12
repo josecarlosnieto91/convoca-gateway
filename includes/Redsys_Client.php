@@ -230,7 +230,7 @@ class Redsys_Client {
 			$data['DS_MERCHANT_COF_TYPE']   = 'R';
 		}
 
-		return base64_encode( json_encode( $data, JSON_UNESCAPED_UNICODE ) );
+		return base64_encode( wp_json_encode( $data, JSON_UNESCAPED_UNICODE ) );
 	}
 
 	/**
@@ -269,7 +269,7 @@ class Redsys_Client {
 	private static function encrypt_3des( string $data, string $key ): string {
 		// Redsys requires padding the message to 8-byte blocks with null bytes.
 		$l_message = strlen( $data );
-		if ( $l_message % 8 != 0 ) {
+		if ( $l_message % 8 !== 0 ) {
 			$data .= str_repeat( "\0", 8 - ( $l_message % 8 ) );
 		}
 

@@ -1416,7 +1416,7 @@ class Payment_Handler {
 		}
 
 		$allowed_types = array( 'application/pdf', 'image/jpeg', 'image/png' );
-		if ( ! in_array( $filetype['type'], $allowed_types ) ) {
+		if ( ! in_array( $filetype['type'], $allowed_types , true) ) {
 			return new \WP_Error( 'invalid_mime', 'El contenido del archivo no coincide con una extensión permitida.' );
 		}
 
@@ -1427,7 +1427,7 @@ class Payment_Handler {
 		if ( function_exists( 'mime_content_type' ) ) {
 			$real_mime     = mime_content_type( $uploaded_file['tmp_name'] );
 			$allowed_mimes = array( 'application/pdf', 'image/jpeg', 'image/png' );
-			if ( ! in_array( $real_mime, $allowed_mimes ) ) {
+			if ( ! in_array( $real_mime, $allowed_mimes , true) ) {
 				return new \WP_Error( 'invalid_mime', 'El contenido del archivo no coincide con su extensión o no es un tipo permitido.' );
 			}
 		}
