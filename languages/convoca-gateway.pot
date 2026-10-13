@@ -2,14 +2,14 @@
 # This file is distributed under the GPL-2.0-or-later.
 msgid ""
 msgstr ""
-"Project-Id-Version: Convoca Gateway — Payment Gateway 2.12.0\n"
-"Report-Msgid-Bugs-To: https://wordpress.org/support/plugin/pot2\n"
+"Project-Id-Version: Convoca Gateway — Payment Gateway 2.13.6\n"
+"Report-Msgid-Bugs-To: \n"
 "Last-Translator: FULL NAME <EMAIL@ADDRESS>\n"
 "Language-Team: LANGUAGE <LL@li.org>\n"
 "MIME-Version: 1.0\n"
 "Content-Type: text/plain; charset=UTF-8\n"
 "Content-Transfer-Encoding: 8bit\n"
-"POT-Creation-Date: 2026-09-11T13:35:45+00:00\n"
+"POT-Creation-Date: 2026-10-13T20:06:36+00:00\n"
 "PO-Revision-Date: YEAR-MO-DA HO:MI+ZONE\n"
 "X-Generator: WP-CLI 2.12.0\n"
 "X-Domain: convoca-gateway\n"
@@ -86,7 +86,7 @@ msgstr ""
 #: includes/Admin_Settings.php:115
 #: includes/CPT_Pago.php:309
 #: includes/Dashboard_Widget.php:82
-#: includes/Payment_Handler.php:700
+#: includes/Payment_Handler.php:707
 msgid "Tarjeta"
 msgstr ""
 
@@ -96,7 +96,7 @@ msgstr ""
 #: includes/Admin_Settings.php:116
 #: includes/CPT_Pago.php:310
 #: includes/Dashboard_Widget.php:83
-#: includes/Payment_Handler.php:706
+#: includes/Payment_Handler.php:713
 msgid "Bizum"
 msgstr ""
 
@@ -105,7 +105,7 @@ msgstr ""
 #: includes/Admin_Links.php:454
 #: includes/Admin_Settings.php:117
 #: includes/CPT_Pago.php:311
-#: includes/Payment_Handler.php:715
+#: includes/Payment_Handler.php:722
 msgid "Transferencia"
 msgstr ""
 
@@ -147,34 +147,34 @@ msgstr ""
 
 #: admin/class-admin-generador.php:277
 #: includes/CPT_Pago.php:361
-#: includes/Payment_Handler.php:1020
-#: includes/Payment_Handler.php:1167
+#: includes/Payment_Handler.php:1027
+#: includes/Payment_Handler.php:1174
 msgid "Donativo"
 msgstr ""
 
 #: includes/Admin_Links.php:58
 #: includes/Admin_Links.php:168
-#: includes/Admin_Payments.php:114
-#: includes/Admin_Payments.php:309
+#: includes/Admin_Payments.php:130
+#: includes/Admin_Payments.php:325
 msgid "Eliminar"
 msgstr ""
 
 #: includes/Admin_Links.php:63
-#: includes/Admin_Payments.php:119
+#: includes/Admin_Payments.php:135
 msgid "<input type=\"checkbox\" />"
 msgstr ""
 
 #: includes/Admin_Links.php:64
 #: includes/Admin_Links.php:421
-#: includes/Admin_Payments.php:120
+#: includes/Admin_Payments.php:136
 #: includes/Admin_Record_Actions.php:239
 msgid "Pedido"
 msgstr ""
 
 #. translators: %s: payment concept.
 #: includes/Admin_Links.php:66
-#: includes/Admin_Payments.php:121
-#: includes/Admin_Payments.php:473
+#: includes/Admin_Payments.php:137
+#: includes/Admin_Payments.php:489
 #: includes/Admin_Record_Actions.php:242
 #: includes/Admin_Record_Actions.php:244
 #: includes/Email_Notifications.php:76
@@ -184,16 +184,16 @@ msgid "Importe"
 msgstr ""
 
 #: includes/Admin_Links.php:67
-#: includes/Admin_Payments.php:122
-#: includes/Admin_Payments.php:477
+#: includes/Admin_Payments.php:138
+#: includes/Admin_Payments.php:493
 #: includes/CSV_Exporter.php:78
 #: includes/PDF_Exporter.php:105
 msgid "Método"
 msgstr ""
 
 #: includes/Admin_Links.php:68
-#: includes/Admin_Payments.php:124
-#: includes/Admin_Payments.php:481
+#: includes/Admin_Payments.php:140
+#: includes/Admin_Payments.php:497
 #: includes/CSV_Exporter.php:80
 #: includes/PDF_Exporter.php:107
 msgid "Origen"
@@ -242,7 +242,7 @@ msgid "Enlace de pago"
 msgstr ""
 
 #: includes/Admin_Links.php:210
-#: includes/Admin_Payments.php:326
+#: includes/Admin_Payments.php:342
 #: includes/Admin_Record_Actions.php:257
 #: includes/Admin_Record_Actions.php:259
 msgid "Importe libre"
@@ -317,8 +317,8 @@ msgstr ""
 
 #: includes/Admin_Links.php:439
 #: includes/CSV_Exporter.php:77
-#: includes/Payment_Handler.php:1065
-#: includes/Payment_Handler.php:1502
+#: includes/Payment_Handler.php:1072
+#: includes/Payment_Handler.php:1509
 msgid "Importe (€)"
 msgstr ""
 
@@ -339,7 +339,7 @@ msgid "Con la casilla marcada el enlace no caduca nunca. Sin fecha y sin casilla
 msgstr ""
 
 #: includes/Admin_Links.php:475
-#: includes/Payment_Handler.php:599
+#: includes/Payment_Handler.php:606
 msgid "Email de notificación"
 msgstr ""
 
@@ -360,22 +360,22 @@ msgstr ""
 msgid "Eliminar este enlace"
 msgstr ""
 
-#: includes/Admin_Payments.php:86
+#: includes/Admin_Payments.php:102
 msgid "Convoca Pagos"
 msgstr ""
 
-#: includes/Admin_Payments.php:87
+#: includes/Admin_Payments.php:103
 #: includes/CPT_Pago.php:108
 msgid "Pagos"
 msgstr ""
 
-#: includes/Admin_Payments.php:98
-#: includes/Admin_Payments.php:99
+#: includes/Admin_Payments.php:114
+#: includes/Admin_Payments.php:115
 msgid "Todos los Pagos"
 msgstr ""
 
-#: includes/Admin_Payments.php:123
-#: includes/Admin_Payments.php:469
+#: includes/Admin_Payments.php:139
+#: includes/Admin_Payments.php:485
 #: includes/Admin_Record_Actions.php:245
 #: includes/Admin_Settings.php:637
 #: includes/CSV_Exporter.php:79
@@ -383,210 +383,210 @@ msgstr ""
 msgid "Estado"
 msgstr ""
 
-#: includes/Admin_Payments.php:125
-#: includes/Admin_Payments.php:536
+#: includes/Admin_Payments.php:141
+#: includes/Admin_Payments.php:552
 #: includes/Admin_Record_Actions.php:246
 #: includes/Email_Notifications.php:132
 msgid "Fecha"
 msgstr ""
 
-#: includes/Admin_Payments.php:150
+#: includes/Admin_Payments.php:166
 msgid "Todos los estados"
 msgstr ""
 
-#: includes/Admin_Payments.php:158
+#: includes/Admin_Payments.php:174
 msgid "Todos los métodos"
 msgstr ""
 
-#: includes/Admin_Payments.php:170
+#: includes/Admin_Payments.php:186
 msgid "Todos los orígenes"
 msgstr ""
 
-#: includes/Admin_Payments.php:181
+#: includes/Admin_Payments.php:197
 msgid "Filtrar"
 msgstr ""
 
-#: includes/Admin_Payments.php:184
+#: includes/Admin_Payments.php:200
 msgid "Exportar CSV"
 msgstr ""
 
-#: includes/Admin_Payments.php:292
+#: includes/Admin_Payments.php:308
 msgid "Ver detalle"
 msgstr ""
 
-#: includes/Admin_Payments.php:297
+#: includes/Admin_Payments.php:313
 msgid "Ver inscripción"
 msgstr ""
 
-#: includes/Admin_Payments.php:301
+#: includes/Admin_Payments.php:317
 msgid "Ver miembro"
 msgstr ""
 
-#: includes/Admin_Payments.php:308
+#: includes/Admin_Payments.php:324
 msgid "Eliminar este pago"
 msgstr ""
 
-#: includes/Admin_Payments.php:389
+#: includes/Admin_Payments.php:405
 msgid "Pagos Convoca"
 msgstr ""
 
-#: includes/Admin_Payments.php:390
+#: includes/Admin_Payments.php:406
 msgid "Exportar a CSV"
 msgstr ""
 
-#: includes/Admin_Payments.php:391
+#: includes/Admin_Payments.php:407
 msgid "Exportar PDF"
 msgstr ""
 
-#: includes/Admin_Payments.php:399
+#: includes/Admin_Payments.php:415
 msgid "Buscar pedido"
 msgstr ""
 
-#: includes/Admin_Payments.php:412
-#: includes/Link_Expiry.php:99
+#: includes/Admin_Payments.php:428
+#: includes/Link_Expiry.php:112
 #: includes/Payment_Handler.php:378
-#: includes/Payment_Handler.php:2033
+#: includes/Payment_Handler.php:2119
 msgid "Pago no encontrado."
 msgstr ""
 
-#: includes/Admin_Payments.php:426
+#: includes/Admin_Payments.php:442
 msgid "Email reenviado a la cola."
 msgstr ""
 
-#: includes/Admin_Payments.php:432
+#: includes/Admin_Payments.php:448
 msgid "Pago marcado como reembolsado."
 msgstr ""
 
-#: includes/Admin_Payments.php:439
-#: includes/Admin_Payments.php:695
+#: includes/Admin_Payments.php:455
+#: includes/Admin_Payments.php:711
 msgid "Pago marcado como PAGADO manualmente."
 msgstr ""
 
-#: includes/Admin_Payments.php:446
+#: includes/Admin_Payments.php:462
 msgid "Marcador de donación actualizado."
 msgstr ""
 
 #. translators: %s: order ID
-#: includes/Admin_Payments.php:453
+#: includes/Admin_Payments.php:469
 #, php-format
 msgid "Pago #%s"
 msgstr ""
 
-#: includes/Admin_Payments.php:454
+#: includes/Admin_Payments.php:470
 msgid "Volver al listado"
 msgstr ""
 
-#: includes/Admin_Payments.php:461
+#: includes/Admin_Payments.php:477
 msgid "Información del Pago"
 msgstr ""
 
-#: includes/Admin_Payments.php:465
+#: includes/Admin_Payments.php:481
 #: includes/CSV_Exporter.php:76
 #: includes/PDF_Exporter.php:103
 msgid "ID Pedido"
 msgstr ""
 
-#: includes/Admin_Payments.php:488
+#: includes/Admin_Payments.php:504
 msgid "Descripción producto"
 msgstr ""
 
-#: includes/Admin_Payments.php:492
+#: includes/Admin_Payments.php:508
 msgid "Código Autorización"
 msgstr ""
 
-#: includes/Admin_Payments.php:496
+#: includes/Admin_Payments.php:512
 msgid "Respuesta Redsys"
 msgstr ""
 
-#: includes/Admin_Payments.php:506
+#: includes/Admin_Payments.php:522
 msgid "Número de recibo"
 msgstr ""
 
-#: includes/Admin_Payments.php:510
+#: includes/Admin_Payments.php:526
 msgid "Ver recibo"
 msgstr ""
 
-#: includes/Admin_Payments.php:517
+#: includes/Admin_Payments.php:533
 msgid "Justificante de pago"
 msgstr ""
 
-#: includes/Admin_Payments.php:521
+#: includes/Admin_Payments.php:537
 msgid "Ver justificante"
 msgstr ""
 
-#: includes/Admin_Payments.php:531
+#: includes/Admin_Payments.php:547
 msgid "Registro de eventos (Logs)"
 msgstr ""
 
-#: includes/Admin_Payments.php:537
+#: includes/Admin_Payments.php:553
 msgid "Nivel"
 msgstr ""
 
-#: includes/Admin_Payments.php:538
+#: includes/Admin_Payments.php:554
 msgid "Mensaje"
 msgstr ""
 
-#: includes/Admin_Payments.php:543
+#: includes/Admin_Payments.php:559
 msgid "No hay eventos registrados."
 msgstr ""
 
-#: includes/Admin_Payments.php:562
+#: includes/Admin_Payments.php:578
 msgid "Acciones"
 msgstr ""
 
-#: includes/Admin_Payments.php:567
+#: includes/Admin_Payments.php:583
 msgid "Reenviar email de confirmación"
 msgstr ""
 
-#: includes/Admin_Payments.php:569
+#: includes/Admin_Payments.php:585
 msgid "Solo disponible para pagos completados."
 msgstr ""
 
-#: includes/Admin_Payments.php:576
+#: includes/Admin_Payments.php:592
 msgid "Este pago es una donación"
 msgstr ""
 
-#: includes/Admin_Payments.php:578
+#: includes/Admin_Payments.php:594
 msgid "Guardar"
 msgstr ""
 
-#: includes/Admin_Payments.php:579
+#: includes/Admin_Payments.php:595
 msgid "Si se marca, el recibo se sustituye por un justificante de donación (Ley 49/2002) con numeración D-AÑO-NNN."
 msgstr ""
 
-#: includes/Admin_Payments.php:583
+#: includes/Admin_Payments.php:599
 msgid "¿Confirmas que has recibido el dinero de este pago?"
 msgstr ""
 
-#: includes/Admin_Payments.php:585
+#: includes/Admin_Payments.php:601
 msgid "Confirmar Pago Manual"
 msgstr ""
 
-#: includes/Admin_Payments.php:586
+#: includes/Admin_Payments.php:602
 msgid "Úsalo para confirmar transferencias recibidas."
 msgstr ""
 
-#: includes/Admin_Payments.php:591
+#: includes/Admin_Payments.php:607
 msgid "¿Estás seguro de marcar este pago como reembolsado?"
 msgstr ""
 
-#: includes/Admin_Payments.php:593
+#: includes/Admin_Payments.php:609
 msgid "Marcar como Reembolsado"
 msgstr ""
 
-#: includes/Admin_Payments.php:599
+#: includes/Admin_Payments.php:615
 msgid "Ver inscripción original"
 msgstr ""
 
-#: includes/Admin_Payments.php:678
+#: includes/Admin_Payments.php:694
 msgid "Pago marcado como REEMBOLSADO manualmente."
 msgstr ""
 
-#: includes/Admin_Payments.php:713
+#: includes/Admin_Payments.php:729
 msgid "Pago marcado como donación."
 msgstr ""
 
-#: includes/Admin_Payments.php:713
+#: includes/Admin_Payments.php:729
 msgid "Pago desmarcado como donación."
 msgstr ""
 
@@ -1012,7 +1012,7 @@ msgstr ""
 
 #. translators: %s: name of the user's bank entity (filterable).
 #: includes/Admin_Settings.php:663
-#: includes/Payment_Handler.php:1661
+#: includes/Payment_Handler.php:1668
 msgid "tu entidad bancaria"
 msgstr ""
 
@@ -1380,190 +1380,202 @@ msgstr ""
 msgid "%1$s (código %2$s)"
 msgstr ""
 
+#: includes/Link_Expiry.php:116
+msgid "Este pago ya se ha cobrado: su enlace está cerrado y no se genera otro."
+msgstr ""
+
 #: includes/Payment_Handler.php:384
 msgid "Enlace de pago inválido."
 msgstr ""
 
-#: includes/Payment_Handler.php:476
+#: includes/Payment_Handler.php:483
 msgid "La sesión ha caducado. Vuelve a cargar el enlace."
 msgstr ""
 
-#: includes/Payment_Handler.php:481
-#: includes/Payment_Handler.php:1160
-#: includes/Payment_Handler.php:1553
+#: includes/Payment_Handler.php:488
+#: includes/Payment_Handler.php:1167
+#: includes/Payment_Handler.php:1560
 msgid "Elige un método de pago."
 msgstr ""
 
-#: includes/Payment_Handler.php:601
+#: includes/Payment_Handler.php:608
 msgid "Si lo indicas, te enviamos el recibo del pago a este correo."
 msgstr ""
 
-#: includes/Payment_Handler.php:608
-#: includes/Payment_Handler.php:1055
-#: includes/Payment_Handler.php:1491
-#: includes/Payment_Handler.php:1651
+#: includes/Payment_Handler.php:615
+#: includes/Payment_Handler.php:1062
+#: includes/Payment_Handler.php:1498
+#: includes/Payment_Handler.php:1658
 msgid "Selecciona un método de pago"
 msgstr ""
 
-#: includes/Payment_Handler.php:701
+#: includes/Payment_Handler.php:708
 msgid "Visa, Mastercard, etc."
 msgstr ""
 
-#: includes/Payment_Handler.php:707
+#: includes/Payment_Handler.php:714
 msgid "Pago instantáneo con tu móvil"
 msgstr ""
 
-#: includes/Payment_Handler.php:716
+#: includes/Payment_Handler.php:723
 msgid "Ingresa desde tu banco"
 msgstr ""
 
-#: includes/Payment_Handler.php:755
+#: includes/Payment_Handler.php:762
 msgid "No hay ningún método de pago disponible. Contacta con la entidad."
 msgstr ""
 
-#: includes/Payment_Handler.php:781
-#: includes/Payment_Handler.php:792
+#: includes/Payment_Handler.php:788
+#: includes/Payment_Handler.php:799
 msgid "Recomendado"
 msgstr ""
 
-#: includes/Payment_Handler.php:837
+#: includes/Payment_Handler.php:844
 msgid "Cambiar método"
 msgstr ""
 
-#: includes/Payment_Handler.php:1032
+#: includes/Payment_Handler.php:1039
 msgid "Formulario de donativo"
 msgstr ""
 
-#: includes/Payment_Handler.php:1043
+#: includes/Payment_Handler.php:1050
 msgid "Datos adicionales"
 msgstr ""
 
-#: includes/Payment_Handler.php:1069
+#: includes/Payment_Handler.php:1076
 msgid "Mínimo 0,50 €."
 msgstr ""
 
-#: includes/Payment_Handler.php:1073
+#: includes/Payment_Handler.php:1080
 msgid "Email para el recibo (opcional)"
 msgstr ""
 
-#: includes/Payment_Handler.php:1076
+#: includes/Payment_Handler.php:1083
 msgid "Si lo indicas, te enviamos el recibo de tu aportación."
 msgstr ""
 
 #. translators: %s: payment method label (Tarjeta, Bizum o Transferencia).
-#: includes/Payment_Handler.php:1084
-#: includes/Payment_Handler.php:1521
+#: includes/Payment_Handler.php:1091
+#: includes/Payment_Handler.php:1528
 #, php-format
 msgid "Continuar con %s"
 msgstr ""
 
-#: includes/Payment_Handler.php:1096
-#: includes/Payment_Handler.php:1533
+#: includes/Payment_Handler.php:1103
+#: includes/Payment_Handler.php:1540
 msgid "Al continuar te mostraremos los datos para hacer el ingreso."
 msgstr ""
 
-#: includes/Payment_Handler.php:1098
-#: includes/Payment_Handler.php:1535
+#: includes/Payment_Handler.php:1105
+#: includes/Payment_Handler.php:1542
 msgid "Pago seguro gestionado por Redsys. No almacenamos tus datos bancarios."
 msgstr ""
 
-#: includes/Payment_Handler.php:1127
+#: includes/Payment_Handler.php:1134
 msgid "La sesión ha caducado. Vuelve a intentarlo."
 msgstr ""
 
-#: includes/Payment_Handler.php:1140
+#: includes/Payment_Handler.php:1147
 msgid "El importe mínimo es de 0,50 €."
 msgstr ""
 
-#: includes/Payment_Handler.php:1150
+#: includes/Payment_Handler.php:1157
 msgid "El email no es válido."
 msgstr ""
 
-#: includes/Payment_Handler.php:1206
+#: includes/Payment_Handler.php:1213
 msgid "Redirigiendo al pago seguro... Si no eres redirigido,"
 msgstr ""
 
-#: includes/Payment_Handler.php:1207
+#: includes/Payment_Handler.php:1214
 msgid "haz clic aquí"
 msgstr ""
 
 #. translators: %s: Maximum file size in megabytes
-#: includes/Payment_Handler.php:1399
+#: includes/Payment_Handler.php:1406
 #, php-format
 msgid "El archivo es demasiado grande. El límite es de %sMB."
 msgstr ""
 
-#: includes/Payment_Handler.php:1480
+#: includes/Payment_Handler.php:1487
 msgid "Emitir Pago Nuevo"
 msgstr ""
 
-#: includes/Payment_Handler.php:1481
+#: includes/Payment_Handler.php:1488
 msgid "Introduce los datos para realizar un pago seguro."
 msgstr ""
 
-#: includes/Payment_Handler.php:1507
+#: includes/Payment_Handler.php:1514
 msgid "Concepto o Actividad"
 msgstr ""
 
-#: includes/Payment_Handler.php:1508
+#: includes/Payment_Handler.php:1515
 msgid "Ej: Inscripción Taller Aves"
 msgstr ""
 
-#: includes/Payment_Handler.php:1512
+#: includes/Payment_Handler.php:1519
 msgid "Email para el recibo"
 msgstr ""
 
-#: includes/Payment_Handler.php:1596
+#: includes/Payment_Handler.php:1603
 msgid "Enlace de pago inválido o corrupto."
 msgstr ""
 
-#: includes/Payment_Handler.php:1600
+#: includes/Payment_Handler.php:1607
 msgid "El enlace de pago ha caducado. Por favor, solicita uno nuevo."
 msgstr ""
 
-#: includes/Payment_Handler.php:1605
+#: includes/Payment_Handler.php:1612
 msgid "✅ Este pago ya ha sido completado."
 msgstr ""
 
 #. translators: %s: name of the user's bank entity (filterable).
-#: includes/Payment_Handler.php:1666
+#: includes/Payment_Handler.php:1673
 #, php-format
 msgid "Pago seguro gestionado por Redsys (%s)."
 msgstr ""
 
-#: includes/Payment_Handler.php:1668
+#: includes/Payment_Handler.php:1675
 msgid "Tus datos bancarios nunca pasan por nuestro servidor."
 msgstr ""
 
-#: includes/Payment_Handler.php:1712
+#: includes/Payment_Handler.php:1719
 msgid "✅ Este pago ya ha sido completado correctamente. No es necesario realizarlo de nuevo."
 msgstr ""
 
-#: includes/Payment_Handler.php:1719
+#: includes/Payment_Handler.php:1726
 msgid "Error: El importe del pago no es válido (0.00€)."
 msgstr ""
 
-#: includes/Payment_Handler.php:2028
+#: includes/Payment_Handler.php:2114
 msgid "ID de pago no especificado."
 msgstr ""
 
-#: includes/Payment_Handler.php:2146
+#: includes/Payment_Handler.php:2243
+msgid "✅ Este enlace ya se ha cobrado"
+msgstr ""
+
+#: includes/Payment_Handler.php:2245
+msgid "El enlace queda cerrado y no admite más pagos."
+msgstr ""
+
+#: includes/Payment_Handler.php:2253
 msgid "Solicitar nuevo enlace"
 msgstr ""
 
-#: includes/Payment_Handler.php:2149
+#: includes/Payment_Handler.php:2256
 msgid "El enlace de pago ha caducado. Solicita un enlace nuevo para completar el pago."
 msgstr ""
 
-#: includes/Payment_Handler.php:2175
+#: includes/Payment_Handler.php:2282
 msgid "Pago no especificado."
 msgstr ""
 
-#: includes/Payment_Handler.php:2187
+#: includes/Payment_Handler.php:2294
 msgid "Generando nuevo enlace… Si no eres redirigido, haz clic aquí."
 msgstr ""
 
-#: includes/Payment_Handler.php:2187
+#: includes/Payment_Handler.php:2294
 msgid "Continuar"
 msgstr ""
 
