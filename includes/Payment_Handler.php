@@ -943,7 +943,7 @@ class Payment_Handler {
 			}
 			.conv-method-desc {
 				font-size: 0.85rem;
-				color: #777;
+				color: #6b6b6b;
 				text-align: left;
 				line-height: 1.4;
 			}

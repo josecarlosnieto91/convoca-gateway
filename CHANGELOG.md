@@ -1,5 +1,14 @@
 # Changelog — convoca-gateway
 
+## [2.13.6] - 2026-10-13
+
+### Arreglado
+
+- **Contraste AA de la descripción del método de pago**: el texto usaba `#777`, que sobre el fondo
+  claro de la tarjeta da **4,29:1** (por debajo del 4,5:1 de AA en texto normal; peor aún sobre
+  `#f7f7f7`: 4,18:1). Ahora usa `#6b6b6b`: **5,33:1** sobre blanco y 5,11:1 sobre `#fafafa`, y sigue
+  pasando en los cuatro fondos donde aparece el componente.
+
 ## v2.13.5 (2026-10-12)
 
 ### Arreglado
