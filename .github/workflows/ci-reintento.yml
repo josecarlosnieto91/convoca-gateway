@@ -1,0 +1,33 @@
+name: Reintento del CI
+
+# El job «Plugin Check (PCP)» descarga plugin-check desde wordpress.org en cada ejecución. Cuando la
+# API de wp.org tiene un hipo (dio «A valid URL was not provided» + «The 'plugin-check' plugin could
+# not be found» y el job se puso en rojo con el mismo código que el commit anterior en verde), el
+# veredicto del CI deja de significar algo. Este flujo reintenta UNA sola vez los jobs que fallaron:
+# un fallo real sigue en rojo después del reintento (y no se vuelve a reintentar).
+on:
+  workflow_run:
+    workflows: ["CI"]
+    types: [completed]
+
+permissions:
+  actions: write
+
+jobs:
+  reintentar:
+    if: github.event.workflow_run.conclusion == 'failure'
+    runs-on: ubuntu-latest
+    steps:
+      - name: Reintentar los jobs que fallaron (una vez como máximo)
+        env:
+          GH_TOKEN: ${{ secrets.GITHUB_TOKEN }}
+          RUN_ID: ${{ github.event.workflow_run.id }}
+        run: |
+          intentos=$(gh api "repos/$GITHUB_REPOSITORY/actions/runs/$RUN_ID/attempts" --jq 'length')
+          echo "intentos hasta ahora: $intentos"
+          if [ "$intentos" -ge 2 ]; then
+            echo "Ya se reintentó una vez: el fallo se toma como real y no insisto."
+            exit 0
+          fi
+          gh api -X POST "repos/$GITHUB_REPOSITORY/actions/runs/$RUN_ID/rerun-failed-jobs" \
+            && echo "Reintento lanzado para el run $RUN_ID."
