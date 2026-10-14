@@ -502,18 +502,10 @@ class Email_Notifications {
 	 * @return bool True on success.
 	 */
 	private function deliver( string $to, string $subject, string $body ): bool {
-		$settings = get_option( 'convoca_gateway_settings', array() );
-
-		$sender_name  = $settings['email_sender_name'] ?? get_bloginfo( 'name' );
-		$sender_email = get_option( 'admin_email' );
-
-		$headers = array(
-			'Content-Type: text/html; charset=UTF-8',
-			sprintf( 'From: %s <%s>', $sender_name, $sender_email ),
-		);
-
-		// Pasa por el punto de salida único de Core: envoltorio de Convoca y copia a la
-		// asociación si el ajuste está marcado (issue convoca-core#6). El `From` propio se respeta.
+		// El remitente NO se fija aquí: lo pone el punto de salida único de Core
+		// (`Mailer::from_header()`), que lee **este mismo ajuste** y cae al nombre del sitio cuando
+		// está en blanco. Fijarlo también aquí duplicaba la lógica y, con el ajuste vacío, producía
+		// `From:  <correo>` — medido por la auditoría de la pasada 10 del gauntlet.
 		return \Convoca\Core\Mailer::send(
 			$to,
 			$subject,
@@ -521,7 +513,7 @@ class Email_Notifications {
 			array(
 				'plugin'   => 'convoca-gateway',
 				'template' => 'notificacion_pago',
-				'headers'  => $headers,
+				'headers'  => array( 'Content-Type: text/html; charset=UTF-8' ),
 			)
 		);
 	}

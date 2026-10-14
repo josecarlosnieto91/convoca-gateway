@@ -1,5 +1,14 @@
 # Changelog — convoca-gateway
 
+## [2.13.8] — 2026-10-14
+
+### Cambiado
+- **El gateway deja de fijar su propio remitente y usa el del núcleo.** Hacía
+  `$settings['email_sender_name'] ?? get_bloginfo('name')`, y el `??` **no cae al respaldo cuando la
+  clave existe vacía**: con el ajuste guardado en blanco el correo salía como `From:  <correo>`
+  (medido por la auditoría de la pasada 10). El `Mailer` de Core ya lee **este mismo ajuste** y resuelve
+  el respaldo, así que aquí solo queda el tipo de contenido.
+
 ## [2.13.7] - 2026-10-14
 
 ### Arreglado
