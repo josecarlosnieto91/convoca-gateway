@@ -1,5 +1,31 @@
 # Changelog — convoca-gateway
 
+## [2.13.7] - 2026-10-14
+
+### Arreglado
+
+- **El último paso del alta ya no es un callejón sin salida** (recorrido a ciegas con usuario nuevo,
+  criterio 16 de la pasada 9 del gauntlet). Cuando no hay ningún método de pago configurado, la
+  pantalla decía «No hay ningún método de pago disponible. Contacta con la entidad.» y ahí se
+  acababa todo: sin decir qué faltaba, sin decir si el alta se había registrado y **sin un solo
+  botón**. Quien rellenaba cuatro pasos se quedaba mirando un aviso.
+
+  Ahora el aviso dice tres cosas:
+  1. **Qué ha pasado**: el alta queda registrada y pendiente de pago; no se ha perdido nada.
+  2. **Qué falta y dónde se arregla** (credenciales de la pasarela y/o cuenta bancaria para las
+     transferencias) con enlace a los ajustes — **solo a quien puede arreglarlo** (`manage_options`);
+     a un socio o un visitante esa lista no le sirve y se le mantiene el «contacta con la entidad».
+  3. **Por dónde seguir**: un enlace de vuelta (filtro `convoca_gateway_volver_url`).
+
+### Pruebas
+
+- 4 pruebas nuevas de las que **tres fallan** al restaurar el aviso de una línea.
+- La primera versión de la prueba invocaba el método nuevo por reflexión y **pasaba con el defecto
+  puesto**: el aviso vivía en el punto de llamada y la prueba no lo tocaba. Ahora llama a
+  `render_method_cards()`, que es la puerta por la que entra la pantalla de pago.
+- Y sin `ReflectionMethod::setAccessible()`: desde PHP 8.1 no hace nada y en 8.5 suelta un
+  `Deprecated` que el CI cuenta como incidencia.
+
 ## [2.13.6] - 2026-10-13
 
 ### Arreglado

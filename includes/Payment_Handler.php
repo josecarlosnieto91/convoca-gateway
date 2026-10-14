@@ -747,6 +747,48 @@ class Payment_Handler {
 	}
 
 	/**
+	 * Qué se ve cuando no hay ningún método de pago disponible.
+	 *
+	 * Defecto medido con ojos de usuario nuevo (recorrido a ciegas, pasada 9 del gauntlet): el alta
+	 * de socio terminaba en «No hay ningún método de pago disponible. Contacta con la entidad.» y
+	 * **ahí se acababa todo** — sin decir qué falta, sin decir si el alta se había registrado y sin
+	 * un solo botón. Un callejón sin salida en el último paso del recorrido.
+	 *
+	 * Ahora hay tres cosas distintas, según quién mire:
+	 *  1. **Qué ha pasado**: el alta queda registrada y pendiente de pago; no se ha perdido nada.
+	 *  2. **Qué falta** y dónde se arregla, si quien mira puede arreglarlo (`manage_options`); para
+	 *     un socio o un visitante esa lista no le sirve de nada y se le dice a quién escribir.
+	 *  3. **Por dónde seguir**: un enlace de vuelta, que es lo que convierte el aviso en una salida.
+	 *
+	 * @return string HTML.
+	 */
+	private function render_sin_metodos(): string {
+		$faltan = array();
+		if ( '' === Redsys_Client::merchant_code() || '' === Redsys_Client::secret_key() ) {
+			$faltan[] = __( 'las credenciales de la pasarela (código de comercio y clave secreta)', 'convoca-gateway' );
+		}
+		$ajustes = get_option( 'convoca_gateway_settings', array() );
+		if ( empty( $ajustes['iban'] ) ) {
+			$faltan[] = __( 'una cuenta bancaria para las transferencias', 'convoca-gateway' );
+		}
+
+		$salida  = '<div class="convoca-alert convoca-alert--warning">';
+		$salida .= '<p><strong>' . esc_html__( 'No hay ningún método de pago disponible. Contacta con la entidad.', 'convoca-gateway' ) . '</strong></p>';
+		$salida .= '<p>' . esc_html__( 'Tu alta no se ha perdido: queda registrada y pendiente de pago. La entidad la verá en su panel.', 'convoca-gateway' ) . '</p>';
+
+		if ( current_user_can( 'manage_options' ) ) {
+			$salida .= '<p>' . esc_html__( 'Para quien administra el sitio: falta configurar', 'convoca-gateway' ) . ' ' . esc_html( implode( ' ' . __( 'y', 'convoca-gateway' ) . ' ', $faltan ) ) . '.</p>';
+			$salida .= '<p><a class="convoca-btn convoca-btn-primary" href="' . esc_url( admin_url( 'admin.php?page=conv-gateway-settings' ) ) . '">' . esc_html__( 'Abrir los ajustes de pago', 'convoca-gateway' ) . '</a></p>';
+		}
+
+		$volver  = apply_filters( 'convoca_gateway_volver_url', home_url( '/' ) );
+		$salida .= '<p><a class="convoca-btn convoca-btn-outline" href="' . esc_url( $volver ) . '">' . esc_html__( 'Volver al inicio', 'convoca-gateway' ) . '</a></p>';
+		$salida .= '</div>' . $this->methods_css();
+
+		return $salida;
+	}
+
+	/**
 	 * Tarjetas grandes de método de pago: tarjeta y Bizum en paralelo,
 	 * transferencia a lo ancho debajo.
 	 *
@@ -758,9 +800,7 @@ class Payment_Handler {
 		$methods = $this->enabled_methods();
 
 		if ( empty( $methods ) ) {
-			return '<div class="convoca-alert convoca-alert--warning">' .
-				esc_html__( 'No hay ningún método de pago disponible. Contacta con la entidad.', 'convoca-gateway' ) .
-				'</div>' . $this->methods_css();
+			return $this->render_sin_metodos();
 		}
 
 		ob_start();
