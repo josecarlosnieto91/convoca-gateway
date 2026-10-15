@@ -1,3 +1,21 @@
+## [2.13.12] — 2026-10-15
+
+### Cambiado
+- **La sal de firma de la pasarela se llama `get_payment_salt()` (issue convoca-core#16).** Se llamaba
+  `get_persistent_salt()`, igual que `Convoca\Core\Utils::get_persistent_salt()`, pero **no son la misma**:
+  core lee `convoca_persistent_salt` y la pasarela `convoca_gateway_persistent_salt`. Eran **dos secretos con
+  el mismo nombre**, y quien leyera el código creería que eran el mismo — con el riesgo de que alguien los
+  unificara «para no duplicar», cambiando la sal de un lado y dejando de validar las firmas del otro sin que
+  se note hasta que falle un cobro.
+  - **El valor NO se toca**: la opción sigue siendo la misma, así que las firmas ya emitidas siguen validando.
+    Es un cambio de nombre, no de secreto.
+
+### Pruebas
+- `tests/Unit/PaymentSaltTest.php` (tres casos): la firma se calcula con la sal de la pasarela, la sal vive en
+  su propia opción y no en la del ecosistema, y no vuelve el nombre compartido. **Negativos probados**: leyendo
+  la opción del ecosistema, cae; volviendo el nombre viejo, cae.
+- Suite **219** en verde, PHPCS 0.
+
 ## [2.13.11] — 2026-10-15
 
 ### Arreglado

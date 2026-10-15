@@ -33,7 +33,16 @@ class Payment_Handler {
 	 * Get a persistent salt for hashing payment links.
 	 * This avoids links breaking when AUTH_SALT is changed in wp-config.php.
 	 */
-	private static function get_persistent_salt(): string {
+	/**
+	 * La sal de firma de la pasarela. NO es la de `Convoca\Core\Utils::get_persistent_salt()`.
+	 *
+	 * Las dos se llamaban `get_persistent_salt()` y usan opciones distintas
+	 * (`convoca_persistent_salt` en core, `convoca_gateway_persistent_salt` aquí), así que no eran dos copias
+	 * del mismo secreto: eran **dos secretos con el mismo nombre**. Quien leyera el código creía que eran el
+	 * mismo, y unificarlas “para no duplicar” habría cambiado la sal de un lado y dejado de validar las firmas
+	 * del otro. Se renombra para que el nombre diga lo que es; el VALOR no se toca.
+	 */
+	private static function get_payment_salt(): string {
 		$salt = get_option( 'convoca_gateway_persistent_salt' );
 		if ( ! $salt ) {
 			$salt = wp_generate_password( 64, true, true );
@@ -316,7 +325,7 @@ class Payment_Handler {
 		} else {
 			$ts                          = time();
 			$args['convoca_gateway_t']   = $ts;
-			$args['convoca_gateway_key'] = hash_hmac( 'sha256', $pago_id . '|' . $ts . '_convoca_payment', self::get_persistent_salt() );
+			$args['convoca_gateway_key'] = hash_hmac( 'sha256', $pago_id . '|' . $ts . '_convoca_payment', self::get_payment_salt() );
 		}
 
 		return add_query_arg( $args, $base_url );
@@ -1636,7 +1645,7 @@ class Payment_Handler {
 	 * Render payment page for legacy system (24h expiration).
 	 */
 	private function render_legacy_payment_page( int $pago_id, int $ts, string $key ): string {
-		$persistent_hash = hash_hmac( 'sha256', $pago_id . '|' . $ts . '_convoca_payment', self::get_persistent_salt() );
+		$persistent_hash = hash_hmac( 'sha256', $pago_id . '|' . $ts . '_convoca_payment', self::get_payment_salt() );
 		$legacy_hash     = wp_hash( $pago_id . '|' . $ts . '_convoca_payment' );
 
 		if ( ! hash_equals( $persistent_hash, $key ) && ! hash_equals( $legacy_hash, $key ) ) {
