@@ -1,3 +1,17 @@
+## [2.13.18] — 2026-10-16
+
+### Arreglado
+- **El método elegido viaja en el enlace de pago (issue #9).** Quien elegía «Transferencia bancaria» en el alta
+  aterrizaba en `/pago/?convoca_gateway_pago=…&convoca_gateway_key=…` —**sin el método**—, así que la página caía al
+  selector genérico y le ofrecía tarjeta y Bizum; con el IBAN sin configurar no veía ni la transferencia ni una
+  explicación: el camino moría ahí y el dato había que darlo a mano por WhatsApp. El alta **ya** pasaba el método al
+  crear el pago; lo que faltaba era que la URL lo llevara. Con eso la página entra por las instrucciones de
+  transferencia que ya existían (IBAN, beneficiario, concepto) —o por el aviso de que falta el IBAN— y el
+  justificante se puede subir ahí mismo. El método «any» de un enlace de donación se queda sin parámetro: ahí elige
+  quien paga.
+- **Doble de `add_query_arg()` del arnés de pruebas, arreglado**: solo entendía la forma de dos argumentos y con la
+  de tres (que usa medio plugin) devolvía el **valor** en lugar de la URL. Se destapó al estrenar este arreglo.
+
 ## [2.13.14] — 2026-10-15
 
 ## [2.13.15] — 2026-10-15

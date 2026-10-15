@@ -278,6 +278,16 @@ class Payment_Handler {
 
 		$payment_url = self::build_payment_url( $pago_id, $token, $expires_ts );
 
+		// Si el pago nace con un método YA elegido —lo normal en el alta de socio o de inscripción—, el
+		// enlace se lo lleva puesto. Sin esto la página de pago caía al selector genérico: quien había
+		// elegido transferencia se encontraba tarjeta y Bizum, y con el IBAN sin configurar no veía ni la
+		// transferencia ni una explicación (medido: gateway#9). El método «any» de un enlace de donación
+		// se deja sin tocar: ahí elegir es cosa de quien paga.
+		$method = sanitize_text_field( (string) ( $data['method'] ?? '' ) );
+		if ( in_array( $method, array( 'tarjeta', 'bizum', 'transferencia' ), true ) ) {
+			$payment_url = add_query_arg( 'convoca_gateway_method', $method, $payment_url );
+		}
+
 		return array(
 			'pago_id'     => $pago_id,
 			'payment_url' => $payment_url,

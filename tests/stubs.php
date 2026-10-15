@@ -117,11 +117,30 @@ namespace {
 	function get_rest_url( $path = '', $scheme = 'rest' ) { return 'https://example.com/wp-json' . $path; }
 	function set_url_scheme( $url, $scheme = null ) { return $url; }
 	function get_permalink( $post = 0 ) { return 'https://example.com/pago/'; }
-	function add_query_arg( $args, $url = '' ) {
-		if ( ! is_array( $args ) ) {
-			return $url;
+	/**
+	 * Doble de `add_query_arg()` que soporta SUS DOS FORMAS.
+	 *
+	 * Antes solo entendía la de dos argumentos —`add_query_arg( array $args, $url )`— y con la de tres
+	 * (`add_query_arg( $clave, $valor, $url )`, que usa medio plugin) devolvía el **valor** en lugar de la
+	 * URL: `'tarjeta'` donde tenía que ir el enlace con su parámetro. Se destapó al añadir el método
+	 * elegido a la URL de pago (gateway#9): una prueba empezó a comparar contra `'tarjeta'`. Y explica por
+	 * qué otras rutas con la forma de tres argumentos tenían pruebas que no comprobaban la URL de verdad.
+	 *
+	 * @param string|array $args  Clave, o el arreglo de parámetros.
+	 * @param string       $value Valor (forma de tres argumentos) o la URL (forma de dos).
+	 * @param string       $url   URL (solo en la forma de tres argumentos).
+	 * @return string
+	 */
+	function add_query_arg( $args, $value = '', $url = '' ) {
+		if ( is_array( $args ) ) {
+			$url      = (string) $value;
+			$argumentos = $args;
+		} else {
+			$url        = (string) $url;
+			$argumentos = array( (string) $args => $value );
 		}
-		return $url . ( str_contains( (string) $url, '?' ) ? '&' : '?' ) . http_build_query( $args );
+
+		return $url . ( str_contains( $url, '?' ) ? '&' : '?' ) . http_build_query( $argumentos );
 	}
 	function remove_query_arg( $key, $url = '' ) {
 		$parts = explode( '?', (string) $url, 2 );
