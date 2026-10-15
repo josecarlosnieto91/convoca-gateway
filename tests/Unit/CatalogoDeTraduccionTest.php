@@ -92,7 +92,7 @@ class CatalogoDeTraduccionTest extends TestCase {
 				'Hay un .po sin su .mo: el catálogo no llegaría al sitio. Regenéralo con msgfmt -o.'
 			);
 
-			$temporal = tempnam( sys_get_temp_dir(), 'convoca-mo-' );
+			$temporal                = tempnam( sys_get_temp_dir(), 'convoca-mo-' );
 			list( $codigo, $salida ) = $this->msgfmt( array( '-c', '-o', $temporal, $po ) );
 			$this->assertSame( 0, $codigo, 'msgfmt no compila ' . basename( $po ) . ":\n" . $salida );
 
@@ -101,6 +101,7 @@ class CatalogoDeTraduccionTest extends TestCase {
 				md5_file( $mo ),
 				basename( $mo ) . ' no corresponde a ' . basename( $po ) . ': se quedó viejo. Regenéralo con msgfmt -o.'
 			);
+			// phpcs:ignore WordPress.WP.AlternativeFunctions.unlink_unlink -- Temporal de un test: no hay WP_Filesystem que aplicarle.
 			unlink( $temporal );
 		}
 	}
