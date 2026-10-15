@@ -1,5 +1,14 @@
 # Changelog — convoca-gateway
 
+## [2.13.9] - 2026-10-15
+
+### Corregido
+
+- **El diagnóstico decía «clave configurada» sin comprobar que la clave SIRVA** (auditoría de
+  navegador): con una clave que no se puede descifrar, `Redsys_Client::secret_key()` devuelve `''`, no hay
+  tarjeta ni Bizum y la página de pago se queda sin métodos —y el diagnóstico sonreía igual, porque solo
+  miraba que hubiera texto. Ahora comprueba el descifrado y, si falla, lo dice con la severidad de error.
+
 ## [2.13.8] — 2026-10-14
 
 ### Cambiado

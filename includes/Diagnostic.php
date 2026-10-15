@@ -88,6 +88,13 @@ class Diagnostic {
 			return self::result( 'environment', 'Modo de entorno', 'Clave SHA-256 no configurada', self::SEVERITY_ERROR, 'Configura la clave secreta en la pestaña General' );
 		}
 
+		// Tener la clave guardada no es que la clave SIRVA: si no se puede descifrar, el cobro queda
+		// inutilizable —`Redsys_Client::secret_key()` devuelve '' y la página de pago se queda sin
+		// tarjeta ni Bizum—. Antes el diagnóstico decía «clave configurada» mirando solo que hubiera texto.
+		if ( '' === (string) Redsys_Client::secret_key() ) {
+			return self::result( 'environment', 'Clave secreta utilizable', 'La clave guardada no se puede descifrar: los pagos no funcionarán', self::SEVERITY_ERROR, 'Vuelve a pegar la clave secreta de Redsys en la pestaña General' );
+		}
+
 		$test_keys = array(
 			'sq7H8UFiN7w5oZ8xP2vT9mL4kJ6gH3n',
 			'b0c9d2E4fA6gH8iJ0kL2mN4oP6qR8sT',
