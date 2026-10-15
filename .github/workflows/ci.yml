@@ -69,6 +69,8 @@ jobs:
         with:
           dependency-versions: highest
           composer-options: '--ignore-platform-req=ext-iconv'
+      - name: Instalar gettext (msgfmt, del contrato de traducciones)
+        run: sudo apt-get update -qq && sudo apt-get install -y -qq gettext
       - name: Create build directory
         run: mkdir -p build
       - name: Run unit tests
