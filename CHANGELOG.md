@@ -1,5 +1,16 @@
 ## [2.13.14] — 2026-10-15
 
+## [2.13.15] — 2026-10-15
+
+### Cambiado
+- **La pantalla de ajustes usa el andamiaje del núcleo (issue convoca-core#16).** `Admin_Settings` suelta su
+  constructor con los cinco `add_action` y sus dos `add_submenu_page` (la página visible y la oculta del detalle) y
+  pasa a `Convoca\Core\Admin\Pantalla_Admin`. Los ganchos, las capacidades y la prioridad no cambian.
+- **Contrato `AndamiajeAdminTest`** (probado en negativo): la pantalla declarada tiene que usar el andamiaje y no
+  declarar constructor propio.
+- El ignore de PHPStan de `add_submenu_page( null )` se retira: la llamada vive ya en el andamiaje del núcleo y el
+  ignore dejó de casar (un ignore que no casa es un error).
+
 ### Corregido
 - **El exportador de pagos escapaba las fórmulas con una regla propia y más corta (issue convoca-core#16).**
   Tenía la protección escrita a mano —`=`, `+`, `-`, `@`— en vez del ayudante del ecosistema, y **le faltaban

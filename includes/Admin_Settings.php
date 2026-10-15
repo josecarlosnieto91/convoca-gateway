@@ -27,18 +27,28 @@ if ( ! defined( 'ABSPATH' ) ) {
 	exit;
 }
 
-class Admin_Settings {
+class Admin_Settings extends \Convoca\Core\Admin\Pantalla_Admin {
 
 
 	/** Option key. */
 	private const OPTION = 'convoca_gateway_settings';
 
-	public function __construct() {
-		add_action( 'admin_menu', array( $this, 'add_menu' ) );
-		add_action( 'admin_init', array( $this, 'register_settings' ) );
-		add_action( 'wp_ajax_convoca_diagnostic_run', array( $this, 'ajax_diagnostic_run' ) );
-		add_action( 'wp_ajax_convoca_gateway_diagnostic_fix', array( $this, 'ajax_diagnostic_fix' ) );
-		add_action( 'admin_notices', array( $this, 'secret_key_warning' ) );
+	/**
+	 * Ganchos de la pantalla, en una lista en vez del constructor copiado.
+	 *
+	 * Los ganchos, el orden y las prioridades son los de antes; lo que cambia es dónde está escrito el
+	 * constructor, que era el mismo (copiado) en las seis pantallas del ecosistema.
+	 *
+	 * @return array<string, string> Gancho => método de esta clase.
+	 */
+	protected function ganchos(): array {
+		return array(
+			'admin_menu'                             => 'add_menu',
+			'admin_init'                             => 'register_settings',
+			'wp_ajax_convoca_diagnostic_run'         => 'ajax_diagnostic_run',
+			'wp_ajax_convoca_gateway_diagnostic_fix' => 'ajax_diagnostic_fix',
+			'admin_notices'                          => 'secret_key_warning',
+		);
 	}
 
 	/**
@@ -60,7 +70,7 @@ class Admin_Settings {
 	}
 
 	public function add_menu(): void {
-		add_submenu_page(
+		$this->registrar_subpagina(
 			'conv-gateway-payments',
 			__( 'Ajustes del TPV', 'convoca-gateway' ),
 			__( 'Configuración', 'convoca-gateway' ),
@@ -70,7 +80,7 @@ class Admin_Settings {
 		);
 
 		// Add hidden detail page for tab selection (it's called from Admin_Payments).
-		add_submenu_page(
+		$this->registrar_subpagina(
 			null, // Hidden.
 			__( 'Detalle de Pago', 'convoca-gateway' ),
 			__( 'Detalle', 'convoca-gateway' ),

@@ -48,3 +48,29 @@ class Mailer
 {
     public static function send( mixed ...$args ): mixed { return true; }
 }
+
+namespace Convoca\Core\Admin;
+
+/**
+ * Andamiaje de las pantallas de administración del núcleo (convoca-core#16).
+ *
+ * Las pantallas de este plugin heredan de aquí (o usan el trait): en el CI aislado el núcleo no está
+ * a mano, así que sus símbolos se declaran en el stub para que el análisis resuelva la jerarquía.
+ */
+trait Andamiaje_Admin
+{
+    abstract protected function ganchos(): array;
+    protected function editor_propio(): ?array { return null; }
+    protected function nodo_barra(): ?array { return null; }
+    public function __construct() {}
+    protected function registrar_subpagina( ?string $padre, string $titulo, string $menu, string $capacidad, string $slug, callable $callback ): string { return ''; }
+    protected function encolar_estilo_comun(): void {}
+    protected function exigir_guardado( string $nonce, string $capacidad, string $mensaje ): void {}
+    public function redirigir_editor_propio(): void {}
+    public function apuntar_nodo_barra( \WP_Admin_Bar $wp_admin_bar ): void {}
+}
+
+abstract class Pantalla_Admin
+{
+    use Andamiaje_Admin;
+}

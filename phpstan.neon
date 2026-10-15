@@ -27,11 +27,10 @@ parameters:
         -
             message: '#Path in require_once\(\) "/tmp/wp/wp-admin/#'
             identifier: requireOnce.fileNotFound
-        # add_submenu_page(null) es el patrón WP documentado para páginas
-        # standalone accesibles vía admin.php?page=.
-        -
-            message: '#Parameter \#1 \$parent_slug of function add_submenu_page expects string, null given#'
-            identifier: argument.type
+        # (Aquí había un ignore de add_submenu_page(null): al pasar el alta de páginas al
+        # andamiaje del núcleo —Convoca\Core\Admin\Pantalla_Admin—, la llamada ya no está en
+        # este repositorio y el ignore dejó de casar. Un ignore que no casa es un error, así
+        # que se retira en vez de dejar una excepción que ya no protege nada.)
         # wp_dropdown_pages: option_none_value=0 es válido (el stub no lista
         # la key como opcional con int; WP lo acepta).
         -
