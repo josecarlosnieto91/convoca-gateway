@@ -3,7 +3,7 @@
  * Plugin Name:       Convoca Gateway — Payment Gateway
  * Plugin URI:        https://getconvoca.app
  * Description:       Redsys payment gateway (card + Bizum).
- * Version: 2.13.16
+ * Version: 2.13.17
  * Requires at least: 6.4
  * Requires PHP:      8.1
  * Tested up to:      7.1
@@ -98,7 +98,7 @@ add_action(
 		new Block_Gateway();
 		if ( is_admin() ) {
 			// La pantalla cruda de los pagos responde 500 de permisos: se lleva a la lista del plugin. Core#15.
-			\Convoca\Core\Admin\Andamiaje_Admin::redirigir_pantallas_crudas(
+			\Convoca\Core\Admin\Pantalla_Admin::redirigir_pantallas_crudas(
 				array(
 					'pago' => array( 'lista' => 'conv-gateway-payments' ),
 				)
