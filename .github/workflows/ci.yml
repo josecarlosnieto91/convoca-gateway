@@ -78,15 +78,32 @@ jobs:
         run: vendor/bin/phpunit --testsuite integration
 
   plugin-check:
-    name: Plugin Check (PCP)
+    name: Plugin Check (PCP · version fijada y cacheada)
     runs-on: ubuntu-latest
+    env:
+      # Versiones FIJADAS a proposito (issue convoca-members#11). Al subirlas hay que volver a medir.
+      WP_VERSION: '7.1.3'
+      PLUGIN_CHECK_VERSION: '2.1.0'
+    services:
+      mysql:
+        image: mysql:8.0
+        env:
+          MYSQL_ROOT_PASSWORD: root
+          MYSQL_DATABASE: wordpress
+        ports:
+          - 3306:3306
+        options: >-
+          --health-cmd="mysqladmin ping --silent"
+          --health-interval=10s
+          --health-timeout=5s
+          --health-retries=5
     steps:
       - uses: actions/checkout@v4
       - name: Setup PHP
         uses: shivammathur/setup-php@v2
         with:
           php-version: '8.3'
-          tools: composer:v2
+          tools: composer:v2, wp-cli
       - name: Cache Composer dependencies
         uses: actions/cache@v4
         with:
@@ -113,18 +130,50 @@ jobs:
           # auditará cuando core esté publicado también).
           sed -i '/Requires Plugins:/d' build-dir/convoca-gateway/convoca-gateway.php
           ls build-dir/convoca-gateway/
-      - name: Run Plugin Check (WordPress.org)
-        # Ejecuta Plugin Check (PCP) en categorías plugin_repo + security,
-        # bloqueantes para publicar en WordPress.org. Los warnings no fallan;
-        # cualquier ERROR sí (exit != 0).
-        uses: wordpress/plugin-check-action@v1
+      - name: Traer las piezas fijadas (WordPress y Plugin Check), con cache
+        # Antes esto lo hacia la accion oficial, que descargaba `plugin-check` de wordpress.org EN CADA
+        # EJECUCION y con la version que hubiera ese dia (issue convoca-members#11): cuando wp.org tenia un
+        # hipo el trabajo salia en ROJO por red, y cuando publicaba version nueva los hallazgos cambiaban
+        # solos. Ahora las dos piezas van fijadas y cacheadas, y un fallo de red se lee como fallo de red.
+        id: piezas
+        uses: actions/cache@v4
         with:
-          build-dir: './build-dir/convoca-gateway'
-          categories: |
-            plugin_repo
-            security
-          ignore-warnings: 'true'
-          wp-version: latest
+          path: ${{ runner.temp }}/pcp
+          key: pcp-wp${{ env.WP_VERSION }}-plugincheck${{ env.PLUGIN_CHECK_VERSION }}
+
+      - name: Descargar las piezas (solo si no estan en cache)
+        if: steps.piezas.outputs.cache-hit != 'true'
+        run: |
+          mkdir -p "$RUNNER_TEMP/pcp"
+          traer() {
+            if ! curl -fL --retry 5 --retry-all-errors --retry-delay 3 -o "$2" "$1"; then
+              echo "::error title=Infraestructura, no el repositorio::No se pudo traer $1. Este rojo NO dice nada del codigo."
+              exit 1
+            fi
+          }
+          traer "https://wordpress.org/wordpress-${WP_VERSION}.zip" "$RUNNER_TEMP/pcp/wordpress.zip"
+          traer "https://downloads.wordpress.org/plugin/plugin-check.${PLUGIN_CHECK_VERSION}.zip" "$RUNNER_TEMP/pcp/plugin-check.zip"
+
+      - name: Preparar el WordPress de pruebas
+        run: |
+          unzip -q "$RUNNER_TEMP/pcp/wordpress.zip" -d "$RUNNER_TEMP/pcp"
+          cp -r build-dir/convoca-gateway "$RUNNER_TEMP/pcp/wordpress/wp-content/plugins/convoca-gateway"
+          wp config create --path="$RUNNER_TEMP/pcp/wordpress" --dbname=wordpress \
+            --dbuser=root --dbpass=root --dbhost=127.0.0.1
+          wp core install --path="$RUNNER_TEMP/pcp/wordpress" --url=http://localhost:8880 \
+            --title=Convoca --admin_user=admin --admin_password=NoEsUnSecreto123 \
+            --admin_email=ci@example.org --skip-email
+
+      - name: Run Plugin Check (WordPress.org, version fijada)
+        # Categorias plugin_repo + security, bloqueantes. Los avisos no fallan; cualquier ERROR si (exit != 0).
+        # El plugin se activa igual que hacia la accion: PCP mide tambien lo que pasa al cargarlo.
+        run: |
+          wp plugin install "$RUNNER_TEMP/pcp/plugin-check.zip" --activate --path="$RUNNER_TEMP/pcp/wordpress"
+          wp plugin activate convoca-gateway --path="$RUNNER_TEMP/pcp/wordpress"
+          wp plugin check convoca-gateway \
+            --path="$RUNNER_TEMP/pcp/wordpress" \
+            --categories=plugin_repo,security \
+            --ignore-warnings=true
 
   phpunit-summary:
     name: PHPUnit Summary
