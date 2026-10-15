@@ -54,23 +54,31 @@ class CSV_Exporter {
 
 		$filename = 'pagos-convoca-' . current_time( 'Y-m-d-His' ) . '.csv';
 
-		if ( ob_get_length() ) {
-			ob_end_clean();
-		}
+		// Las filas se generan de una en una: 5.000 pagos construidos de golpe son 5.000 arrays vivos.
+		$filas = ( static function () use ( $payments ) {
+			foreach ( $payments as $post ) {
+				$meta = CPT_Pago::get_meta( $post->ID );
 
-		header( 'Content-Type: text/csv; charset=utf-8' );
-		header( 'Content-Disposition: attachment; filename=' . $filename );
-		header( 'Pragma: no-cache' );
-		header( 'Expires: 0' );
+				yield array(
+					$post->ID,
+					$meta['order_id'],
+					number_format( $meta['amount_cents'] / 100, 2, ',', '.' ),
+					ucfirst( $meta['method'] ),
+					CPT_Pago::status()[ $meta['status'] ] ?? $meta['status'],
+					self::format_origin( $meta['origin'] ),
+					self::get_user_email( (string) $meta['origin'], (int) $meta['origin_id'] ),
+					$meta['created_at'],
+					$meta['paid_at'] ?: '—',
+				);
+			}
+		} )();
 
-		$output = fopen( 'php://output', 'w' );
-
-		// Add BOM for Excel UTF-8 compatibility.
-		fprintf( $output, chr( 0xEF ) . chr( 0xBB ) . chr( 0xBF ) );
-
-		// Headers.
-		fputcsv(
-			$output,
+		// La ceremonia —cabeceras, BOM, separador y la protección contra fórmulas— vive en un solo sitio
+		// del núcleo (issue convoca-core#16). Aquí estaba copiada a mano y **más corta** que el ayudante
+		// del ecosistema: cubría `= + - @` pero no el tabulador, el retorno de carro ni el `;`, que sí
+		// están en `Utils::escape_csv_field()`. Un solo sitio donde se decide qué es peligroso.
+		\Convoca\Core\Utils::stream_csv(
+			$filename,
 			array(
 				__( 'ID', 'convoca-gateway' ),
 				__( 'ID Pedido', 'convoca-gateway' ),
@@ -82,39 +90,9 @@ class CSV_Exporter {
 				__( 'Fecha Creación', 'convoca-gateway' ),
 				__( 'Fecha Pago', 'convoca-gateway' ),
 			),
-			';',
-			'"',
-			'\\'
+			$filas
 		);
 
-		foreach ( $payments as $post ) {
-			$meta = CPT_Pago::get_meta( $post->ID );
-
-			$email = self::get_user_email( (string) $meta['origin'], (int) $meta['origin_id'] );
-
-			$row = array(
-				$post->ID,
-				$meta['order_id'],
-				number_format( $meta['amount_cents'] / 100, 2, ',', '.' ),
-				ucfirst( $meta['method'] ),
-				CPT_Pago::status()[ $meta['status'] ] ?? $meta['status'],
-				self::format_origin( $meta['origin'] ),
-				$email,
-				$meta['created_at'],
-				$meta['paid_at'] ?: '—',
-			);
-
-			// La protección contra inyección de fórmulas es la del ecosistema, no una copia (issue
-			// convoca-core#16). Aquí estaba escrita a mano y **más corta** que `Utils::escape_csv_field`:
-			// cubría `= + - @` pero no el tabulador, el retorno de carro ni el punto y coma, que sí están en
-			// el ayudante que usan enroll y members. Un solo sitio donde se decide qué es peligroso.
-			$row = array_map( array( \Convoca\Core\Utils::class, 'escape_csv_field' ), $row );
-
-			fputcsv( $output, $row, ';', '"', '\\' );
-		}
-
-		// phpcs:ignore WordPress.WP.AlternativeFunctions.file_system_operations_fclose -- Stream to php://output, WP_Filesystem not applicable.
-		fclose( $output );
 		exit;
 	}
 

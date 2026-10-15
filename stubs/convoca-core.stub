@@ -35,6 +35,8 @@ class Logger
 class Utils
 {
     public static function do_action( mixed ...$args ): void {}
+    public static function escape_csv_field( string $field ): string { return $field; }
+    public static function stream_csv( string $filename, array $headers, iterable $rows ): int { return 0; }
 }
 
 class License_Manager
