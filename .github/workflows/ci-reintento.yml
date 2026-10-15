@@ -22,12 +22,15 @@ jobs:
         env:
           GH_TOKEN: ${{ secrets.GITHUB_TOKEN }}
           RUN_ID: ${{ github.event.workflow_run.id }}
+          RUN_ATTEMPT: ${{ github.event.workflow_run.run_attempt }}
         run: |
-          intentos=$(gh api "repos/$GITHUB_REPOSITORY/actions/runs/$RUN_ID/attempts" --jq 'length')
-          echo "intentos hasta ahora: $intentos"
-          if [ "$intentos" -ge 2 ]; then
+          # El número de intento viene en el propio evento (el endpoint /attempts da 404: comprobado el
+          # 15/10/2026 con curl y con gh, también para runs que existen. Ver health-check#14). Si ya es el
+          # segundo intento, el fallo se toma como real y no se insiste.
+          echo "intento del run: $RUN_ATTEMPT"
+          if [ "$RUN_ATTEMPT" -ge 2 ]; then
             echo "Ya se reintentó una vez: el fallo se toma como real y no insisto."
             exit 0
           fi
-          gh api -X POST "repos/$GITHUB_REPOSITORY/actions/runs/$RUN_ID/rerun-failed-jobs" \
-            && echo "Reintento lanzado para el run $RUN_ID."
+          gh run rerun "$RUN_ID" --failed --repo "$GITHUB_REPOSITORY" \
+            && echo "Reintento lanzado para el run $RUN_ID." || echo "No se pudo reintentar (queda en rojo, que es lo honesto)."
