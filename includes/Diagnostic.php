@@ -42,9 +42,17 @@ class Diagnostic {
 	 * @return array Array of results.
 	 */
 	public static function run_all( bool $force = false ): array {
+		$huella = self::huella_ajustes();
+
 		if ( ! $force ) {
 			$cached = get_option( self::CACHE_KEY, false );
-			if ( $cached && isset( $cached['timestamp'] ) && ( time() - $cached['timestamp'] < self::CACHE_TTL ) ) {
+			// El veredicto solo vale para los ajustes con los que se calculó. Si han cambiado —lo típico:
+			// alguien acaba de arreglar la clave secreta— se recalcula en el acto, en lugar de seguir
+			// enseñando el error viejo durante la hora que dura la caché. Medido: tras reponer la clave,
+			// el diagnóstico seguía diciendo «no se puede descifrar».
+			if ( $cached && isset( $cached['timestamp'], $cached['huella'] )
+				&& ( $cached['huella'] === $huella )
+				&& ( time() - $cached['timestamp'] < self::CACHE_TTL ) ) {
 				return $cached['results'];
 			}
 		}
@@ -65,6 +73,7 @@ class Diagnostic {
 			self::CACHE_KEY,
 			array(
 				'timestamp'    => time(),
+				'huella'       => $huella,
 				'results'      => $results,
 				'has_errors'   => self::has_errors( $results ),
 				'has_warnings' => self::has_warnings( $results ),
@@ -72,6 +81,15 @@ class Diagnostic {
 		);
 
 		return $results;
+	}
+
+	/**
+	 * Huella de los ajustes que condicionan el diagnóstico.
+	 *
+	 * Con ella, un veredicto cacheado deja de valer en cuanto alguien toca la configuración del cobro.
+	 */
+	private static function huella_ajustes(): string {
+		return md5( (string) wp_json_encode( get_option( 'convoca_gateway_settings', array() ) ) );
 	}
 
 	/**

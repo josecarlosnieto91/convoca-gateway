@@ -1,5 +1,14 @@
 # Changelog — convoca-gateway
 
+## [2.13.10] - 2026-10-15
+
+### Corregido
+
+- **El diagnóstico del cobro cacheaba su veredicto sin atarlo a los ajustes** (encontrado al verificar el
+  arreglo anterior): el resultado se guardaba una hora y no se invalidaba al cambiar la configuración, así
+  que quien acababa de arreglar la clave secreta seguía leyendo «no se puede descifrar» —medido—. Ahora el
+  veredicto lleva la huella de los ajustes con los que se calculó y se recalcula en cuanto cambian.
+
 ## [2.13.9] - 2026-10-15
 
 ### Corregido
