@@ -1,3 +1,16 @@
+## [2.13.11] — 2026-10-15
+
+### Arreglado
+- **La desinstalación dejaba atrás la sal de firma (issue #10).** `convoca_gateway_persistent_salt` —la sal que
+  firma los avisos del TPV— y `convoca_gateway_secret_needs_reentry` se quedaban en la base **para siempre** tras
+  desinstalar. La del informe era la más delicada de todo el bloque: una sal que sobrevive al plugin que la creó.
+  Las ha encontrado la **prueba de contrato** que lee las claves del propio código.
+
+### Pruebas
+- `tests/Unit/OpcionesSeBorranAlDesinstalarTest.php`, con dos comprobaciones: que estén, y que el borrado esté **a
+  nivel de fichero** (una opción borrada dentro de un bucle solo se borra a veces — pasó en shifts en este mismo
+  arreglo). **Negativo probado**.
+
 # Changelog — convoca-gateway
 
 ## [2.13.10] - 2026-10-15

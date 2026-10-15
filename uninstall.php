@@ -51,6 +51,9 @@ delete_option( 'convoca_gateway_redsys_config' );
 delete_option( 'convoca_gateway_db_version' );
 delete_option( 'convoca_gateway_notification_retry_limit' );
 delete_option( 'convoca_gateway_settings' );
+// Las encontró la prueba de contrato de opciones (issue #10): la sal de firma se quedaba en la base para siempre.
+delete_option( 'convoca_gateway_persistent_salt' );
+delete_option( 'convoca_gateway_secret_needs_reentry' );
 
 // Delete posts of CPT 'pago'.
 $payments = get_posts(
