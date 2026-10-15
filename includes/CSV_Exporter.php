@@ -104,12 +104,11 @@ class CSV_Exporter {
 				$meta['paid_at'] ?: '—',
 			);
 
-			// Protect against CSV Injection.
-			foreach ( $row as &$field ) {
-				if ( is_string( $field ) && ! empty( $field ) && in_array( $field[0], array( '=', '+', '-', '@' ), true ) ) {
-					$field = "'" . $field;
-				}
-			}
+			// La protección contra inyección de fórmulas es la del ecosistema, no una copia (issue
+			// convoca-core#16). Aquí estaba escrita a mano y **más corta** que `Utils::escape_csv_field`:
+			// cubría `= + - @` pero no el tabulador, el retorno de carro ni el punto y coma, que sí están en
+			// el ayudante que usan enroll y members. Un solo sitio donde se decide qué es peligroso.
+			$row = array_map( array( \Convoca\Core\Utils::class, 'escape_csv_field' ), $row );
 
 			fputcsv( $output, $row, ';', '"', '\\' );
 		}

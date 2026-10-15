@@ -1,3 +1,16 @@
+## [2.13.14] — 2026-10-15
+
+### Corregido
+- **El exportador de pagos escapaba las fórmulas con una regla propia y más corta (issue convoca-core#16).**
+  Tenía la protección escrita a mano —`=`, `+`, `-`, `@`— en vez del ayudante del ecosistema, y **le faltaban
+  el tabulador, el retorno de carro y el punto y coma**: justo el separador que usa el CSV que genera. `enroll`
+  y `members` ya usaban `Core\Utils::escape_csv_field()`; la pasarela era el único que decidía por su cuenta
+  qué es peligroso. Ahora escapa con el mismo ayudante, así que las tres partes aplican la misma regla.
+
+### Añadido
+- Contrato (`tests/Unit/EscapadoDelCsvTest.php`) que impide que vuelva a haber aquí una segunda
+  implementación de la regla. **Probado en negativo**: contra el fichero anterior caen las dos aserciones.
+
 ## [2.13.13] — 2026-10-15
 
 ### Cambiado
