@@ -113,6 +113,11 @@ class Diagnostic {
 			return self::result( 'environment', 'Clave secreta utilizable', 'La clave guardada no se puede descifrar: los pagos no funcionarán', self::SEVERITY_ERROR, 'Vuelve a pegar la clave secreta de Redsys en la pestaña General' );
 		}
 
+		// La comprobación de arriba sólo se veía al fallar: con una clave sana la fila no decía nada de la
+		// clave, así que quien miraba la lista no sabía si se descifra o no (gateway#7). Se confirma aquí,
+		// con la longitud de la clave descifrada para poder compararla con la del TPV.
+		$largo_clave = strlen( (string) Redsys_Client::secret_key() );
+
 		$test_keys = array(
 			'sq7H8UFiN7w5oZ8xP2vT9mL4kJ6gH3n',
 			'b0c9d2E4fA6gH8iJ0kL2mN4oP6qR8sT',
@@ -136,7 +141,7 @@ class Diagnostic {
 			$severity = self::SEVERITY_OK;
 		}
 
-		return self::result( 'environment', 'Modo de entorno', $message, $severity, 'Si estás en producción, asegúrate de usar la clave SHA-256 de producción, no la de test' );
+		return self::result( 'environment', 'Modo de entorno', $message . sprintf( ' | Clave secreta utilizable (%d caracteres)', $largo_clave ), $severity, 'Si estás en producción, asegúrate de usar la clave SHA-256 de producción, no la de test' );
 	}
 
 	/**

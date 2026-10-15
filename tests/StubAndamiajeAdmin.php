@@ -20,6 +20,7 @@ namespace Convoca\Core\Admin {
         protected function encolar_estilo_comun(): void {}
         protected function exigir_guardado( string $nonce, string $capacidad, string $mensaje ): void {}
         public function redirigir_editor_propio(): void {}
+        public static function redirigir_pantallas_crudas( array $destinos ): void {}
         public function apuntar_nodo_barra( $wp_admin_bar ): void {}
     }
 
