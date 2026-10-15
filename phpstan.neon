@@ -11,7 +11,9 @@ parameters:
         analyseAndScan:
             - vendor
             - tests
-            - dev-tools
+            # `(?)`: la carpeta ya no existe (tenía una copia muerta de la config, retirada en
+            # convoca-health-check#15) y una ruta excluida que no existe ABORTA el análisis entero.
+            - dev-tools (?)
             - node_modules (?)
     bootstrapFiles:
         - vendor/php-stubs/wordpress-stubs/wordpress-stubs.php
