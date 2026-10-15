@@ -131,47 +131,46 @@ jobs:
           sed -i '/Requires Plugins:/d' build-dir/convoca-gateway/convoca-gateway.php
           ls build-dir/convoca-gateway/
       - name: Traer las piezas fijadas (WordPress y Plugin Check), con cache
-        # Antes esto lo hacia la accion oficial, que descargaba `plugin-check` de wordpress.org EN CADA
-        # EJECUCION y con la version que hubiera ese dia (issue convoca-members#11): cuando wp.org tenia un
-        # hipo el trabajo salia en ROJO por red, y cuando publicaba version nueva los hallazgos cambiaban
-        # solos. Ahora las dos piezas van fijadas y cacheadas, y un fallo de red se lee como fallo de red.
+        # La cache guarda SOLO los dos zip. Antes guardaba ademas el WordPress ya descomprimido y el segundo
+        # run pedia confirmacion para sobrescribirlo ("replace ... [y]es, [n]o, [A]ll, [N]one"), que en el CI
+        # sin terminal es un fallo: unzip preguntaba y moria con EOF. Se cachea lo que hay que traer de la red,
+        # no el resultado de usarlo.
         id: piezas
         uses: actions/cache@v4
         with:
-          path: ${{ runner.temp }}/pcp
-          key: pcp-wp${{ env.WP_VERSION }}-plugincheck${{ env.PLUGIN_CHECK_VERSION }}
+          path: ${{ runner.temp }}/pcp-archivos
+          key: pcp2-wp${{ env.WP_VERSION }}-plugincheck${{ env.PLUGIN_CHECK_VERSION }}
 
       - name: Descargar las piezas (solo si no estan en cache)
         if: steps.piezas.outputs.cache-hit != 'true'
         run: |
-          mkdir -p "$RUNNER_TEMP/pcp"
+          mkdir -p "$RUNNER_TEMP/pcp-archivos"
           traer() {
             if ! curl -fL --retry 5 --retry-all-errors --retry-delay 3 -o "$2" "$1"; then
               echo "::error title=Infraestructura, no el repositorio::No se pudo traer $1. Este rojo NO dice nada del codigo."
               exit 1
             fi
           }
-          traer "https://wordpress.org/wordpress-${WP_VERSION}.zip" "$RUNNER_TEMP/pcp/wordpress.zip"
-          traer "https://downloads.wordpress.org/plugin/plugin-check.${PLUGIN_CHECK_VERSION}.zip" "$RUNNER_TEMP/pcp/plugin-check.zip"
+          traer "https://wordpress.org/wordpress-${WP_VERSION}.zip" "$RUNNER_TEMP/pcp-archivos/wordpress.zip"
+          traer "https://downloads.wordpress.org/plugin/plugin-check.${PLUGIN_CHECK_VERSION}.zip" "$RUNNER_TEMP/pcp-archivos/plugin-check.zip"
 
       - name: Preparar el WordPress de pruebas
         run: |
-          unzip -q "$RUNNER_TEMP/pcp/wordpress.zip" -d "$RUNNER_TEMP/pcp"
-          cp -r build-dir/convoca-gateway "$RUNNER_TEMP/pcp/wordpress/wp-content/plugins/convoca-gateway"
-          wp config create --path="$RUNNER_TEMP/pcp/wordpress" --dbname=wordpress \
+          mkdir -p "$RUNNER_TEMP/wp"
+          unzip -oq "$RUNNER_TEMP/pcp-archivos/wordpress.zip" -d "$RUNNER_TEMP/wp"
+          cp -r build-dir/convoca-gateway "$RUNNER_TEMP/wp/wordpress/wp-content/plugins/convoca-gateway"
+          wp config create --path="$RUNNER_TEMP/wp/wordpress" --dbname=wordpress \
             --dbuser=root --dbpass=root --dbhost=127.0.0.1
-          wp core install --path="$RUNNER_TEMP/pcp/wordpress" --url=http://localhost:8880 \
+          wp core install --path="$RUNNER_TEMP/wp/wordpress" --url=http://localhost:8880 \
             --title=Convoca --admin_user=admin --admin_password=NoEsUnSecreto123 \
             --admin_email=ci@example.org --skip-email
 
       - name: Run Plugin Check (WordPress.org, version fijada)
-        # Categorias plugin_repo + security, bloqueantes. Los avisos no fallan; cualquier ERROR si (exit != 0).
-        # El plugin se activa igual que hacia la accion: PCP mide tambien lo que pasa al cargarlo.
         run: |
-          wp plugin install "$RUNNER_TEMP/pcp/plugin-check.zip" --activate --path="$RUNNER_TEMP/pcp/wordpress"
-          wp plugin activate convoca-gateway --path="$RUNNER_TEMP/pcp/wordpress"
+          wp plugin install "$RUNNER_TEMP/pcp-archivos/plugin-check.zip" --activate --path="$RUNNER_TEMP/wp/wordpress"
+          wp plugin activate convoca-gateway --path="$RUNNER_TEMP/wp/wordpress"
           wp plugin check convoca-gateway \
-            --path="$RUNNER_TEMP/pcp/wordpress" \
+            --path="$RUNNER_TEMP/wp/wordpress" \
             --categories=plugin_repo,security \
             --ignore-warnings=true
 
