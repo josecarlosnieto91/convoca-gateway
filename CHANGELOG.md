@@ -1,3 +1,18 @@
+## [2.13.13] — 2026-10-15
+
+### Cambiado
+- **`Payment_Handler::get_payment_link()` se llama `build_payment_url()` (issue convoca-core#16).** El nombre no
+  decía lo que hace y era **el mismo** que `Core\Utils::get_payment_link()`, que hace lo contrario: aquella crea
+  el pago, esta construye la URL de uno que ya existe. Dentro de la pasarela había nueve llamadas al nombre
+  viejo en cuatro ficheros; ahora llaman al nuevo, y `get_payment_link()` queda como **alias de compatibilidad**
+  que delega (lo llaman también members, enroll y cualquier integración publicada: se cambia el nombre, no el
+  comportamiento).
+  - **La URL que genera es la misma byte a byte.** Verificado contra la URL firmada de pagos reales de la demo,
+    antes y después del cambio: misma cadena, carácter a carácter.
+  - Contrato con prueba, en positivo y en negativo: `build_payment_url()` es el nombre declarado, el alias
+    delega, y **no queda ninguna llamada interna al nombre viejo** (la aserción cae contra la versión anterior,
+    que tenía ocho).
+
 ## [2.13.12] — 2026-10-15
 
 ### Cambiado

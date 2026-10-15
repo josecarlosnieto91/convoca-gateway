@@ -64,7 +64,7 @@ class Email_Notifications {
 		$concepto     = (string) get_post_meta( $pago_id, '_convoca_product_desc', true );
 		$token        = get_post_meta( $pago_id, '_convoca_link_key', true );
 		$expires      = get_post_meta( $pago_id, '_convoca_expires_at', true );
-		$url          = Payment_Handler::get_payment_link( $pago_id, is_string( $token ) ? $token : '', is_numeric( $expires ) ? (int) $expires : null );
+		$url          = Payment_Handler::build_payment_url( $pago_id, is_string( $token ) ? $token : '', is_numeric( $expires ) ? (int) $expires : null );
 
 		$label = '' !== $concepto ? $concepto : __( 'pago pendiente', 'convoca-gateway' );
 
@@ -98,7 +98,7 @@ class Email_Notifications {
 		$label    = '' !== $concepto ? $concepto : __( 'pago pendiente', 'convoca-gateway' );
 		$token    = get_post_meta( $pago_id, '_convoca_link_key', true );
 		$expires  = get_post_meta( $pago_id, '_convoca_expires_at', true );
-		$url      = Payment_Handler::get_payment_link( $pago_id, is_string( $token ) ? $token : '', is_numeric( $expires ) ? (int) $expires : null );
+		$url      = Payment_Handler::build_payment_url( $pago_id, is_string( $token ) ? $token : '', is_numeric( $expires ) ? (int) $expires : null );
 
 		$hours = Link_Expiry::notice_hours();
 
@@ -468,8 +468,8 @@ class Email_Notifications {
 		// valiendo y respeta su caducidad), y si no, el enlace firmado de siempre.
 		$link_token  = (string) get_post_meta( $payment_id, '_convoca_link_key', true );
 		$payment_url = $link_token
-			? Payment_Handler::get_payment_link( $payment_id, $link_token, (int) get_post_meta( $payment_id, '_convoca_expires_at', true ) )
-			: Payment_Handler::get_payment_link( $payment_id );
+			? Payment_Handler::build_payment_url( $payment_id, $link_token, (int) get_post_meta( $payment_id, '_convoca_expires_at', true ) )
+			: Payment_Handler::build_payment_url( $payment_id );
 
 		$motivo = __( 'Tu banco rechazó la operación.', 'convoca-gateway' );
 		if ( '' !== $response ) {

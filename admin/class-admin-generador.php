@@ -312,7 +312,7 @@ class Admin_Generador {
 		$token      = get_post_meta( $pago_id, '_convoca_link_key', true );
 		$expires_ts = get_post_meta( $pago_id, '_convoca_expires_at', true );
 
-		$url = Payment_Handler::get_payment_link( $pago_id, $token, $expires_ts );
+		$url = Payment_Handler::build_payment_url( $pago_id, $token, $expires_ts );
 
 		return array(
 			'pago_id' => $pago_id,

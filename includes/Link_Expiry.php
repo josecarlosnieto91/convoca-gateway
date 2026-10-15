@@ -124,7 +124,7 @@ class Link_Expiry {
 
 		$token = get_post_meta( $pago_id, '_convoca_link_key', true );
 
-		return Payment_Handler::get_payment_link( $pago_id, is_string( $token ) ? $token : '', $expires_ts );
+		return Payment_Handler::build_payment_url( $pago_id, is_string( $token ) ? $token : '', $expires_ts );
 	}
 
 	/**

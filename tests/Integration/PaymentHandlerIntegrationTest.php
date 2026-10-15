@@ -25,7 +25,9 @@ class PaymentHandlerIntegrationTest extends \PHPUnit\Framework\TestCase
 
     public function test_has_get_payment_link_method(): void
     {
-        // create_link_payment no existe: el metodo real es get_payment_link
+        // El nombre de verdad es build_payment_url(): get_payment_link sigue como alias de compatibilidad
+        // (convoca-core#16). Las dos tienen que existir: la segunda la llaman otros plugins del ecosistema.
+        $this->assertTrue(method_exists('Convoca\Gateway\Payment_Handler', 'build_payment_url'));
         $this->assertTrue(method_exists('Convoca\Gateway\Payment_Handler', 'get_payment_link'));
     }
 

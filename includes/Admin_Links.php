@@ -148,7 +148,7 @@ class Admin_Links extends \WP_List_Table {
 		// Build the actual link for quick copy.
 		// expires_at puede ser string vacío cuando el meta no existe (PHP 8.1+ TypeError si pasamos string a ?int).
 		$expires_ts = ! empty( $meta['expires_at'] ) ? (int) $meta['expires_at'] : null;
-		$link_url   = Payment_Handler::get_payment_link( $item->ID, $meta['link_key'], $expires_ts );
+		$link_url   = Payment_Handler::build_payment_url( $item->ID, $meta['link_key'], $expires_ts );
 
 		$actions = array(
 			'view' => sprintf( '<a href="%s">%s</a>', esc_url( $url ), esc_html__( 'Ver detalles', 'convoca-gateway' ) ),
@@ -398,7 +398,7 @@ class Admin_Links extends \WP_List_Table {
 
 		$meta    = CPT_Pago::get_meta( $id );
 		$token   = (string) get_post_meta( $id, '_convoca_link_key', true );
-		$enlace  = Payment_Handler::get_payment_link( $id, $token, ! empty( $meta['expires_at'] ) ? (int) $meta['expires_at'] : null );
+		$enlace  = Payment_Handler::build_payment_url( $id, $token, ! empty( $meta['expires_at'] ) ? (int) $meta['expires_at'] : null );
 		$abierto = ! empty( $meta['open_amount'] );
 		$nunca   = empty( $meta['expires_at'] );
 		$fecha   = $nunca ? '' : wp_date( 'Y-m-d', (int) $meta['expires_at'] );

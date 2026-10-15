@@ -276,7 +276,7 @@ class Payment_Handler {
 		update_post_meta( $pago_id, '_convoca_link_key', $token );
 		update_post_meta( $pago_id, '_convoca_expires_at', $expires_ts );
 
-		$payment_url = self::get_payment_link( $pago_id, $token, $expires_ts );
+		$payment_url = self::build_payment_url( $pago_id, $token, $expires_ts );
 
 		return array(
 			'pago_id'     => $pago_id,
@@ -307,14 +307,19 @@ class Payment_Handler {
 	}
 
 	/**
-	 * Generate a signed payment link for an existing payment.
+	 * Construye la URL firmada de un pago que YA existe (issue convoca-core#16).
+	 *
+	 * Antes se llamaba `get_payment_link()`, el mismo nombre que `Core\Utils::get_payment_link()`, y eso hacía
+	 * creer que las dos hacían lo mismo: aquella **crea** el pago y devuelve un array o un error, esta
+	 * construye la URL de uno existente. Quien llamaba a una creyendo llamar a la otra no lo descubría hasta
+	 * que fallaba. El nombre nuevo dice lo que hace.
 	 *
 	 * @param int    $pago_id    The payment post ID.
 	 * @param string $token      Optional token (for link payment).
 	 * @param int    $expires_ts Optional expiration timestamp.
 	 * @return string The signed URL.
 	 */
-	public static function get_payment_link( int $pago_id, string $token = '', ?int $expires_ts = null ): string {
+	public static function build_payment_url( int $pago_id, string $token = '', ?int $expires_ts = null ): string {
 		$base_url = self::get_payment_page_url();
 
 		$args = array( 'convoca_gateway_pago' => $pago_id );
@@ -329,6 +334,24 @@ class Payment_Handler {
 		}
 
 		return add_query_arg( $args, $base_url );
+	}
+
+	/**
+	 * Alias de compatibilidad de `build_payment_url()` (issue convoca-core#16).
+	 *
+	 * El nombre viejo queda porque es API que otros plugins del ecosistema llaman desde antes: se cambia el
+	 * nombre, no el comportamiento, y **la URL que genera es la misma byte a byte** (la migración está
+	 * verificada contra la URL firmada de un pago real de la demo, antes y después del cambio).
+	 *
+	 * @deprecated 2.13.13 Usa `build_payment_url()`.
+	 *
+	 * @param int    $pago_id    The payment post ID.
+	 * @param string $token      Optional token (for link payment).
+	 * @param int    $expires_ts Optional expiration timestamp.
+	 * @return string The signed URL.
+	 */
+	public static function get_payment_link( int $pago_id, string $token = '', ?int $expires_ts = null ): string {
+		return self::build_payment_url( $pago_id, $token, $expires_ts );
 	}
 
 	/* ── Payment page rendering ────────────────── */
@@ -567,7 +590,7 @@ class Payment_Handler {
 	 */
 	private function render_link_form( int $pago_id, array $meta, string $product_desc, int $amount_cents, string $suggested_method, string $recipient_email, array $params, bool $es_plantilla = true ): string {
 		$amount_display = CPT_Pago::format_amount( $amount_cents );
-		$base_url       = self::get_payment_link( $pago_id, (string) get_post_meta( $pago_id, '_convoca_link_key', true ), (int) get_post_meta( $pago_id, '_convoca_expires_at', true ) );
+		$base_url       = self::build_payment_url( $pago_id, (string) get_post_meta( $pago_id, '_convoca_link_key', true ), (int) get_post_meta( $pago_id, '_convoca_expires_at', true ) );
 
 		$settings         = get_option( 'convoca_gateway_settings', array() );
 		$transfer_enabled = ! empty( $settings['iban'] );
@@ -1081,7 +1104,7 @@ class Payment_Handler {
 		$method  = $this->requested_method();
 		$methods = $this->enabled_methods();
 		$token   = (string) get_post_meta( $pago_id, '_convoca_link_key', true );
-		$base    = $token ? self::get_payment_link( $pago_id, $token ) : remove_query_arg( 'convoca_gateway_method' );
+		$base    = $token ? self::build_payment_url( $pago_id, $token ) : remove_query_arg( 'convoca_gateway_method' );
 
 		ob_start();
 		?>
@@ -1255,7 +1278,7 @@ class Payment_Handler {
 		);
 
 		$token = get_post_meta( $pago, '_convoca_link_key', true );
-		$url   = add_query_arg( array( 'convoca_gateway_method' => $method ), self::get_payment_link( $pago, $token ) );
+		$url   = add_query_arg( array( 'convoca_gateway_method' => $method ), self::build_payment_url( $pago, $token ) );
 
 		return '<script>window.location.href="' . esc_url_raw( $url ) . '";</script>' .
 			'<div class="convoca-alert convoca-alert--info">' .
@@ -1635,7 +1658,7 @@ class Payment_Handler {
 		}
 
 		$token = get_post_meta( $pago_id, '_convoca_link_key', true );
-		$url   = add_query_arg( array( 'convoca_gateway_method' => $method ), self::get_payment_link( $pago_id, $token ) );
+		$url   = add_query_arg( array( 'convoca_gateway_method' => $method ), self::build_payment_url( $pago_id, $token ) );
 
 		return '<script>window.location.href="' . esc_url_raw( $url ) . '";</script>' .
 				'<div class="convoca-alert convoca-alert--info">Generando orden de pago... Si no eres redirigido, <a href="' . esc_url( $url ) . '">haz clic aquí</a>.</div>';
@@ -1681,7 +1704,7 @@ class Payment_Handler {
 	 */
 	private function render_method_selector( int $pago_id, array $meta ): string {
 		$amount_display = CPT_Pago::format_amount( (int) $meta['amount_cents'] );
-		$base_url       = self::get_payment_link( $pago_id );
+		$base_url       = self::build_payment_url( $pago_id );
 
 		$settings         = get_option( 'convoca_gateway_settings', array() );
 		$transfer_enabled = ! empty( $settings['iban'] );
@@ -1704,7 +1727,7 @@ class Payment_Handler {
 
 			<?php
 			// Tarjetas compartidas con el resto de flujos de pago.
-			echo $this->render_method_picker( self::get_payment_link( $pago_id ), __( 'Selecciona un método de pago', 'convoca-gateway' ) ); // phpcs:ignore WordPress.Security.EscapeOutput.OutputNotEscaped -- Marcado propio, ya escapado.
+			echo $this->render_method_picker( self::build_payment_url( $pago_id ), __( 'Selecciona un método de pago', 'convoca-gateway' ) ); // phpcs:ignore WordPress.Security.EscapeOutput.OutputNotEscaped -- Marcado propio, ya escapado.
 			?>
 
 			<p class="conv-security-note">
@@ -2189,7 +2212,7 @@ class Payment_Handler {
 			// E2E-4: $expires puede ser string vacío; la firma exige ?int|null.
 			$expires_raw = get_post_meta( $pago_id, '_convoca_expires_at', true );
 			$expires     = is_numeric( $expires_raw ) ? (int) $expires_raw : null;
-			$url         = self::get_payment_link( $pago_id, is_string( $token ) ? $token : '', $expires );
+			$url         = self::build_payment_url( $pago_id, is_string( $token ) ? $token : '', $expires );
 
 			return '<div class="convoca-alert convoca-alert--warning">
                 <h4>⚠️ Pago aún no confirmado</h4>
