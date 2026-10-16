@@ -187,3 +187,71 @@ jobs:
     steps:
       - uses: actions/checkout@v4
       - run: echo "All PHPUnit runs completed."
+
+  integracion:
+    name: Integración con WordPress real
+    runs-on: ubuntu-latest
+    services:
+      mysql:
+        image: mariadb:10.11
+        env:
+          MYSQL_ROOT_PASSWORD: convoca_test
+          MYSQL_DATABASE: convoca_test
+        ports:
+          - 3306:3306
+        options: >-
+          --health-cmd="mariadb-admin ping"
+          --health-interval=10s
+          --health-timeout=5s
+          --health-retries=5
+    steps:
+      - uses: actions/checkout@v4
+      - name: Traer el núcleo (dependencia real, como en producción)
+        run: git clone --depth 1 https://github.com/josecarlosnieto91/convoca-core.git ../convoca-core
+      - name: Setup PHP
+        uses: shivammathur/setup-php@v2
+        with:
+          php-version: '8.3'
+          extensions: mbstring, intl, gd, mysqli, pdo_mysql, zip
+          tools: wp-cli
+      - uses: ramsey/composer-install@v3
+        with:
+          dependency-versions: highest
+          composer-options: '--ignore-platform-req=ext-iconv'
+      - name: Montar el entorno de WordPress
+        env:
+          DB_HOST: 127.0.0.1:3306
+          DB_USER: root
+          DB_PASSWORD: convoca_test
+        run: |
+          mysql -h 127.0.0.1 -uroot -pconvoca_test -e 'CREATE DATABASE IF NOT EXISTS convoca_test;'
+          bash bin/instalar-entorno-integracion.sh /tmp/entorno
+      - name: Pruebas de integración, con WordPress de verdad
+        env:
+          CONVOCA_WP_ROOT: /tmp/entorno/wp
+        run: |
+          mkdir -p build
+          vendor/bin/phpunit -c phpunit-integration.xml --display-skipped --log-junit build/junit-integracion.xml
+      - name: Nadie se salta por no haber WordPress
+        if: always()
+        # Un salto invisible se lee como suite verde (convoca-health-check#19 y #20): si el entorno no
+        # se monta, este paso cae en vez de dejar el trabajo en verde sin haber probado nada.
+        run: |
+          if [ ! -f build/junit-integracion.xml ]; then
+            echo "::error::no hay informe de la suite de integración"; exit 1
+          fi
+          if grep -qE 'WordPress not (loaded|available)|WordPress real no cargado|WordPress functions not available|dbDelta not available' build/junit-integracion.xml; then
+            echo "::error::hay casos saltados por falta de WordPress: el entorno no se montó"
+            grep -oE 'message="[^"]*(WordPress|dbDelta)[^"]*"' build/junit-integracion.xml | head -5
+            exit 1
+          fi
+          python3 - <<'PY'
+          import xml.etree.ElementTree as ET
+          raiz = ET.parse('build/junit-integracion.xml').getroot()
+          casos = list(raiz.iter('testcase'))
+          saltados = [c for c in casos if c.find('skipped') is not None]
+          print(f"casos: {len(casos)} · ejecutados: {len(casos)-len(saltados)} · saltados: {len(saltados)}")
+          if len(saltados) == len(casos):
+              raise SystemExit("::error::todos los casos se han saltado: la suite no probó nada")
+          PY
+

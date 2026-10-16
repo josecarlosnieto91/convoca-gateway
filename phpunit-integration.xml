@@ -1,0 +1,24 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!--
+  Suite de INTEGRACION de convoca-core: necesita WordPress de verdad.
+
+  Configuración aparte de phpunit-unit.xml a propósito: el bootstrap unitario define dobles de
+  WordPress, y con él los casos o se saltaban o corrían contra los dobles. Aquí el bootstrap es
+  tests/bootstrap-integration.php, que carga el WordPress que indique CONVOCA_WP_ROOT (o deja que
+  cada caso declare su salto, con motivo e issue, si no hay entorno).
+
+  Uso:  CONVOCA_WP_ROOT=/ruta/wp vendor/bin/phpunit -c phpunit-integration.xml
+-->
+<phpunit xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
+         xsi:noNamespaceSchemaLocation="https://schema.phpunit.de/10.5/phpunit.xsd"
+         bootstrap="tests/bootstrap-integration.php"
+         backupGlobals="false"
+         colors="true"
+         cacheResult="false"
+         cacheDirectory=".phpunit.cache">
+  <testsuites>
+    <testsuite name="integration">
+      <directory suffix="Test.php">./tests/Integration</directory>
+    </testsuite>
+  </testsuites>
+</phpunit>
