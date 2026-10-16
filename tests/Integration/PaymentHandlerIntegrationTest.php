@@ -33,7 +33,7 @@ class PaymentHandlerIntegrationTest extends \PHPUnit\Framework\TestCase
 
     public function test_build_payment_link_returns_valid_url(): void
     {
-        $this->markTestSkipped('Requiere WordPress: build_payment_link usa helpers de WordPress (add_query_arg/home_url). Motivo y seguimiento: convoca-health-check#3.');
+        $this->markTestSkipped('Requiere WordPress: build_payment_link usa helpers de WordPress (add_query_arg/home_url). Motivo y seguimiento: convoca-health-check#20.');
         // (medido en pasada 3: de 13 casos, 3 necesitan WP; este es uno)
 $link = \Convoca\Gateway\CPT_Pago::build_payment_link(1, 'test-token');
         $this->assertStringContainsString('convoca-pay=', $link);

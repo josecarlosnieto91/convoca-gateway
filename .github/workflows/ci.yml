@@ -77,7 +77,10 @@ jobs:
         run: vendor/bin/phpunit --testsuite unit --log-junit build/junit.xml
 
       - name: Run integration tests
-        run: vendor/bin/phpunit --testsuite integration
+        run: vendor/bin/phpunit --testsuite integration --display-skipped --log-junit build/junit-integration.xml
+        # --display-skipped no es cosmetico: los casos que necesitan WordPress se saltan, y sin esta
+        # bandera el motivo (y el issue vivo al que apuntan) no sale en el registro del CI: un salto
+        # invisible se lee como suite en verde (convoca-health-check#19).
 
   plugin-check:
     name: Plugin Check (PCP · version fijada y cacheada)
