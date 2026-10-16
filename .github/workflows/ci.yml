@@ -207,7 +207,11 @@ jobs:
     steps:
       - uses: actions/checkout@v4
       - name: Traer el núcleo (dependencia real, como en producción)
-        run: git clone --depth 1 https://github.com/josecarlosnieto91/convoca-core.git ../convoca-core
+        # Con su vendor de PRODUCCIÓN: al activarlo, el núcleo revienta si le falta
+        # (Fatal error: Class "Convoca\Core\Installer" not found). Es la misma receta de enroll.
+        run: |
+          git clone --depth 1 https://github.com/josecarlosnieto91/convoca-core.git ../convoca-core
+          ( cd ../convoca-core && composer install --no-dev --no-interaction --ignore-platform-req=ext-iconv --optimize-autoloader )
       - name: Setup PHP
         uses: shivammathur/setup-php@v2
         with:

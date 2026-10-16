@@ -46,3 +46,6 @@ phpunit-unit.xml
 phpstan-stubs/
 *.stub.php
 wpml-config.xml
+
+# Guiones de taller (montar el entorno de pruebas): no viajan al sitio.
+bin/
