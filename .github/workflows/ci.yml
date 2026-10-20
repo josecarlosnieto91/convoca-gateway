@@ -263,3 +263,25 @@ jobs:
               raise SystemExit("::error::todos los casos se han saltado: la suite no probó nada")
           PY
 
+
+  higiene:
+    name: Higiene de datos
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v4
+
+      # El cliente no aparece en el producto (convoca-health-check#12/#13).
+      # El guardián NO lleva los nombres en su código: este repositorio es público y la lista de lo
+      # prohibido era el índice de clientes. Se descarga el de convoca-health-check (fuente única) y los
+      # nombres llegan por secret. Secret y no variable: en un repositorio público el contexto `vars` SÍ
+      # se entrega a los workflows de un PR abierto desde un fork, así que cualquiera podría imprimirlo.
+      # Si el secret no está (PR desde un fork, secret borrado), el guardián avisa en el registro y sigue
+      # vigilando dominios y correos; no se calla.
+      - name: El cliente no aparece en el producto
+        env:
+          CONVOCA_HYGIENE_CLIENTES: ${{ secrets.CONVOCA_HYGIENE_CLIENTES }}
+        run: |
+          curl -fsSL --retry 3 --retry-delay 2 \
+            -o "$RUNNER_TEMP/higiene.py" \
+            https://raw.githubusercontent.com/josecarlosnieto91/convoca-health-check/main/scripts/check-data-hygiene.py
+          python3 "$RUNNER_TEMP/higiene.py" .
