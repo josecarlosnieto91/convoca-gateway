@@ -1,3 +1,22 @@
+## [2.13.20] — 2026-10-20
+
+### Cambiado
+
+- **El CSS del front sale de siete bloques `<style>` a una hoja.** Estaba repartido en
+  `includes/Payment_Handler.php`, uno por vista (formulario de enlace, tarjetas de método, donación,
+  transferencia, selector de método, pago correcto y pago fallido): 44 selectores impresos en el
+  cuerpo de cada página, sin caché y sin un sitio donde mirarlos. Ahora viven en
+  `assets/css/gateway.css`, registrada con dependencia de `convoca-core`.
+- **Las dos vistas que compartían nombres de clase ya no se pisan.** El formulario de enlace y el
+  selector de método definían `.conv-payment-wrapper`, `.conv-payment-summary`, `.conv-amount` y
+  `.conv-desc` con valores distintos; al juntar las hojas, la tarjeta de 600 px se habría quedado en
+  480 px sin fondo. El selector de método lleva el modificador `conv-payment-wrapper--compacto` y sus
+  reglas van acotadas a él. El bloque de «pago correcto» y el de «pago fallido» eran idénticos: va una
+  vez.
+- **La pantalla del generador encolaba `convoca-common.css` dos veces** (handle `convoca-common-admin`
+  y el `convoca-core` del núcleo). Fuera el duplicado.
+- «Convoca Common» → «Convoca Core» en textos y catálogos.
+
 ## [2.13.19] — 2026-10-20
 
 ### Añadido

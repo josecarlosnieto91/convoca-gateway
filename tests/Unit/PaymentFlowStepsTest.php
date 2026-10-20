@@ -279,13 +279,28 @@ namespace Convoca\Gateway\Tests {
 			$this->assertStringContainsString( 'convoca_link_nonce', $html, 'El formulario del enlace va firmado.' );
 		}
 
-		public function test_shared_css_is_printed_only_once_per_page(): void {
-			$css = $this->call( 'methods_css' );
+		public function test_shared_css_is_enqueued_once_per_page_and_never_printed(): void {
+			// Las reglas de las tarjetas ya no viajan impresas en el cuerpo: están en
+			// assets/css/gateway.css. Lo que se comprueba aquí es el contrato nuevo —
+			// se encola UNA vez, en la misma página, y no se imprime CSS en línea.
+			$GLOBALS['__gw_enqueued_styles'] = array();
+
+			$this->assertSame( '', $this->call( 'methods_css' ), 'methods_css ya no devuelve marcado.' );
+			$this->assertSame( array( 'convoca-gateway' ), $GLOBALS['__gw_enqueued_styles'], 'Se encola la hoja una vez.' );
+
+			$this->assertSame( '', $this->call( 'methods_css' ), 'La segunda llamada de la página no vuelve a encolarla (bandera de impresión única).' );
+			$this->assertSame( array( 'convoca-gateway' ), $GLOBALS['__gw_enqueued_styles'], 'No se repite el encolado en la misma página.' );
+		}
+
+		public function test_la_hoja_del_front_existe_y_tiene_las_reglas_de_las_tarjetas(): void {
+			$css = (string) file_get_contents( dirname( __DIR__, 2 ) . '/assets/css/gateway.css' );
 
 			$this->assertStringContainsString( 'grid-template-columns: 1fr 1fr', $css, 'Tarjeta y Bizum en paralelo.' );
 			$this->assertStringContainsString( 'grid-column: 1 / -1', $css, 'Transferencia a lo ancho.' );
 			$this->assertStringContainsString( '@media (max-width: 480px)', $css );
-			$this->assertSame( '', $this->call( 'methods_css' ), 'El bloque no debe repetirse en la misma página.' );
+			// Y el bloque acotado que evita que el selector de método pise al formulario de enlace.
+			$this->assertStringContainsString( '.conv-payment-wrapper--compacto', $css );
+			$this->assertStringNotContainsString( '</style>', $css, 'La hoja no trae etiquetas de estilo.' );
 		}
 
 		public function test_picker_without_methods_warns_instead_of_breaking(): void {

@@ -242,6 +242,16 @@ namespace {
 	function esc_url_raw( $url ) { return (string) $url; }
 	function wp_kses_post( $s ) { return $s; }
 	function wp_enqueue_script( ...$args ) { return true; }
+	// La hoja del front se encola desde la vista: se registra el handle para poder
+	// comprobar en las pruebas QUE se encoló, no solo que no reviente.
+	function wp_enqueue_style( ...$args ) {
+		$GLOBALS['__gw_enqueued_styles'][] = $args[0] ?? '';
+		return true;
+	}
+	function wp_register_style( ...$args ) {
+		$GLOBALS['__gw_registered_styles'][ $args[0] ?? '' ] = $args[1] ?? '';
+		return true;
+	}
 	function wp_generate_password( $length = 12, $special = true, $extra = false ) {
 		return substr( str_repeat( 'a1B2c3D4e5F6g7H8', 8 ), 0, $length );
 	}

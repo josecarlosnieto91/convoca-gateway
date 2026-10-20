@@ -620,7 +620,7 @@ class Admin_Settings extends \Convoca\Core\Admin\Pantalla_Admin {
 
 		// Security Guard: Check if critical dependencies are missing.
 		if ( ! class_exists( '\\Convoca\\Core\\Utils' ) ) {
-			echo '<div class="notice notice-warning"><p>⚠️ ' . esc_html__( 'Convoca Common no está activo. Algunas funciones de la pasarela podrían no estar disponibles.', 'convoca-gateway' ) . '</p></div>';
+			echo '<div class="notice notice-warning"><p>⚠️ ' . esc_html__( 'Convoca Core no está activo. Algunas funciones de la pasarela podrían no estar disponibles.', 'convoca-gateway' ) . '</p></div>';
 		}
 
 		$settings   = get_option( self::OPTION, array() );

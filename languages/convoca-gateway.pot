@@ -981,7 +981,7 @@ msgid "La clave secreta debe tener al menos 16 caracteres."
 msgstr ""
 
 #: includes/Admin_Settings.php:623
-msgid "Convoca Common no está activo. Algunas funciones de la pasarela podrían no estar disponibles."
+msgid "Convoca Core no está activo. Algunas funciones de la pasarela podrían no estar disponibles."
 msgstr ""
 
 #: includes/Admin_Settings.php:634

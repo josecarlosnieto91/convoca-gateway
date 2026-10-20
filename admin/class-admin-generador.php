@@ -60,13 +60,9 @@ class Admin_Generador {
 			return;
 		}
 
-		wp_enqueue_style(
-			'convoca-common-admin',
-			\CONVOCA_COMMON_URL . 'assets/css/convoca-common.css',
-			array(),
-			\CONVOCA_COMMON_VERSION
-		);
-
+		// La hoja común ya la sirve el núcleo con el handle `convoca-core` (y aquí se
+		// encolaba otra vez con otro handle: el mismo fichero dos veces). Se declara la
+		// dependencia en el script, que es lo que de verdad se necesita.
 		wp_enqueue_script(
 			'conv-gateway-generador',
 			\CONVOCA_GATEWAY_URL . 'assets/js/generador.js',

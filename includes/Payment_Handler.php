@@ -68,6 +68,14 @@ class Payment_Handler {
 	}
 
 	public function register_assets(): void {
+		// Hoja única del front: antes eran siete bloques <style> repartidos por las vistas.
+		wp_register_style(
+			'convoca-gateway',
+			CONVOCA_GATEWAY_URL . 'assets/css/gateway.css',
+			array( 'convoca-core' ),
+			CONVOCA_GATEWAY_VERSION
+		);
+
 		wp_register_script(
 			'conv-redsys',
 			CONVOCA_GATEWAY_URL . 'assets/js/redsys.js',
@@ -669,61 +677,7 @@ class Payment_Handler {
 				?>
 			</form>
 		</div>
-		<style>
-			.conv-payment-wrapper {
-				max-width: 600px;
-				margin: 2rem auto;
-				background: #fff;
-				border-radius: 16px;
-				box-shadow: 0 10px 25px rgba(0,0,0,0.05);
-				padding: 2.5rem 2rem;
-				border: 1px solid #f0f0f0;
-			}
-			.conv-payment-summary {
-				text-align: center;
-				margin-bottom: 2rem;
-				padding-bottom: 1.5rem;
-				border-bottom: 1px solid #f0f0f0;
-			}
-			.conv-amount {
-				font-size: 2.5rem;
-				font-weight: 800;
-				color: var(--wp--preset--color--naranja, #ff8700);
-				margin: 0.5rem 0;
-			}
-			.conv-desc {
-				color: #666;
-				font-size: 1.1rem;
-			}
-			.conv-params { 
-				margin: 1.5rem 0; 
-				padding: 1.25rem; 
-				background: #f8f9fa; 
-				border-radius: 12px; 
-				border: 1px solid #eee;
-			}
-			.conv-params h4 { margin-top: 0; font-size: 1rem; color: #333; }
-			.conv-params-list { margin: 0; padding-left: 1.25rem; list-style-type: square; color: #555; }
-			.conv-param-key { font-weight: 700; color: #333; }
-			
-			.conv-email-field {
-				margin-bottom: 2rem;
-			}
-			.conv-email-field label {
-				display: block;
-				font-weight: 700;
-				margin-bottom: 0.5rem;
-				color: #333;
-				text-align: left;
-			}
-			.conv-email-field input {
-				width: 100%;
-				padding: 12px 16px;
-				border: 2px solid #e0e0e0;
-				border-radius: 8px;
-				font-size: 1rem;
-			}
-		</style>
+		<?php wp_enqueue_style( 'convoca-gateway' ); ?>
 		<?php
 		return $this->compact_html( (string) ob_get_clean() );
 	}
@@ -963,141 +917,11 @@ class Payment_Handler {
 
 		self::$methods_css_printed = true;
 
-		return '<style>
-			.conv-methods {
-				display: grid;
-				grid-template-columns: 1fr 1fr;
-				gap: 1.25rem;
-				margin: 1rem 0 1.5rem;
-			}
-			.conv-method-card {
-				display: flex;
-				flex-direction: column;
-				align-items: center;
-				justify-content: center;
-				padding: 1.5rem;
-				border: 2px solid #eee;
-				border-radius: 12px;
-				text-decoration: none;
-				color: #333 !important;
-				background: #fafafa;
-				transition: all 0.3s cubic-bezier(0.4, 0, 0.2, 1);
-				position: relative;
-			}
-			.conv-method-card:hover,
-			.conv-method-card:focus-visible {
-				border-color: var(--wp--preset--color--naranja, #ff8700);
-				background: #fff;
-				transform: translateY(-4px);
-				box-shadow: 0 8px 20px rgba(255, 135, 0, 0.12);
-			}
-			button.conv-method-card {
-				width: 100%;
-				font: inherit;
-				font-family: inherit;
-				text-align: center;
-				cursor: pointer;
-				appearance: none;
-			}
-			.conv-method-card--wide {
-				grid-column: 1 / -1;
-				flex-direction: row;
-				gap: 1.25rem;
-				padding: 1.75rem 1.5rem;
-			}
-			.conv-method-card--wide .conv-method-icon {
-				font-size: 3rem;
-				margin-bottom: 0;
-			}
-			.conv-method-card--wide .conv-method-label {
-				font-size: 1.35rem;
-			}
-			.conv-method-card--wide .conv-method-text {
-				align-items: flex-start;
-			}
-			.conv-method-text {
-				display: flex;
-				flex-direction: column;
-				align-items: center;
-			}
-			.conv-method--suggested {
-				border-color: var(--wp--preset--color--naranja, #ff8700);
-				background: rgba(255, 135, 0, 0.03);
-			}
-			.conv-method-icon {
-				font-size: 2.5rem;
-				margin-bottom: 0.75rem;
-				filter: drop-shadow(0 2px 4px rgba(0, 0, 0, 0.1));
-			}
-			.conv-method-label {
-				font-weight: 700;
-				font-size: 1.1rem;
-				margin-bottom: 0.25rem;
-			}
-			.conv-method-desc {
-				font-size: 0.85rem;
-				color: #6b6b6b;
-				text-align: left;
-				line-height: 1.4;
-			}
-			.conv-method-badge {
-				position: absolute;
-				top: -12px;
-				background: var(--wp--preset--color--naranja, #ff8700);
-				color: #fff;
-				padding: 4px 12px;
-				border-radius: 20px;
-				font-size: 0.7rem;
-				font-weight: 800;
-				text-transform: uppercase;
-				letter-spacing: 0.8px;
-				box-shadow: 0 2px 8px rgba(255, 135, 0, 0.3);
-			}
-			.conv-methods-heading {
-				margin-bottom: 0;
-			}
-			.conv-chosen-method {
-				display: flex;
-				align-items: center;
-				gap: 0.6rem;
-				margin: 0 0 1.5rem;
-				padding: 0.9rem 1.1rem;
-				border: 2px solid #eee;
-				border-radius: 12px;
-				background: #fafafa;
-				text-align: left;
-			}
-			.conv-chosen-icon {
-				font-size: 1.6rem;
-				line-height: 1;
-			}
-			.conv-chosen-label {
-				font-weight: 700;
-			}
-			.conv-chosen-change {
-				margin-left: auto;
-				font-size: 0.85rem;
-				white-space: nowrap;
-			}
-			@media (max-width: 480px) {
-				.conv-methods {
-					grid-template-columns: 1fr;
-				}
-				.conv-method-card--wide {
-					flex-direction: column;
-					gap: 0;
-				}
-				.conv-method-card--wide .conv-method-icon {
-					margin-bottom: 0.5rem;
-				}
-				.conv-method-card--wide .conv-method-text {
-					align-items: center;
-				}
-				.conv-method-desc {
-					text-align: center;
-				}
-			}
-		</style>';
+		// El CSS vive en assets/css/gateway.css. Antes era un <style> de 133 líneas aquí,
+		// impreso en el cuerpo de la página: no se cachea y no hay dónde buscarlo.
+		wp_enqueue_style( 'convoca-gateway' );
+
+		return '';
 	}
 
 	/**
@@ -1199,15 +1023,7 @@ class Payment_Handler {
 				<?php endif; ?>
 			</p>
 		</div>
-		<style>
-			.conv-donation-form .conv-field,
-			.conv-donation-form .conv-email-field { margin-bottom: 1.25rem; }
-			.conv-donation-form .conv-field label,
-			.conv-donation-form .conv-email-field label { display: block; font-weight: 600; margin-bottom: .35rem; }
-			.conv-donation-form input[type="number"] { max-width: 180px; font-size: 1.25rem; padding: .6rem .75rem; }
-			.conv-donation-form .form-actions { margin-top: 1.5rem; }
-			.conv-help { margin: .35rem 0 0; font-size: .85rem; opacity: .75; }
-		</style>
+		<?php wp_enqueue_style( 'convoca-gateway' ); ?>
 		<?php
 		return $this->compact_html( (string) ob_get_clean() );
 	}
@@ -1412,51 +1228,7 @@ class Payment_Handler {
 				</button>
 			</div>
 		</div>
-		<style>
-			.conv-transfer-view .conv-success-icon { font-size: 3rem; margin-bottom: 1rem; }
-			.conv-transfer-details { 
-				background: #fcfcfc; 
-				border: 1px solid #eee; 
-				border-radius: 12px; 
-				padding: 1.5rem; 
-				margin: 1.5rem 0;
-			}
-			.conv-detail-row { 
-				display: flex; 
-				justify-content: space-between; 
-				padding: 0.75rem 0; 
-				border-bottom: 1px solid #f0f0f0; 
-			}
-			.conv-detail-row:last-child { border-bottom: none; }
-			.conv-detail-label { font-weight: 700; color: #666; font-size: 0.9rem; }
-			.conv-detail-value { font-family: monospace; font-size: 1.1rem; color: #333; }
-			.conv-highlight { color: var(--wp--preset--color--naranja, #ff8700); font-weight: 800; }
-			.conv-copyable { cursor: pointer; position: relative; }
-			.conv-copyable:hover { text-decoration: underline; }
-			.conv-transfer-instructions { 
-				text-align: left; 
-				margin: 1.5rem 0; 
-				padding: 1rem; 
-				background: #fff8f0; 
-				border-radius: 8px; 
-			}
-			.conv-transfer-instructions h4 { margin-top: 0; color: #a65d00; }
-			.conv-actions { display: flex; justify-content: space-between; align-items: center; margin-top: 2rem; }
-			.conv-back-link { font-size: 0.9rem; color: #888; text-decoration: none; }
-			.conv-back-link:hover { color: #333; }
-			.conv-proof-upload { 
-				margin-top: 2rem; 
-				padding: 1.5rem; 
-				background: #f8f9fa; 
-				border-radius: 12px; 
-				border: 1px dashed #ced4da; 
-				text-align: left;
-			}
-			.conv-proof-upload h4 { margin-top: 0; }
-			.conv-upload-form .form-group { display: flex; gap: 1rem; align-items: center; margin-top: 1rem; }
-			.conv-upload-form input[type="file"] { flex-grow: 1; font-size: 0.9rem; }
-			.conv-proof-exists { color: #28a745; font-weight: 600; padding: 0.5rem 0; }
-		</style>
+		<?php wp_enqueue_style( 'convoca-gateway' ); ?>
 		<script>
 			document.querySelectorAll('.conv-copyable').forEach(el => {
 				el.addEventListener('click', () => {
@@ -1733,7 +1505,7 @@ class Payment_Handler {
 
 		ob_start();
 		?>
-		<div class="conv-payment-wrapper convoca-form" role="region" aria-label="Selección de método de pago">
+		<div class="conv-payment-wrapper conv-payment-wrapper--compacto convoca-form" role="region" aria-label="Selección de método de pago">
 			<div class="conv-payment-summary">
 				<h3>Resumen del pago</h3>
 				<div class="conv-amount">
@@ -1768,37 +1540,7 @@ class Payment_Handler {
 				<?php esc_html_e( 'Tus datos bancarios nunca pasan por nuestro servidor.', 'convoca-gateway' ); ?>
 			</p>
 		</div>
-		<style>
-			.conv-payment-wrapper {
-				max-width: 480px;
-				margin: 2rem auto;
-				text-align: center;
-			}
-
-			.conv-payment-summary {
-				background: var(--wp--preset--color--gris-suave, #f5f5f5);
-				border-radius: 12px;
-				padding: 1.5rem;
-				margin-bottom: 1.5rem;
-			}
-
-			.conv-amount {
-				font-size: 2rem;
-				font-weight: 700;
-				color: var(--wp--preset--color--naranja, #E86833);
-			}
-
-			.conv-desc {
-				color: #666;
-				margin-top: .5rem;
-			}
-
-			.conv-security-note {
-				font-size: .8rem;
-				color: #999;
-				margin-top: 1rem;
-			}
-		</style>
+		<?php wp_enqueue_style( 'convoca-gateway' ); ?>
 		<?php
 		return $this->compact_html( (string) ob_get_clean() );
 	}
@@ -2261,18 +2003,7 @@ class Payment_Handler {
 			<p>Recibir&aacute;s un email de confirmaci&oacute;n en breve.</p>
 			<p><a href="<?php echo esc_url( home_url( '/' ) ); ?>" class="convoca-btn convoca-btn-primary">&larr; Volver al inicio</a></p>
 		</div>
-		<style>
-			.conv-result {
-				max-width: 480px;
-				margin: 2rem auto;
-				text-align: center;
-			}
-
-			.conv-result-icon {
-				font-size: 4rem;
-				margin-bottom: 1rem;
-			}
-		</style>
+		<?php wp_enqueue_style( 'convoca-gateway' ); ?>
 		<?php
 		return ob_get_clean();
 	}
@@ -2302,18 +2033,7 @@ class Payment_Handler {
 			<?php endif; ?>
 			<p><a href="<?php echo esc_url( home_url( '/' ) ); ?>" class="convoca-btn convoca-btn-outline">&larr; Volver al inicio</a></p>
 		</div>
-		<style>
-			.conv-result {
-				max-width: 480px;
-				margin: 2rem auto;
-				text-align: center;
-			}
-
-			.conv-result-icon {
-				font-size: 4rem;
-				margin-bottom: 1rem;
-			}
-		</style>
+		<?php wp_enqueue_style( 'convoca-gateway' ); ?>
 		<?php
 		return ob_get_clean();
 	}

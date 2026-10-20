@@ -991,10 +991,10 @@ msgstr "The secret key must be at least 16 characters long."
 
 #: includes/Admin_Settings.php:613
 msgid ""
-"Convoca Common no está activo. Algunas funciones de la pasarela podrían no "
+"Convoca Core no está activo. Algunas funciones de la pasarela podrían no "
 "estar disponibles."
 msgstr ""
-"Convoca Common is not active. Some gateway features may not be available."
+"Convoca Core is not active. Some gateway features may not be available."
 
 #: includes/Admin_Settings.php:624
 msgid "Pasarela de pago — Redsys"
