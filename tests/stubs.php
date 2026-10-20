@@ -205,6 +205,26 @@ namespace {
 		return true;
 	}
 	function apply_filters( $tag, $value, ...$args ) { return $value; }
+	// Registro de filtros: el gateway se registra en la fachada del núcleo (convoca_payment_*) y hay
+	// que poder comprobar que los tres enganches están puestos sin un WordPress de verdad.
+	function add_filter( $hook, $callback, $priority = 10, $args = 1 ) {
+		$GLOBALS['__gw_filtros'][ $hook ][ (int) $priority ][] = $callback;
+		return true;
+	}
+	function has_filter( $hook, $callback = false ) {
+		if ( empty( $GLOBALS['__gw_filtros'][ $hook ] ) ) {
+			return false;
+		}
+		if ( false === $callback ) {
+			return true;
+		}
+		foreach ( $GLOBALS['__gw_filtros'][ $hook ] as $callbacks ) {
+			if ( in_array( $callback, $callbacks, true ) ) {
+				return true;
+			}
+		}
+		return false;
+	}
 	function get_theme_mod( $name, $default = false ) { return $default; }
 	function wp_get_attachment_image_url( $id, $size = "thumbnail" ) { return ""; }
 	function nocache_headers() { return true; }

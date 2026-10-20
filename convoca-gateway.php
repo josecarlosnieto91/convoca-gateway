@@ -214,6 +214,14 @@ add_action( 'convoca_gateway_payment_completed', array( \Convoca\Gateway\Receipt
 /* ── Cuota o inscripción cobrada: su enlace se cierra (los de donativo, no) ── */
 add_action( 'convoca_gateway_payment_completed', array( \Convoca\Gateway\Link_Expiry::class, 'on_payment_completed' ), 20, 2 );
 
+/*
+ * Puente de cobros: este plugin se registra en la fachada del núcleo.
+ *
+ * El núcleo (Core\Payments) ya no nombra nuestras clases: pregunta por filtro y aquí se le contesta.
+ * Va antes de la API pública de abajo porque la fachada se resuelve al llamarla, no al cargar.
+ */
+\Convoca\Gateway\Payments_Backend::register();
+
 /* ── Public API Functions ─────────────────────── */
 
 if ( ! function_exists( 'convoca_gateway_create_payment' ) ) {
