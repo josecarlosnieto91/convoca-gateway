@@ -1,3 +1,10 @@
+## [2.13.19] — 2026-10-20
+
+### Añadido
+- Origen de pago `courses` y filtro `convoca_gateway_valid_origins`: la lista de orígenes estaba
+  cerrada a `enroll` y `members`, así que cualquier módulo nuevo que quisiera cobrar recibía
+  `invalid_origin` sin salida. Ahora el módulo que cobra añade su origen por filtro.
+
 ## [2.13.18] — 2026-10-16
 
 ### Arreglado

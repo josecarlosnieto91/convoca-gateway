@@ -236,7 +236,18 @@ class Payment_Handler {
 		}
 
 		$origin = $data['origin'] ?? '';
-		if ( ! in_array( $origin, array( 'enroll', 'members' ), true ) ) {
+		/**
+		 * Orígenes de pago admitidos.
+		 *
+		 * La lista estaba cerrada a `enroll` y `members`, así que cualquier módulo nuevo que quisiera
+		 * cobrar (por ejemplo `courses`) recibía `invalid_origin` sin más salida que tocar este
+		 * fichero. El filtro deja añadir orígenes desde el módulo que los genera, sin acoplar el
+		 * gateway a una lista que crece.
+		 *
+		 * @param array<int, string> $origins Orígenes admitidos.
+		 */
+		$origins = (array) apply_filters( 'convoca_gateway_valid_origins', array( 'enroll', 'members', 'courses' ) );
+		if ( ! in_array( $origin, $origins, true ) ) {
 			return new \WP_Error( 'invalid_origin', 'Origen de pago no válido.' );
 		}
 
