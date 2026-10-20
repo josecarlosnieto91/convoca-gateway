@@ -41,6 +41,34 @@ class Diagnostic {
 	 * @param bool $force Force fresh run (bypass cache).
 	 * @return array Array of results.
 	 */
+	/**
+	 * Aporta el diagnóstico de este módulo a la página Salud del núcleo.
+	 *
+	 * El mapeo (título con el nombre del plugin y `severity` → `status`) lo hacía el núcleo cuando
+	 * llamaba a `run_all()`; ahora lo hace el módulo que sabe qué significan sus resultados.
+	 *
+	 * @param array<string, array<int, array<string, string>>> $bloques Bloques ya aportados.
+	 * @param bool                                             $force   Si se ignoran las cachés.
+	 * @return array<string, array<int, array<string, string>>>
+	 */
+	public static function aportar_checks( array $bloques, $force = false ): array {
+		$items = array();
+
+		foreach ( self::run_all( (bool) $force ) as $r ) {
+			$items[] = array(
+				'title'   => __( 'Convoca Gateway', 'convoca-gateway' ) . ': ' . ( $r['title'] ?? '' ),
+				'status'  => ( isset( $r['severity'] ) && 'ok' === $r['severity'] ) ? 'ok' : ( $r['severity'] ?? 'warning' ),
+				'message' => (string) ( $r['message'] ?? '' ),
+				'fix'     => (string) ( $r['fix'] ?? '' ),
+				'fix_url' => (string) ( $r['fix_url'] ?? '' ),
+			);
+		}
+
+		$bloques['gateway'] = $items;
+
+		return $bloques;
+	}
+
 	public static function run_all( bool $force = false ): array {
 		$huella = self::huella_ajustes();
 

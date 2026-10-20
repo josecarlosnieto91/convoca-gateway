@@ -246,3 +246,8 @@ if ( ! function_exists( 'convoca_get_gateway_settings' ) ) {
 		return get_option( 'convoca_gateway_settings', array() );
 	}
 }
+
+/*
+ * Diagnóstico compartido: el gateway aporta sus comprobaciones a la página Salud del núcleo.
+ */
+add_filter( 'convoca_system_checks', array( '\Convoca\Gateway\Diagnostic', 'aportar_checks' ), 10, 2 );
