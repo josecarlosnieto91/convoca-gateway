@@ -105,6 +105,15 @@ namespace {
 		return $default;
 	}
 	function get_page_by_title( $title ) { return null; }
+
+	/**
+	* Página de privacidad: el doble devuelve la URL de la que esté configurada como tal, igual que
+	* WordPress. Sin página, cadena vacía — que es el caso que el diagnóstico tiene que avisar.
+	*/
+	function get_privacy_policy_url() {
+	$id = (int) get_option( 'wp_page_for_privacy_policy' );
+	return $id > 0 ? '/?page_id=' . $id : '';
+	}
 	function is_ssl() { return true; }
 	function home_url( $path = '' ) { return "https://example.com$path"; }
 	function __( $s, $domain ) { return $s; }

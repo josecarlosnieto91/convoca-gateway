@@ -1,3 +1,22 @@
+## [2.13.22] — 2026-10-21
+
+### Añadido
+
+- **El formulario de pago informa del tratamiento de datos**, antes del botón: responsable, finalidad, base
+  jurídica, destinatarios y derechos, con enlace a la política de privacidad. Es el deber de información del
+  art. 13 RGPD, en el momento de recoger los datos.
+- **El texto y el enlace son de cada instalación** (Gateway → Privacidad). Por defecto se usa un texto con el
+  nombre del sitio y la página de privacidad de WordPress; si no se ha configurado, **el diagnóstico avisa**:
+  un texto genérico cumple el expediente, pero el responsable del tratamiento es de cada entidad.
+
+### Por qué no hay casilla de «acepto»
+
+- El pago se apoya en la **ejecución de un contrato** (art. 6.1.b RGPD), no en el consentimiento. Una casilla
+  de «he leído y acepto la política de privacidad» no añade base jurídica y la AEPD la ha señalado como el
+  patrón que sustituye la información por finalidad: la política no se acepta, se informa. Donde sí hace falta
+  casilla es para lo que el contrato no cubre (boletín, cesión a terceros no necesarios): ahí va aparte,
+  opcional y sin premarcar.
+
 ## [2.13.21] — 2026-10-21
 
 ### Añadido

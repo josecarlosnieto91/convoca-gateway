@@ -1385,6 +1385,8 @@ class Payment_Handler {
 						<input type="email" name="email" id="email" placeholder="tu@email.com" required>
 					</div>
 
+					<?php echo $this->privacy_notice(); // phpcs:ignore WordPress.Security.EscapeOutput.OutputNotEscaped -- Marcado propio, ya escapado. ?>
+
 					<div class="form-actions">
 						<button type="submit" class="wp-block-button__link">
 							<?php
@@ -1410,6 +1412,41 @@ class Payment_Handler {
 		</div>
 		<?php
 		return $this->compact_html( (string) ob_get_clean() );
+	}
+
+	/**
+	 * Aviso de privacidad que se muestra en el formulario, antes del botón.
+	 *
+	 * Deber de información (art. 13 RGPD) en el momento de recoger los datos. NO es una casilla de
+	 * consentimiento: el pago se apoya en la ejecución de un contrato (art. 6.1.b), y una casilla de
+	 * «acepto la política» no aporta base jurídica. El texto es de cada instalación —el responsable del
+	 * tratamiento lo es— así que se configura en los ajustes y aquí solo se pinta.
+	 */
+	private function privacy_notice(): string {
+		$settings = get_option( 'convoca_gateway_settings', array() );
+		$texto    = trim( (string) ( $settings['privacidad_texto'] ?? '' ) );
+
+		if ( '' === $texto ) {
+			$texto = sprintf(
+				/* translators: %s: site name (the data controller). */
+				__( 'Responsable: %s. Finalidad: gestionar tu pago y enviarte el justificante. Base jurídica: ejecución del contrato. Destinatarios: la pasarela de pago y la entidad bancaria. Puedes ejercer tus derechos de acceso, rectificación, supresión, limitación, portabilidad y oposición ante el responsable.', 'convoca-gateway' ),
+				(string) get_bloginfo( 'name' )
+			);
+		}
+
+		$url = trim( (string) ( $settings['privacidad_url'] ?? '' ) );
+		if ( '' === $url ) {
+			$url = (string) \get_privacy_policy_url();
+		}
+
+		$html = '<p class="conv-privacy-note">' . esc_html( $texto );
+
+		if ( '' !== $url ) {
+			$html .= ' <a href="' . esc_url( $url ) . '" target="_blank" rel="noopener">'
+				. esc_html__( 'Política de privacidad', 'convoca-gateway' ) . '</a>';
+		}
+
+		return $html . '</p>';
 	}
 
 	/**

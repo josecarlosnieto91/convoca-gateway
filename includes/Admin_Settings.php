@@ -320,6 +320,37 @@ class Admin_Settings extends \Convoca\Core\Admin\Pantalla_Admin {
 			);
 		}
 
+		// Privacidad del formulario de pago (deber de información, art. 13 RGPD).
+		add_settings_section(
+			'convoca_gateway_privacidad',
+			__( 'Privacidad del formulario de pago', 'convoca-gateway' ),
+			fn() => print '<p>' . esc_html__( 'Texto informativo que aparece en el formulario de pago, antes del botón. No es una casilla de consentimiento: el pago se apoya en la ejecución de un contrato, así que la ley exige informar, no pedir permiso. El responsable del tratamiento es de cada entidad: revísalo.', 'convoca-gateway' ) . '</p>',
+			'conv-gateway-settings'
+		);
+
+		$privacidad_fields = array(
+			'privacidad_texto' => array(
+				'label' => __( 'Texto informativo', 'convoca-gateway' ),
+				'type'  => 'textarea',
+				'desc'  => __( 'Responsable, finalidad, base jurídica, destinatarios y derechos. Si lo dejas vacío se usa un texto por defecto con el nombre del sitio, y el diagnóstico lo avisa.', 'convoca-gateway' ),
+			),
+			'privacidad_url'   => array(
+				'label' => __( 'Enlace a la política de privacidad', 'convoca-gateway' ),
+				'type'  => 'text',
+				'desc'  => __( 'Si lo dejas vacío se usa la página de privacidad de WordPress (Ajustes → Privacidad).', 'convoca-gateway' ),
+			),
+		);
+
+		foreach ( $privacidad_fields as $key => $field ) {
+			add_settings_field(
+				'convoca_gateway_' . $key,
+				$field['label'],
+				fn() => $this->render_form_field( $key, $field ),
+				'conv-gateway-settings',
+				'convoca_gateway_privacidad'
+			);
+		}
+
 		// Receipts section (D23/D24).
 		add_settings_section(
 			'convoca_gateway_receipts',

@@ -91,6 +91,7 @@ class Diagnostic {
 			self::check_terminal(),
 			self::check_return_pages(),
 			self::check_offline_methods(),
+			self::check_privacidad(),
 			self::check_php_version(),
 			self::check_openssl(),
 			self::check_database(),
@@ -209,6 +210,59 @@ class Diagnostic {
 		}
 
 		return self::result( 'terminal', 'Terminal', "Terminal: $terminal", self::SEVERITY_OK );
+	}
+
+	/**
+	 * Aviso de privacidad del formulario de pago.
+	 *
+	 * El pago se basa en la ejecución de un contrato (art. 6.1.b RGPD), así que no se pide consentimiento:
+	 * lo que la ley exige es INFORMAR (art. 13). Si el texto no está configurado se muestra uno por defecto
+	 * con el nombre del sitio, y este check lo dice para que alguien lo revise: un texto genérico cumple el
+	 * expediente, pero el responsable del tratamiento es de cada entidad.
+	 *
+	 * @return array
+	 */
+	public static function check_privacidad(): array {
+		$settings = get_option( 'convoca_gateway_settings', array() );
+		$texto    = trim( (string) ( $settings['privacidad_texto'] ?? '' ) );
+		$url      = trim( (string) ( $settings['privacidad_url'] ?? '' ) );
+
+		if ( '' === $url ) {
+			$url = (string) \get_privacy_policy_url();
+		}
+
+		$ajustes = admin_url( 'admin.php?page=conv-gateway-settings&tab=status' );
+
+		if ( '' === $texto ) {
+			$r            = self::result(
+				'privacidad',
+				__( 'Aviso de privacidad del formulario', 'convoca-gateway' ),
+				__( 'Sin texto propio: el formulario muestra el texto por defecto con el nombre del sitio. Revísalo y ajústalo a tu entidad.', 'convoca-gateway' ),
+				self::SEVERITY_WARNING,
+				__( 'Gateway → Privacidad: escribe el texto informativo (responsable, finalidad, base jurídica, destinatarios y derechos)', 'convoca-gateway' )
+			);
+			$r['fix_url'] = $ajustes;
+			return $r;
+		}
+
+		if ( '' === $url ) {
+			$r            = self::result(
+				'privacidad',
+				__( 'Aviso de privacidad del formulario', 'convoca-gateway' ),
+				__( 'El texto está puesto, pero no hay política de privacidad publicada ni enlace configurado: el formulario informa a medias.', 'convoca-gateway' ),
+				self::SEVERITY_WARNING,
+				__( 'Publica una página de política de privacidad (Ajustes → Privacidad) o pon su enlace', 'convoca-gateway' )
+			);
+			$r['fix_url'] = admin_url( 'options-privacy.php' );
+			return $r;
+		}
+
+		return self::result(
+			'privacidad',
+			__( 'Aviso de privacidad del formulario', 'convoca-gateway' ),
+			__( 'Texto propio y enlace a la política de privacidad', 'convoca-gateway' ),
+			self::SEVERITY_OK
+		);
 	}
 
 	/**
