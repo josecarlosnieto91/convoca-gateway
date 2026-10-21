@@ -313,7 +313,7 @@ class Admin_Links extends \WP_List_Table {
 			if (e.target.classList.contains('conv-gateway-copy-link')) {
 				e.preventDefault();
 				const link = e.target.dataset.link;
-				
+
 				// Fallback for non-https/older browsers.
 				if (navigator.clipboard && window.isSecureContext) {
 					navigator.clipboard.writeText(link).then(() => {
@@ -343,7 +343,7 @@ class Admin_Links extends \WP_List_Table {
 			const originalText = el.textContent;
 			el.textContent = '¡Copiado!';
 			el.style.color = '#2d5a27';
-			setTimeout(() => { 
+			setTimeout(() => {
 				el.textContent = originalText;
 				el.style.color = '';
 			}, 2000);

@@ -91,7 +91,7 @@ class Admin_Generador {
 		?>
 		<div class="wrap conv-gateway-generador">
 			<h1><?php esc_html_e( 'Generador de Enlaces de Pago', 'convoca-gateway' ); ?></h1>
-			
+
 			<?php echo wp_kses_post( $message ); ?>
 
 			<div class="conv-gateway-generador-card">
@@ -104,7 +104,7 @@ class Admin_Generador {
 								<label for="convoca_gateway_amount"><?php esc_html_e( 'Cantidad (€)', 'convoca-gateway' ); ?></label>
 							</th>
 							<td>
-								<input type="number" name="convoca_gateway_amount" id="convoca_gateway_amount" 
+								<input type="number" name="convoca_gateway_amount" id="convoca_gateway_amount"
 										class="regular-text" step="0.01" min="0.50"
 										placeholder="Ej: 50.00">
 								<p class="description"><?php esc_html_e( 'Importe en euros (mínimo 0.50€). Déjalo vacío para crear un enlace de donativo de importe libre: quien aporte decidirá cuánto.', 'convoca-gateway' ); ?></p>
@@ -116,7 +116,7 @@ class Admin_Generador {
 								<label for="convoca_gateway_concepto"><?php esc_html_e( 'Concepto', 'convoca-gateway' ); ?></label>
 							</th>
 							<td>
-								<input type="text" name="convoca_gateway_concepto" id="convoca_gateway_concepto" 
+								<input type="text" name="convoca_gateway_concepto" id="convoca_gateway_concepto"
 										class="regular-text" maxlength="125"
 										placeholder="Ej: Cuota mensual de socio">
 								<p class="description"><?php esc_html_e( 'Descripción del pago (máx. 125 caracteres). Obligatorio salvo en enlaces de donativo, donde se usa «Donativo».', 'convoca-gateway' ); ?></p>
@@ -145,8 +145,8 @@ class Admin_Generador {
 								<label for="convoca_gateway_email"><?php esc_html_e( 'Email del destinatario', 'convoca-gateway' ); ?></label>
 							</th>
 							<td>
-								<input type="email" name="convoca_gateway_email" id="convoca_gateway_email" 
-										class="regular-text" 
+								<input type="email" name="convoca_gateway_email" id="convoca_gateway_email"
+										class="regular-text"
 										placeholder="Ej: cliente@email.com">
 								<p class="description">Pre-rellena el email en el formulario de pago</p>
 							</td>

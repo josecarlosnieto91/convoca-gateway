@@ -28,7 +28,7 @@ class PaymentHandlerTest extends TestCase
         $order = time();
         $amount = '3000'; // 30.00 EUR in cents
         $currency = '978';
-        
+
         $this->assertNotEmpty($merchant_code);
         $this->assertEquals('001', $terminal);
         $this->assertIsString((string)$order);

@@ -94,7 +94,7 @@ class Payment_Handler {
 		global $wpdb;
 		$token = $wpdb->get_var(
 			$wpdb->prepare(
-				"SELECT pm_tok.meta_value 
+				"SELECT pm_tok.meta_value
              FROM {$wpdb->postmeta} pm_orig
              JOIN {$wpdb->postmeta} pm_tok ON pm_orig.post_id = pm_tok.post_id AND pm_tok.meta_key = '_convoca_redsys_merchant_id'
              JOIN {$wpdb->postmeta} pm_stat ON pm_orig.post_id = pm_stat.post_id AND pm_stat.meta_key = '_convoca_status' AND pm_stat.meta_value = 'paid'

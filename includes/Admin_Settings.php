@@ -738,7 +738,7 @@ class Admin_Settings extends \Convoca\Core\Admin\Pantalla_Admin {
 					const type = this.dataset.type;
 					const subjectInput = type === 'success' ? document.querySelector('input[name="convoca_gateway_settings[email_success_subject]"]') : document.querySelector('input[name="convoca_gateway_settings[email_failed_subject]"]');
 					const bodyInput = type === 'success' ? document.querySelector('textarea[name="convoca_gateway_settings[email_success_body]"]') : document.querySelector('textarea[name="convoca_gateway_settings[email_failed_body]"]');
-					
+
 					const previewWindow = window.open('', '_blank', 'width=600,height=400');
 					if (previewWindow) {
 						previewWindow.document.write('<h3>' + (subjectInput ? subjectInput.value : '') + '</h3><hr>' + (bodyInput ? bodyInput.value.replace(/\\n/g, '<br>') : ''));
@@ -754,7 +754,7 @@ class Admin_Settings extends \Convoca\Core\Admin\Pantalla_Admin {
 					const btn = this;
 					btn.disabled = true;
 					btn.textContent = 'Ejecutando...';
-					
+
 					const fd = new FormData();
 					fd.append('action', 'convoca_gateway_diagnostic_run');
 					fd.append('nonce', '<?php echo esc_js( wp_create_nonce( 'convoca_gateway_diagnostic_nonce' ) ); ?>');
@@ -786,12 +786,12 @@ class Admin_Settings extends \Convoca\Core\Admin\Pantalla_Admin {
 					const fix = this.dataset.fix;
 					this.disabled = true;
 					this.textContent = 'Aplicando...';
-				
+
 					const fd = new FormData();
 					fd.append('action', 'convoca_gateway_diagnostic_fix');
 					fd.append('nonce', '<?php echo esc_js( wp_create_nonce( 'convoca_gateway_diagnostic_nonce' ) ); ?>');
 					fd.append('fix', fix);
-				
+
 					fetch(ajaxurl, {
 						method: 'POST',
 						body: fd
@@ -895,7 +895,7 @@ class Admin_Settings extends \Convoca\Core\Admin\Pantalla_Admin {
 								</button>
 							<?php endif; ?>
 						<?php endif; ?>
-						
+
 						<?php if ( ! empty( $result['children'] ) ) : ?>
 							<div class="conv-gateway-diagnostic-children">
 								<?php foreach ( $result['children'] as $child ) : ?>

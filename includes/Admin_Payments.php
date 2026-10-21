@@ -472,7 +472,7 @@ class Admin_Payments extends \WP_List_Table {
 			<div id="poststuff">
 				<div id="post-body" class="metabox-holder columns-2">
 					<div id="post-body-content">
-						
+
 						<div class="postbox">
 							<h2 class="hndle"><span><?php esc_html_e( 'Información del Pago', 'convoca-gateway' ); ?></span></h2>
 							<div class="inside">
@@ -496,7 +496,7 @@ class Admin_Payments extends \WP_List_Table {
 									<tr>
 										<th><?php esc_html_e( 'Origen', 'convoca-gateway' ); ?></th>
 										<td>
-											<?php echo esc_html( $meta['origin'] ); ?> 
+											<?php echo esc_html( $meta['origin'] ); ?>
 											(#<?php echo (int) $meta['origin_id']; ?>)
 										</td>
 									</tr>

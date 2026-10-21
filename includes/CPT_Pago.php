@@ -267,7 +267,7 @@ class CPT_Pago {
 			$wpdb->prepare(
 				"SELECT p.ID FROM {$wpdb->posts} p
              JOIN {$wpdb->postmeta} pm ON p.ID = pm.post_id
-             WHERE pm.meta_key = '_convoca_order_id' AND pm.meta_value = %s 
+             WHERE pm.meta_key = '_convoca_order_id' AND pm.meta_value = %s
              AND p.post_type = 'pago'
              LIMIT 1 FOR UPDATE",
 				$order_id

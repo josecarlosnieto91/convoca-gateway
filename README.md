@@ -86,4 +86,3 @@ Prueba Convoca sin instalar nada:
 - [Convoca Gateway](https://github.com/josecarlosnieto91/convoca-gateway)
 - [Convoca Shifts](https://github.com/josecarlosnieto91/convoca-shifts)
 - [Convoca Publisher](https://github.com/josecarlosnieto91/convoca-publisher)
-

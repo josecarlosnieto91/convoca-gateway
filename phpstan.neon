@@ -53,4 +53,3 @@ parameters:
             message: '#Left side of && is always true#'
             identifier: booleanAnd.leftAlwaysTrue
             path: includes/Payment_Handler.php
-

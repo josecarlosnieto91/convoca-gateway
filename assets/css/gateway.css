@@ -40,11 +40,11 @@
 	color: #666;
 	font-size: 1.1rem;
 }
-.conv-params { 
-	margin: 1.5rem 0; 
-	padding: 1.25rem; 
-	background: #f8f9fa; 
-	border-radius: 12px; 
+.conv-params {
+	margin: 1.5rem 0;
+	padding: 1.25rem;
+	background: #f8f9fa;
+	border-radius: 12px;
 	border: 1px solid #eee;
 }
 .conv-params h4 { margin-top: 0; font-size: 1rem; color: #333; }
@@ -215,18 +215,18 @@ button.conv-method-card {
 
 /* ── Instrucciones de transferencia (render_transfer_instructions) ─ */
 .conv-transfer-view .conv-success-icon { font-size: 3rem; margin-bottom: 1rem; }
-.conv-transfer-details { 
-	background: #fcfcfc; 
-	border: 1px solid #eee; 
-	border-radius: 12px; 
-	padding: 1.5rem; 
+.conv-transfer-details {
+	background: #fcfcfc;
+	border: 1px solid #eee;
+	border-radius: 12px;
+	padding: 1.5rem;
 	margin: 1.5rem 0;
 }
-.conv-detail-row { 
-	display: flex; 
-	justify-content: space-between; 
-	padding: 0.75rem 0; 
-	border-bottom: 1px solid #f0f0f0; 
+.conv-detail-row {
+	display: flex;
+	justify-content: space-between;
+	padding: 0.75rem 0;
+	border-bottom: 1px solid #f0f0f0;
 }
 .conv-detail-row:last-child { border-bottom: none; }
 .conv-detail-label { font-weight: 700; color: #666; font-size: 0.9rem; }
@@ -234,23 +234,23 @@ button.conv-method-card {
 .conv-highlight { color: var(--wp--preset--color--naranja, #ff8700); font-weight: 800; }
 .conv-copyable { cursor: pointer; position: relative; }
 .conv-copyable:hover { text-decoration: underline; }
-.conv-transfer-instructions { 
-	text-align: left; 
-	margin: 1.5rem 0; 
-	padding: 1rem; 
-	background: #fff8f0; 
-	border-radius: 8px; 
+.conv-transfer-instructions {
+	text-align: left;
+	margin: 1.5rem 0;
+	padding: 1rem;
+	background: #fff8f0;
+	border-radius: 8px;
 }
 .conv-transfer-instructions h4 { margin-top: 0; color: #a65d00; }
 .conv-actions { display: flex; justify-content: space-between; align-items: center; margin-top: 2rem; }
 .conv-back-link { font-size: 0.9rem; color: #888; text-decoration: none; }
 .conv-back-link:hover { color: #333; }
-.conv-proof-upload { 
-	margin-top: 2rem; 
-	padding: 1.5rem; 
-	background: #f8f9fa; 
-	border-radius: 12px; 
-	border: 1px dashed #ced4da; 
+.conv-proof-upload {
+	margin-top: 2rem;
+	padding: 1.5rem;
+	background: #f8f9fa;
+	border-radius: 12px;
+	border: 1px dashed #ced4da;
 	text-align: left;
 }
 .conv-proof-upload h4 { margin-top: 0; }
