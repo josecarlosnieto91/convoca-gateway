@@ -2,14 +2,14 @@
 # This file is distributed under the GPL-2.0-or-later.
 msgid ""
 msgstr ""
-"Project-Id-Version: Convoca Gateway — Payment Gateway 2.13.16\n"
+"Project-Id-Version: Convoca Gateway — Payment Gateway 2.13.21\n"
 "Report-Msgid-Bugs-To: https://wordpress.org/support/plugin/convoca-gateway\n"
 "Last-Translator: FULL NAME <EMAIL@ADDRESS>\n"
 "Language-Team: LANGUAGE <LL@li.org>\n"
 "MIME-Version: 1.0\n"
 "Content-Type: text/plain; charset=UTF-8\n"
 "Content-Transfer-Encoding: 8bit\n"
-"POT-Creation-Date: 2026-10-15T20:47:02+00:00\n"
+"POT-Creation-Date: 2026-10-21T06:26:03+00:00\n"
 "PO-Revision-Date: YEAR-MO-DA HO:MI+ZONE\n"
 "X-Generator: WP-CLI 2.12.0\n"
 "X-Domain: convoca-gateway\n"
@@ -36,7 +36,7 @@ msgid "Jose Carlos Nieto Ramos"
 msgstr ""
 
 #: admin/class-admin-generador.php:41
-#: admin/class-admin-generador.php:97
+#: admin/class-admin-generador.php:93
 msgid "Generador de Enlaces de Pago"
 msgstr ""
 
@@ -49,15 +49,15 @@ msgstr ""
 msgid "Enlaces de Pago"
 msgstr ""
 
-#: admin/class-admin-generador.php:108
+#: admin/class-admin-generador.php:104
 msgid "Cantidad (€)"
 msgstr ""
 
-#: admin/class-admin-generador.php:114
+#: admin/class-admin-generador.php:110
 msgid "Importe en euros (mínimo 0.50€). Déjalo vacío para crear un enlace de donativo de importe libre: quien aporte decidirá cuánto."
 msgstr ""
 
-#: admin/class-admin-generador.php:120
+#: admin/class-admin-generador.php:116
 #: includes/Admin_Links.php:65
 #: includes/Admin_Links.php:435
 #: includes/Admin_Record_Actions.php:241
@@ -66,89 +66,89 @@ msgstr ""
 msgid "Concepto"
 msgstr ""
 
-#: admin/class-admin-generador.php:126
+#: admin/class-admin-generador.php:122
 msgid "Descripción del pago (máx. 125 caracteres). Obligatorio salvo en enlaces de donativo, donde se usa «Donativo»."
 msgstr ""
 
-#: admin/class-admin-generador.php:132
+#: admin/class-admin-generador.php:128
 #: includes/Admin_Links.php:446
 #: includes/Receipt_View.php:256
 msgid "Método de pago"
 msgstr ""
 
-#: admin/class-admin-generador.php:137
+#: admin/class-admin-generador.php:133
 msgid "Cualquiera (usuario elige)"
 msgstr ""
 
-#: admin/class-admin-generador.php:138
+#: admin/class-admin-generador.php:134
 #: includes/Admin_Links.php:183
 #: includes/Admin_Links.php:452
 #: includes/Admin_Settings.php:125
 #: includes/CPT_Pago.php:309
 #: includes/Dashboard_Widget.php:82
-#: includes/Payment_Handler.php:739
+#: includes/Payment_Handler.php:714
 msgid "Tarjeta"
 msgstr ""
 
-#: admin/class-admin-generador.php:139
+#: admin/class-admin-generador.php:135
 #: includes/Admin_Links.php:184
 #: includes/Admin_Links.php:453
 #: includes/Admin_Settings.php:126
 #: includes/CPT_Pago.php:310
 #: includes/Dashboard_Widget.php:83
-#: includes/Payment_Handler.php:745
+#: includes/Payment_Handler.php:720
 msgid "Bizum"
 msgstr ""
 
-#: admin/class-admin-generador.php:141
+#: admin/class-admin-generador.php:137
 #: includes/Admin_Links.php:185
 #: includes/Admin_Links.php:454
 #: includes/Admin_Settings.php:127
 #: includes/CPT_Pago.php:311
-#: includes/Payment_Handler.php:754
+#: includes/Payment_Handler.php:729
 msgid "Transferencia"
 msgstr ""
 
-#: admin/class-admin-generador.php:149
+#: admin/class-admin-generador.php:145
 msgid "Email del destinatario"
 msgstr ""
 
-#: admin/class-admin-generador.php:161
+#: admin/class-admin-generador.php:157
 msgid "Parámetros personalizados"
 msgstr ""
 
-#: admin/class-admin-generador.php:172
+#: admin/class-admin-generador.php:168
 msgid "Fecha de caducidad"
 msgstr ""
 
-#: admin/class-admin-generador.php:180
+#: admin/class-admin-generador.php:176
 msgid "El enlace no caduca nunca"
 msgstr ""
 
-#: admin/class-admin-generador.php:188
+#: admin/class-admin-generador.php:184
 msgid "Generar enlace"
 msgstr ""
 
-#: admin/class-admin-generador.php:195
+#: admin/class-admin-generador.php:191
 msgid "Enlace generado"
 msgstr ""
 
-#: admin/class-admin-generador.php:196
+#: admin/class-admin-generador.php:192
 msgid "Copia este enlace y envíaselo al cliente:"
 msgstr ""
 
-#: admin/class-admin-generador.php:200
+#: admin/class-admin-generador.php:196
 msgid "Copiar al portapapeles"
 msgstr ""
 
-#: admin/class-admin-generador.php:249
+#: admin/class-admin-generador.php:245
 msgid "Información"
 msgstr ""
 
-#: admin/class-admin-generador.php:277
+#: admin/class-admin-generador.php:273
 #: includes/CPT_Pago.php:361
-#: includes/Payment_Handler.php:1099
-#: includes/Payment_Handler.php:1246
+#: includes/Payment_Handler.php:944
+#: includes/Payment_Handler.php:1083
 msgid "Donativo"
 msgstr ""
 
@@ -317,8 +317,8 @@ msgstr ""
 
 #: includes/Admin_Links.php:439
 #: includes/CSV_Exporter.php:85
-#: includes/Payment_Handler.php:1144
-#: includes/Payment_Handler.php:1581
+#: includes/Payment_Handler.php:989
+#: includes/Payment_Handler.php:1374
 msgid "Importe (€)"
 msgstr ""
 
@@ -339,7 +339,7 @@ msgid "Con la casilla marcada el enlace no caduca nunca. Sin fecha y sin casilla
 msgstr ""
 
 #: includes/Admin_Links.php:475
-#: includes/Payment_Handler.php:638
+#: includes/Payment_Handler.php:667
 msgid "Email de notificación"
 msgstr ""
 
@@ -444,8 +444,8 @@ msgstr ""
 
 #: includes/Admin_Payments.php:428
 #: includes/Link_Expiry.php:112
-#: includes/Payment_Handler.php:410
-#: includes/Payment_Handler.php:2191
+#: includes/Payment_Handler.php:439
+#: includes/Payment_Handler.php:1954
 msgid "Pago no encontrado."
 msgstr ""
 
@@ -1012,7 +1012,7 @@ msgstr ""
 
 #. translators: %s: name of the user's bank entity (filterable).
 #: includes/Admin_Settings.php:673
-#: includes/Payment_Handler.php:1740
+#: includes/Payment_Handler.php:1533
 msgid "tu entidad bancaria"
 msgstr ""
 
@@ -1200,47 +1200,51 @@ msgstr ""
 msgid "Ver todos los pagos"
 msgstr ""
 
-#: includes/Diagnostic.php:260
+#: includes/Diagnostic.php:59
+msgid "Convoca Gateway"
+msgstr ""
+
+#: includes/Diagnostic.php:288
 msgid "Verifica que la página de pago y las de éxito/error existen y tienen los shortcodes"
 msgstr ""
 
-#: includes/Diagnostic.php:262
+#: includes/Diagnostic.php:290
 msgid "Hay páginas faltantes"
 msgstr ""
 
-#: includes/Diagnostic.php:262
+#: includes/Diagnostic.php:290
 msgid "Páginas OK y error configuradas"
 msgstr ""
 
-#: includes/Diagnostic.php:355
+#: includes/Diagnostic.php:383
 msgid "Hay errores de configuración"
 msgstr ""
 
-#: includes/Diagnostic.php:362
+#: includes/Diagnostic.php:390
 msgid "Hay advertencias"
 msgstr ""
 
-#: includes/Diagnostic.php:368
+#: includes/Diagnostic.php:396
 msgid "Todo correcto"
 msgstr ""
 
-#: includes/Diagnostic.php:382
+#: includes/Diagnostic.php:410
 msgid "Terminal configurado a 001"
 msgstr ""
 
-#: includes/Diagnostic.php:428
+#: includes/Diagnostic.php:456
 msgid "<!-- wp:shortcode -->[convoca_pago_ok]<!-- /wp:shortcode -->"
 msgstr ""
 
-#: includes/Diagnostic.php:452
+#: includes/Diagnostic.php:480
 msgid "<!-- wp:shortcode -->[convoca_pago_ko]<!-- /wp:shortcode -->"
 msgstr ""
 
-#: includes/Diagnostic.php:471
+#: includes/Diagnostic.php:499
 msgid "Las páginas ya estaban configuradas"
 msgstr ""
 
-#: includes/Diagnostic.php:477
+#: includes/Diagnostic.php:505
 msgid "Creadas: "
 msgstr ""
 
@@ -1384,226 +1388,226 @@ msgstr ""
 msgid "Este pago ya se ha cobrado: su enlace está cerrado y no se genera otro."
 msgstr ""
 
-#: includes/Payment_Handler.php:416
+#: includes/Payment_Handler.php:445
 msgid "Enlace de pago inválido."
 msgstr ""
 
-#: includes/Payment_Handler.php:515
+#: includes/Payment_Handler.php:544
 msgid "La sesión ha caducado. Vuelve a cargar el enlace."
 msgstr ""
 
-#: includes/Payment_Handler.php:520
-#: includes/Payment_Handler.php:1239
-#: includes/Payment_Handler.php:1632
+#: includes/Payment_Handler.php:549
+#: includes/Payment_Handler.php:1076
+#: includes/Payment_Handler.php:1425
 msgid "Elige un método de pago."
 msgstr ""
 
-#: includes/Payment_Handler.php:640
+#: includes/Payment_Handler.php:669
 msgid "Si lo indicas, te enviamos el recibo del pago a este correo."
 msgstr ""
 
-#: includes/Payment_Handler.php:647
-#: includes/Payment_Handler.php:1134
-#: includes/Payment_Handler.php:1570
-#: includes/Payment_Handler.php:1730
+#: includes/Payment_Handler.php:676
+#: includes/Payment_Handler.php:979
+#: includes/Payment_Handler.php:1363
+#: includes/Payment_Handler.php:1523
 msgid "Selecciona un método de pago"
 msgstr ""
 
-#: includes/Payment_Handler.php:740
+#: includes/Payment_Handler.php:715
 msgid "Visa, Mastercard, etc."
 msgstr ""
 
-#: includes/Payment_Handler.php:746
+#: includes/Payment_Handler.php:721
 msgid "Pago instantáneo con tu móvil"
 msgstr ""
 
-#: includes/Payment_Handler.php:755
+#: includes/Payment_Handler.php:730
 msgid "Ingresa desde tu banco"
 msgstr ""
 
-#: includes/Payment_Handler.php:800
+#: includes/Payment_Handler.php:775
 msgid "las credenciales de la pasarela (código de comercio y clave secreta)"
 msgstr ""
 
-#: includes/Payment_Handler.php:804
+#: includes/Payment_Handler.php:779
 msgid "una cuenta bancaria para las transferencias"
 msgstr ""
 
-#: includes/Payment_Handler.php:808
+#: includes/Payment_Handler.php:783
 msgid "No hay ningún método de pago disponible. Contacta con la entidad."
 msgstr ""
 
-#: includes/Payment_Handler.php:809
+#: includes/Payment_Handler.php:784
 msgid "Tu alta no se ha perdido: queda registrada y pendiente de pago. La entidad la verá en su panel."
 msgstr ""
 
-#: includes/Payment_Handler.php:812
+#: includes/Payment_Handler.php:787
 msgid "Para quien administra el sitio: falta configurar"
 msgstr ""
 
-#: includes/Payment_Handler.php:812
+#: includes/Payment_Handler.php:787
 msgid "y"
 msgstr ""
 
-#: includes/Payment_Handler.php:813
+#: includes/Payment_Handler.php:788
 msgid "Abrir los ajustes de pago"
 msgstr ""
 
-#: includes/Payment_Handler.php:817
+#: includes/Payment_Handler.php:792
 msgid "Volver al inicio"
 msgstr ""
 
-#: includes/Payment_Handler.php:860
-#: includes/Payment_Handler.php:871
+#: includes/Payment_Handler.php:835
+#: includes/Payment_Handler.php:846
 msgid "Recomendado"
 msgstr ""
 
-#: includes/Payment_Handler.php:916
+#: includes/Payment_Handler.php:891
 msgid "Cambiar método"
 msgstr ""
 
-#: includes/Payment_Handler.php:1111
+#: includes/Payment_Handler.php:956
 msgid "Formulario de donativo"
 msgstr ""
 
-#: includes/Payment_Handler.php:1122
+#: includes/Payment_Handler.php:967
 msgid "Datos adicionales"
 msgstr ""
 
-#: includes/Payment_Handler.php:1148
+#: includes/Payment_Handler.php:993
 msgid "Mínimo 0,50 €."
 msgstr ""
 
-#: includes/Payment_Handler.php:1152
+#: includes/Payment_Handler.php:997
 msgid "Email para el recibo (opcional)"
 msgstr ""
 
-#: includes/Payment_Handler.php:1155
+#: includes/Payment_Handler.php:1000
 msgid "Si lo indicas, te enviamos el recibo de tu aportación."
 msgstr ""
 
 #. translators: %s: payment method label (Tarjeta, Bizum o Transferencia).
-#: includes/Payment_Handler.php:1163
-#: includes/Payment_Handler.php:1600
+#: includes/Payment_Handler.php:1008
+#: includes/Payment_Handler.php:1393
 #, php-format
 msgid "Continuar con %s"
 msgstr ""
 
-#: includes/Payment_Handler.php:1175
-#: includes/Payment_Handler.php:1612
+#: includes/Payment_Handler.php:1020
+#: includes/Payment_Handler.php:1405
 msgid "Al continuar te mostraremos los datos para hacer el ingreso."
 msgstr ""
 
-#: includes/Payment_Handler.php:1177
-#: includes/Payment_Handler.php:1614
+#: includes/Payment_Handler.php:1022
+#: includes/Payment_Handler.php:1407
 msgid "Pago seguro gestionado por Redsys. No almacenamos tus datos bancarios."
 msgstr ""
 
-#: includes/Payment_Handler.php:1206
+#: includes/Payment_Handler.php:1043
 msgid "La sesión ha caducado. Vuelve a intentarlo."
 msgstr ""
 
-#: includes/Payment_Handler.php:1219
+#: includes/Payment_Handler.php:1056
 msgid "El importe mínimo es de 0,50 €."
 msgstr ""
 
-#: includes/Payment_Handler.php:1229
+#: includes/Payment_Handler.php:1066
 msgid "El email no es válido."
 msgstr ""
 
-#: includes/Payment_Handler.php:1285
+#: includes/Payment_Handler.php:1122
 msgid "Redirigiendo al pago seguro... Si no eres redirigido,"
 msgstr ""
 
-#: includes/Payment_Handler.php:1286
+#: includes/Payment_Handler.php:1123
 msgid "haz clic aquí"
 msgstr ""
 
 #. translators: %s: Maximum file size in megabytes
-#: includes/Payment_Handler.php:1478
+#: includes/Payment_Handler.php:1271
 #, php-format
 msgid "El archivo es demasiado grande. El límite es de %sMB."
 msgstr ""
 
-#: includes/Payment_Handler.php:1559
+#: includes/Payment_Handler.php:1352
 msgid "Emitir Pago Nuevo"
 msgstr ""
 
-#: includes/Payment_Handler.php:1560
+#: includes/Payment_Handler.php:1353
 msgid "Introduce los datos para realizar un pago seguro."
 msgstr ""
 
-#: includes/Payment_Handler.php:1586
+#: includes/Payment_Handler.php:1379
 msgid "Concepto o Actividad"
 msgstr ""
 
-#: includes/Payment_Handler.php:1587
+#: includes/Payment_Handler.php:1380
 msgid "Ej: Inscripción Taller Aves"
 msgstr ""
 
-#: includes/Payment_Handler.php:1591
+#: includes/Payment_Handler.php:1384
 msgid "Email para el recibo"
 msgstr ""
 
-#: includes/Payment_Handler.php:1675
+#: includes/Payment_Handler.php:1468
 msgid "Enlace de pago inválido o corrupto."
 msgstr ""
 
-#: includes/Payment_Handler.php:1679
+#: includes/Payment_Handler.php:1472
 msgid "El enlace de pago ha caducado. Por favor, solicita uno nuevo."
 msgstr ""
 
-#: includes/Payment_Handler.php:1684
+#: includes/Payment_Handler.php:1477
 msgid "✅ Este pago ya ha sido completado."
 msgstr ""
 
 #. translators: %s: name of the user's bank entity (filterable).
-#: includes/Payment_Handler.php:1745
+#: includes/Payment_Handler.php:1538
 #, php-format
 msgid "Pago seguro gestionado por Redsys (%s)."
 msgstr ""
 
-#: includes/Payment_Handler.php:1747
+#: includes/Payment_Handler.php:1540
 msgid "Tus datos bancarios nunca pasan por nuestro servidor."
 msgstr ""
 
-#: includes/Payment_Handler.php:1791
+#: includes/Payment_Handler.php:1554
 msgid "✅ Este pago ya ha sido completado correctamente. No es necesario realizarlo de nuevo."
 msgstr ""
 
-#: includes/Payment_Handler.php:1798
+#: includes/Payment_Handler.php:1561
 msgid "Error: El importe del pago no es válido (0.00€)."
 msgstr ""
 
-#: includes/Payment_Handler.php:2186
+#: includes/Payment_Handler.php:1949
 msgid "ID de pago no especificado."
 msgstr ""
 
-#: includes/Payment_Handler.php:2315
+#: includes/Payment_Handler.php:2056
 msgid "✅ Este enlace ya se ha cobrado"
 msgstr ""
 
-#: includes/Payment_Handler.php:2317
+#: includes/Payment_Handler.php:2058
 msgid "El enlace queda cerrado y no admite más pagos."
 msgstr ""
 
-#: includes/Payment_Handler.php:2325
+#: includes/Payment_Handler.php:2066
 msgid "Solicitar nuevo enlace"
 msgstr ""
 
-#: includes/Payment_Handler.php:2328
+#: includes/Payment_Handler.php:2069
 msgid "El enlace de pago ha caducado. Solicita un enlace nuevo para completar el pago."
 msgstr ""
 
-#: includes/Payment_Handler.php:2354
+#: includes/Payment_Handler.php:2095
 msgid "Pago no especificado."
 msgstr ""
 
-#: includes/Payment_Handler.php:2366
+#: includes/Payment_Handler.php:2107
 msgid "Generando nuevo enlace… Si no eres redirigido, haz clic aquí."
 msgstr ""
 
-#: includes/Payment_Handler.php:2366
+#: includes/Payment_Handler.php:2107
 msgid "Continuar"
 msgstr ""
 

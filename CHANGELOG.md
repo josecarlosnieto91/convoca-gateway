@@ -1,3 +1,12 @@
+## [2.13.21] — 2026-10-21
+
+### Añadido
+
+- **Se registra como backend de cobros de `Core\Payments`** por los filtros `convoca_payment_backend`,
+  `convoca_payment_reader` y `convoca_payment_receipt`: el núcleo ya no nombra sus clases, y el día que
+  haya otra pasarela se sustituye sin tocarlo.
+- **Aporta su diagnóstico** al núcleo por el filtro `convoca_system_checks`.
+
 ## [2.13.20] — 2026-10-20
 
 ### Cambiado
