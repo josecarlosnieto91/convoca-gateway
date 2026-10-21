@@ -1,0 +1,33 @@
+# git-cliff — CHANGELOG desde Conventional Commits.
+[changelog]
+header = ""
+body = """
+{% if version %}\
+## [{{ version | trim_start_matches(pat="v") }}] — {{ timestamp | date(format="%Y-%m-%d") }}
+{% else %}\
+## [sin publicar]
+{% endif %}\
+{% for group, commits in commits | group_by(attribute="group") %}
+### {{ group | upper_first }}
+{% for commit in commits %}\
+- {% if commit.breaking %}**ruptura:** {% endif %}{{ commit.message | upper_first }}\
+{% endfor %}
+{% endfor %}"""
+trim = true
+
+[git]
+conventional_commits = true
+filter_unconventional = true
+split_commits = false
+commit_parsers = [
+  { message = "^feat", group = "Añadido" },
+  { message = "^fix", group = "Corregido" },
+  { message = "^perf", group = "Rendimiento" },
+  { message = "^refactor", group = "Refactorizado" },
+  { message = "^docs", group = "Documentación" },
+  { message = "^test", group = "Pruebas" },
+  { message = "^ci", group = "CI" },
+  { message = "^build|^chore", group = "Mantenimiento" },
+  { message = "^revert", group = "Revertido" },
+]
+protect_breaking_commits = true

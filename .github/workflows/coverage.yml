@@ -1,0 +1,60 @@
+# Gate de cobertura (skill flujo-desarrollo, puerta P4).
+# Modo bootstrap: sin .coverage-floor, sólo informa del número y pasa.
+# Con .coverage-floor (porcentaje), falla si la cobertura baja del suelo.
+name: Cobertura
+
+on:
+  push:
+    branches: [main]
+  pull_request:
+
+concurrency:
+  group: cobertura-ref
+  cancel-in-progress: true
+
+permissions:
+  contents: read
+
+jobs:
+  cobertura:
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v4
+
+      - uses: shivammathur/setup-php@v2
+        with:
+          php-version: '8.3'
+          coverage: pcov
+          tools: composer:v2
+
+      - name: Instalar dependencias
+        run: composer install --no-interaction --prefer-dist --no-progress --ignore-platform-req=ext-iconv
+
+      - name: Instalar gettext (msgfmt, lo exige el contrato de traducciones)
+        run: sudo apt-get update -qq && sudo apt-get install -y -qq gettext
+
+      - name: Tests unitarios con cobertura
+        # phpunit-unit.xml no declara <source>: se usa phpunit.xml.dist (misma suite unit,
+        # con el filtro de cobertura sobre ./includes).
+        run: |
+          mkdir -p build
+          vendor/bin/phpunit -c phpunit.xml.dist --testsuite unit \
+            --coverage-clover build/coverage.xml --coverage-text
+
+      - name: Leer la cobertura y aplicar el suelo
+        run: |
+          set -euo pipefail
+          pct=$(php -r '$x=@simplexml_load_file("build/coverage.xml"); if(!$x){echo "0"; exit;} $m=$x->project->metrics; $t=(int)$m["statements"]; $c=(int)$m["coveredstatements"]; printf("%.1f", $t>0 ? $c*100/$t : 0);')
+          echo "Cobertura de líneas: ${pct}%" | tee -a "$GITHUB_STEP_SUMMARY"
+          if [[ -f .coverage-floor ]]; then
+            suelo=$(tr -d '[:space:]%' < .coverage-floor)
+            echo "Suelo exigido: ${suelo}%" | tee -a "$GITHUB_STEP_SUMMARY"
+            if php -r "exit((${pct} < ${suelo}) ? 1 : 0);"; then
+              echo "OK: por encima del suelo"
+            else
+              echo "FALLO: la cobertura (${pct}%) está por debajo del suelo (${suelo}%)" | tee -a "$GITHUB_STEP_SUMMARY"
+              exit 1
+            fi
+          else
+            echo "Modo bootstrap: no hay .coverage-floor, sólo informo" | tee -a "$GITHUB_STEP_SUMMARY"
+          fi

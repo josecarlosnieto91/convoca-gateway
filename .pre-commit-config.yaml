@@ -1,0 +1,27 @@
+# Puerta local del flujo de desarrollo — skill flujo-desarrollo.
+# Un hook que no bloquea es decoración: aquí no hay '|| true'.
+repos:
+  - repo: https://github.com/pre-commit/pre-commit-hooks
+    rev: v6.0.0
+    hooks:
+      - id: end-of-file-fixer
+      - id: trailing-whitespace
+      - id: check-yaml
+      - id: check-merge-conflict
+      - id: mixed-line-ending
+        args: [--fix=lf]
+
+  - repo: local
+    hooks:
+      - id: php-lint
+        name: php -l (sintaxis)
+        entry: bash -c 'rc=0; for f in "$@"; do php -l "$f" >/dev/null || { php -l "$f"; rc=1; }; done; exit $rc' --
+        language: system
+        files: \.php$
+
+      - id: version-coherente
+        name: version coherente (cabecera / Stable tag / CHANGELOG / constante)
+        entry: bin/verificar-version.sh .
+        language: system
+        pass_filenames: false
+        always_run: true
