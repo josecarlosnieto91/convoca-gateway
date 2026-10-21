@@ -13,3 +13,6 @@
 # .mo la interfaz en inglés no existe. Solo esta variante.
 !languages/*-en_US.po
 !languages/*-en_US.mo
+
+# Artefactos de la puerta de cobertura (clover, junit): no se versionan.
+/build/
