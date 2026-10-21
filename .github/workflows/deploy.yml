@@ -1,9 +1,11 @@
 name: Deploy to WordPress.org
 
+# A mano, a propósito (decisión de JC, 21-10-2026). Antes se disparaba con
+# `tags: ['[0-9]+.[0-9]+.[0-9]+']`, un patrón que NO casa con los tags del ecosistema (`vX.Y.Z`):
+# el trabajo no se ejecutó nunca. Se elige `workflow_dispatch` y no `tags: ['v*']` porque publicar en
+# WordPress.org es irreversible: el tag sella la versión y el despliegue se decide aparte, con su ventana.
 on:
-  push:
-    tags:
-      - '[0-9]+.[0-9]+.[0-9]+'
+  workflow_dispatch:
 
 concurrency:
   group: ${{ github.workflow }}-${{ github.ref }}
@@ -18,7 +20,7 @@ jobs:
       - name: Composer install (no dev)
         run: composer install --no-dev --no-interaction --no-progress
       - name: WordPress Plugin Deploy
-        uses: 10up/action-wordpress-plugin-deploy@stable
+        uses: 10up/action-wordpress-plugin-deploy@2.3.0
         env:
           SVN_PASSWORD: ${{ secrets.SVN_PASSWORD }}
           SVN_USERNAME: ${{ secrets.SVN_USERNAME }}
