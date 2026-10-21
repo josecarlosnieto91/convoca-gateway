@@ -6,7 +6,7 @@
  * Version: 2.13.21
  * Requires at least: 6.4
  * Requires PHP:      8.1
- * Tested up to:      7.1
+ * Tested up to:      7.1.3
  * Author:            Jose Carlos Nieto Ramos
  * Author URI:        https://getconvoca.app
  * License:           GPL-2.0-or-later
