@@ -1,18 +1,19 @@
-# git-cliff — CHANGELOG desde Conventional Commits.
+# git-cliff — CHANGELOG desde Conventional Commits (en castellano).
+# Cada viñeta va en su propia línea: sin el salto de línea dentro del bucle, las entradas
+# se encadenan en una sola línea («- A- B- C») y el CHANGELOG queda ilegible.
 [changelog]
 header = ""
 body = """
-{% if version %}\
-## [{{ version | trim_start_matches(pat="v") }}] — {{ timestamp | date(format="%Y-%m-%d") }}
-{% else %}\
-## [sin publicar]
-{% endif %}\
+{% if version %}## [{{ version | trim_start_matches(pat="v") }}] — {{ timestamp | date(format="%Y-%m-%d") }}
+{% else %}## [sin publicar]
+{% endif %}
 {% for group, commits in commits | group_by(attribute="group") %}
-### {{ group | upper_first }}
-{% for commit in commits %}\
-- {% if commit.breaking %}**ruptura:** {% endif %}{{ commit.message | upper_first }}\
+### {{ group }}
+{% for commit in commits %}
+- {% if commit.breaking %}**ruptura:** {% endif %}{{ commit.message | upper_first }}
 {% endfor %}
-{% endfor %}"""
+{% endfor %}
+"""
 trim = true
 
 [git]
