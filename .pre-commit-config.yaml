@@ -1,5 +1,10 @@
 # Puerta local del flujo de desarrollo — skill flujo-desarrollo.
 # Un hook que no bloquea es decoración: aquí no hay '|| true'.
+#
+# `exclude` de primer nivel: .specify/ lo genera 'specify init' y se regenera en cada
+# actualización de las plantillas. Que un hook lo reformatee hace fallar el commit y obliga
+# a una segunda pasada cada vez; no se revisa lo que no escribe nadie a mano.
+exclude: ^\.specify/
 repos:
   - repo: https://github.com/pre-commit/pre-commit-hooks
     rev: v6.0.0
