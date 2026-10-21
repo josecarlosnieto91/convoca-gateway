@@ -285,3 +285,23 @@ jobs:
             -o "$RUNNER_TEMP/higiene.py" \
             https://raw.githubusercontent.com/josecarlosnieto91/convoca-health-check/main/scripts/check-data-hygiene.py
           python3 "$RUNNER_TEMP/higiene.py" .
+
+  acoplamiento:
+    name: Acoplamiento entre plugins
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v4
+
+      # Un plugin no provee la funcionalidad de otro. Guardián nuevo (21/10/2026), nacido de cuatro defectos
+      # reales: tres plugins creando roles de personas, shifts averiguando quién es voluntario por rol, y
+      # members#64 —un fatal en el cron que ningún test veía porque sólo se rompe con Gateway DESACTIVADO—.
+      # Limpiar a mano no dura: esto lo convierte en prueba de cada empujón.
+      #
+      # R4 (decidir por rol o capacidad de personas) va en AVISO: mide la deuda y la deja a la vista, pero no
+      # bloquea hasta que la fase F1 (identidad de socio) la resuelva. Lo que bloquea es lo que ya se cumple.
+      - name: Cada plugin, a lo suyo
+        run: |
+          curl -fsSL --retry 3 --retry-delay 2 \
+            -o "$RUNNER_TEMP/acoplamiento.py" \
+            https://raw.githubusercontent.com/josecarlosnieto91/convoca-health-check/main/scripts/check-acoplamiento.py
+          python3 "$RUNNER_TEMP/acoplamiento.py" . --reglas R1,R2,R3 --avisos R4
