@@ -151,7 +151,8 @@ class AdminPaymentsConsultaTest extends TestCase
 
         // El doble de WP_List_Table no declara la propiedad: prepare_items la crea. Se lee sobre
         // el objeto (ReflectionObject) y no sobre la clase.
-        $ref = new \ReflectionObject($tabla)->getProperty('_column_headers');
+        $objeto = new \ReflectionObject($tabla);
+        $ref    = $objeto->getProperty('_column_headers');
         $this->assertNotEmpty($ref->getValue($tabla), 'sin cabeceras la tabla no pinta las columnas');
     }
 }
