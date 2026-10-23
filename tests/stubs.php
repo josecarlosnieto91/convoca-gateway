@@ -376,4 +376,41 @@ if ( ! function_exists( 'update_meta_cache' ) ) {
 			return 'salt-de-pruebas-suficientemente-largo-para-aes';
 		}
 	}
+
+	// --- Registro de ajustes (Admin_Settings::register_settings) ------------------------
+	if ( ! function_exists( 'register_setting' ) ) {
+		function register_setting( $group, $name, $args = array() ) {
+			$GLOBALS['__gw_registered_settings'][ $name ] = is_array( $args ) ? $args : array();
+			return true;
+		}
+	}
+	if ( ! function_exists( 'add_settings_section' ) ) {
+		function add_settings_section( $id, $title, $callback, $page = '' ) {
+			$GLOBALS['__gw_sections'][ $page ][ $id ] = compact( 'title', 'callback' );
+			return true;
+		}
+	}
+	if ( ! function_exists( 'add_settings_field' ) ) {
+		function add_settings_field( $id, $title, $callback, $page = '', $section = '', $args = array() ) {
+			$GLOBALS['__gw_fields'][ $id ] = array( 'title' => $title, 'callback' => $callback, 'page' => $page, 'section' => $section, 'args' => $args );
+			return true;
+		}
+	}
+
+	if ( ! function_exists( 'esc_textarea' ) ) {
+		function esc_textarea( $text ) {
+			return htmlspecialchars( (string) $text, ENT_QUOTES, 'UTF-8' );
+		}
+	}
+
+	if ( ! function_exists( 'selected' ) ) {
+		// Como WordPress: compara y devuelve el atributo ya montado.
+		function selected( $a, $b = true, $echo = true ) {
+			$r = ( (string) $a === (string) $b ) ? " selected='selected'" : '';
+			if ( $echo ) {
+				echo $r;
+			}
+			return $r;
+		}
+	}
 }
