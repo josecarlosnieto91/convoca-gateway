@@ -44,7 +44,8 @@ namespace {
 		public $postmeta  = 'wp_postmeta';
 		public $options   = 'wp_options';
 		public function get_var( $query ) { return $GLOBALS['__gw_get_var'] ?? null; }
-		public function get_results( $query ) { return array(); }
+		public function get_results( $query ) { return $GLOBALS['__gw_results'] ?? array(); }
+		public function get_col( $query ) { return $GLOBALS['__gw_get_col'] ?? array(); }
 		public function query( $query ) { $GLOBALS['__gw_sql'][] = $query; return true; }
 		public function prepare( $query, ...$args ) { return $query; }
 	};
@@ -306,4 +307,33 @@ namespace {
 	function wp_die( $msg ) {
 		throw new RuntimeException( 'wp_die: ' . ( is_scalar( $msg ) ? $msg : '?' ) );
 	}
+// --- Transients y caché de meta (los usa Dashboard_Widget) ---------------------------------
+if ( ! defined( 'DAY_IN_SECONDS' ) ) {
+	define( 'DAY_IN_SECONDS', 86400 );
+}
+if ( ! function_exists( 'get_transient' ) ) {
+	function get_transient( $key ) {
+		// Lo que la prueba haya dejado, o false (sin caché) como WordPress.
+		return $GLOBALS['__gw_transients'][ $key ] ?? false;
+	}
+}
+if ( ! function_exists( 'set_transient' ) ) {
+	function set_transient( $key, $value, $expiration = 0 ) {
+		$GLOBALS['__gw_transients'][ $key ] = $value;
+		return true;
+	}
+}
+if ( ! function_exists( 'delete_transient' ) ) {
+	function delete_transient( $key ) {
+		unset( $GLOBALS['__gw_transients'][ $key ] );
+		return true;
+	}
+}
+if ( ! function_exists( 'update_meta_cache' ) ) {
+	function update_meta_cache( $meta_type, $object_ids ) {
+		// Sin base de datos que precargar: se apunta la llamada y ya.
+		$GLOBALS['__gw_meta_cache'][] = array( $meta_type, $object_ids );
+		return true;
+	}
+}
 }
