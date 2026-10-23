@@ -121,10 +121,11 @@ class DashboardWidgetTest extends TestCase
 
         $html = $this->pintar();
 
-        // Un pago de cada: 50 % y 50 %.
-        $this->assertStringContainsString('50%', $html, 'la mezcla tarjeta/bizum sale en porcentaje');
-        $this->assertStringContainsString('Tarjeta', $html);
-        $this->assertStringContainsString('Bizum', $html);
+        // Un pago de cada: 50 % y 50 %. Se comprueba CADA etiqueta, no un «50%» suelto: si solo
+        // miro que aparezca el número, basta con que uno de los dos esté bien (lo destapó la
+        // verificación en negativo, poniendo la tarjeta a cero y viendo la prueba verde).
+        $this->assertStringContainsString('50% Tarjeta', $html, 'la tarjeta es la mitad');
+        $this->assertStringContainsString('50% Bizum', $html, 'y Bizum la otra mitad');
     }
 
     public function test_los_ultimos_siete_dias_siempre_son_siete_filas(): void
