@@ -336,4 +336,25 @@ if ( ! function_exists( 'update_meta_cache' ) ) {
 		return true;
 	}
 }
+
+	// --- Bloques de Gutenberg (Block_Gateway) ------------------------------------------
+	if ( ! defined( 'CONVOCA_GATEWAY_URL' ) ) {
+		define( 'CONVOCA_GATEWAY_URL', 'https://example.test/wp-content/plugins/convoca-gateway/' );
+	}
+	if ( ! defined( 'CONVOCA_GATEWAY_VERSION' ) ) {
+		define( 'CONVOCA_GATEWAY_VERSION', '2.13.22' );
+	}
+	if ( ! function_exists( 'wp_register_script' ) ) {
+		function wp_register_script( $handle, $src = '', $deps = array(), $ver = false, $footer = false ) {
+			$GLOBALS['__gw_scripts'][ $handle ] = compact( 'src', 'deps', 'ver', 'footer' );
+			return true;
+		}
+	}
+	if ( ! function_exists( 'register_block_type' ) ) {
+		function register_block_type( $name, $args = array() ) {
+			// Se apunta con sus argumentos: sin render_callback un bloque sale vacío en el sitio.
+			$GLOBALS['__gw_bloques'][ $name ] = $args;
+			return true;
+		}
+	}
 }
