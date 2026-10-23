@@ -357,4 +357,23 @@ if ( ! function_exists( 'update_meta_cache' ) ) {
 			return true;
 		}
 	}
+
+	// --- API de ajustes (Admin_Settings) -----------------------------------------------
+	if ( ! function_exists( 'add_settings_error' ) ) {
+		function add_settings_error( $setting, $code, $message, $type = 'error' ) {
+			$GLOBALS['__gw_settings_errors'][] = compact( 'setting', 'code', 'message', 'type' );
+		}
+	}
+	if ( ! function_exists( 'sanitize_textarea_field' ) ) {
+		function sanitize_textarea_field( $text ) {
+			return trim( strip_tags( (string) $text ) );
+		}
+	}
+
+	if ( ! function_exists( 'wp_salt' ) ) {
+		// Clave de WordPress para cifrar la del TPV: en las pruebas, una fija.
+		function wp_salt( $scheme = 'auth' ) {
+			return 'salt-de-pruebas-suficientemente-largo-para-aes';
+		}
+	}
 }

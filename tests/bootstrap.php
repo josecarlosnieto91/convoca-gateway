@@ -22,6 +22,11 @@ require_once __DIR__ . '/StubMailer.php';
 // Doble de Convoca\Core\Utils (el manejador de notificaciones lo usa para sus ganchos).
 if ( ! class_exists( 'Convoca\\Core\\Utils' ) ) {
 	require_once __DIR__ . '/StubCoreUtils.php';
+require_once __DIR__ . '/StubLicenseManager.php';
+// El gateway consulta la licencia del núcleo: se le da el doble con el nombre real.
+if ( ! class_exists( 'Convoca\\Core\\License_Manager' ) ) {
+	class_alias( 'Convoca\\Gateway\\Tests\\License_Manager_Doble', 'Convoca\\Core\\License_Manager' );
+}
 }
 
 // Andamiaje de las pantallas del núcleo (convoca-core#16): las pantallas de este plugin heredan de
