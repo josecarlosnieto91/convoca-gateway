@@ -52,6 +52,42 @@ class PDF_Exporter {
 		$query    = new \WP_Query( $args );
 		$payments = $query->posts;
 
+		$html = self::build_document( $payments );
+
+		$dompdf = new \Dompdf\Dompdf();
+		$dompdf->setPaper( 'A4', 'landscape' );
+		$dompdf->loadHtml( $html );
+		$dompdf->render();
+		$pdf = $dompdf->output();
+
+		$filename = 'pagos-convoca-' . current_time( 'Y-m-d-His' ) . '.pdf';
+
+		if ( ob_get_length() ) {
+			ob_end_clean();
+		}
+
+		header( 'Content-Type: application/pdf' );
+		header( 'Content-Disposition: attachment; filename=' . $filename );
+		header( 'Content-Length: ' . strlen( $pdf ) );
+		header( 'Pragma: no-cache' );
+		header( 'Expires: 0' );
+
+		// phpcs:ignore WordPress.Security.EscapeOutput.OutputNotEscaped -- Binary PDF content, escaping would corrupt the file.
+		echo $pdf;
+		exit;
+	}
+
+	/**
+	 * Monta el HTML del documento a partir de los pagos.
+	 *
+	 * Vive aparte de `export()` porque `export()` termina en `exit` y no se puede ejercitar en una
+	 * prueba: todo lo que decide el contenido —las filas, los totales, los rótulos y el caso de un
+	 * historial vacío— tiene que ser alcanzable sin mandar cabeceras ni cortar el proceso.
+	 *
+	 * @param array<int, object> $payments Pagos ya consultados (WP_Post).
+	 * @return string Documento HTML completo.
+	 */
+	public static function build_document( array $payments ): string {
 		$rows_html = '';
 		$total     = 0;
 		foreach ( $payments as $post ) {
@@ -79,7 +115,7 @@ class PDF_Exporter {
 		$count     = count( $payments );
 		$total_e   = number_format( $total / 100, 2, ',', '.' );
 
-		$html = '<html><head><meta charset="utf-8"><style>'
+		return '<html><head><meta charset="utf-8"><style>'
 			. 'body{font-family:DejaVu Sans,sans-serif;font-size:10px;color:#1d2327;}'
 			. 'h1{font-size:18px;margin:0 0 4px;}'
 			. 'p.sub{color:#646970;margin:0 0 16px;}'
@@ -116,27 +152,5 @@ class PDF_Exporter {
 				sprintf( __( 'Generado automáticamente por %1$s — %2$s', 'convoca-gateway' ), $site_name, $date )
 			) . '</p>'
 			. '</body></html>';
-
-		$dompdf = new \Dompdf\Dompdf();
-		$dompdf->setPaper( 'A4', 'landscape' );
-		$dompdf->loadHtml( $html );
-		$dompdf->render();
-		$pdf = $dompdf->output();
-
-		$filename = 'pagos-convoca-' . current_time( 'Y-m-d-His' ) . '.pdf';
-
-		if ( ob_get_length() ) {
-			ob_end_clean();
-		}
-
-		header( 'Content-Type: application/pdf' );
-		header( 'Content-Disposition: attachment; filename=' . $filename );
-		header( 'Content-Length: ' . strlen( $pdf ) );
-		header( 'Pragma: no-cache' );
-		header( 'Expires: 0' );
-
-		// phpcs:ignore WordPress.Security.EscapeOutput.OutputNotEscaped -- Binary PDF content, escaping would corrupt the file.
-		echo $pdf;
-		exit;
 	}
 }

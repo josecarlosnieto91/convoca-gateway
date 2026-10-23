@@ -78,14 +78,34 @@ namespace {
 
 	class WP_List_Table {
 		public $items = array();
-		public function __construct( $args = array() ) {}
+		public function __construct( $args = array() ) {
+			$GLOBALS['__gw_list_table_args'][] = $args;
+		}
 		public function row_actions( $actions, $always = false ) {
 			return '<span class="row-actions">' . implode( ' | ', $actions ) . '</span>';
 		}
 		public function get_pagenum() {
 			return 1;
 		}
-		public function set_pagination_args( $args ) {}
+		public function set_pagination_args( $args ) {
+			$GLOBALS['__gw_paginacion'] = $args;
+		}
+		/** Caja de búsqueda: se apunta el texto para poder comprobar que el listado la pinta. */
+		public function search_box( $text, $input_id ) {
+			$GLOBALS['__gw_busquedas'][] = $text;
+			echo '<input type="search" name="s" id="' . $input_id . '" value="">';
+		}
+		/** Render del listado: recorre las filas como hace el original. */
+		public function display() {
+			if ( method_exists( $this, 'get_columns' ) ) {
+				$GLOBALS['__gw_columnas_pintadas'] = $this->get_columns();
+			}
+			echo '<table class="wp-list-table"><tbody>';
+			foreach ( $this->items as $item ) {
+				echo '<tr><td>' . ( is_object( $item ) ? $item->ID : (int) $item ) . '</td></tr>';
+			}
+			echo '</tbody></table>';
+		}
 	}
 
 	/** Guarda los argumentos de la consulta para poder comprobarlos. */
@@ -209,7 +229,10 @@ namespace {
 	function delete_post_meta( $id, $key ) { unset( $GLOBALS['__gw_meta'][ (int) $id ][ $key ] ); return true; }
 
 	// ── Hooks y correo ────────────────────────────────────────────────
-	function add_action( $hook, $callback, $priority = 10, $args = 1 ) { return true; }
+	function add_action( $hook, $callback, $priority = 10, $args = 1 ) {
+		$GLOBALS['__gw_hooks'][] = array( $hook, $callback, (int) $priority );
+		return true;
+	}
 	function wp_mail( $to, $subject, $message, $headers = '', $attachments = array() ) {
 		$GLOBALS['__gw_emails'][] = compact( 'to', 'subject', 'message' );
 		return true;
@@ -306,6 +329,92 @@ namespace {
 	}
 	function wp_die( $msg ) {
 		throw new RuntimeException( 'wp_die: ' . ( is_scalar( $msg ) ? $msg : '?' ) );
+	}
+
+	// --- Pantallas de administración (Admin_Payments / Admin_Links) ----------------------
+	// `check_admin_referer` mata la petición en WordPress cuando el nonce no vale; aquí solo
+	// devuelve lo que diga la prueba: por defecto, válido. Así se puede recorrer la pantalla
+	// entera y, en otra prueba, el camino del nonce inválido.
+	if ( ! function_exists( 'check_admin_referer' ) ) {
+		function check_admin_referer( $action = -1, $query_arg = '_wpnonce' ) {
+			return $GLOBALS['__gw_nonce_ok'] ?? true;
+		}
+	}
+	if ( ! function_exists( 'wp_create_nonce' ) ) {
+		function wp_create_nonce( $action = -1 ) {
+			return 'nonce-de-pruebas';
+		}
+	}
+	if ( ! function_exists( 'wp_nonce_url' ) ) {
+		function wp_nonce_url( $actionurl, $action = -1, $name = '_wpnonce' ) {
+			return add_query_arg( $name, 'nonce-de-pruebas', (string) $actionurl );
+		}
+	}
+	if ( ! function_exists( 'submit_button' ) ) {
+		function submit_button( $text = '', $type = 'primary', $name = 'submit', $wrap = true, $other_attributes = null ) {
+			$GLOBALS['__gw_submit_buttons'][] = $text;
+			echo '<button type="submit" name="' . $name . '">' . $text . '</button>';
+		}
+	}
+	if ( ! function_exists( 'esc_js' ) ) {
+		function esc_js( $text ) {
+			return str_replace( "'", '&#039;', (string) $text );
+		}
+	}
+	if ( ! function_exists( 'add_menu_page' ) ) {
+		function add_menu_page( $page_title, $menu_title, $capability, $menu_slug, $callback = '', $icon = '', $position = null ) {
+			$GLOBALS['__gw_menus'][ $menu_slug ] = compact( 'page_title', 'menu_title', 'capability', 'callback' );
+			return 'hook-' . $menu_slug;
+		}
+	}
+	if ( ! function_exists( 'add_submenu_page' ) ) {
+		function add_submenu_page( $parent, $page_title, $menu_title, $capability, $menu_slug, $callback = '', $position = null ) {
+			$GLOBALS['__gw_submenus'][ $menu_slug ] = compact( 'parent', 'page_title', 'capability', 'callback' );
+			return 'hook-' . $menu_slug;
+		}
+	}
+	if ( ! function_exists( 'do_action' ) ) {
+		// Se apunta lo lanzado: la pantalla de detalle avisa de un reenvío de correo y hay que
+		// poder comprobar que el gancho salió, no solo que no reventó.
+		function do_action( $hook, ...$args ) {
+			$GLOBALS['__gw_actions'][] = array( $hook, $args );
+			return null;
+		}
+	}
+	if ( ! function_exists( 'wp_safe_redirect' ) ) {
+		function wp_safe_redirect( $location, $status = 302 ) {
+			$GLOBALS['__gw_redirect'] = $location;
+			return true;
+		}
+	}
+	// Los shortcodes del front se registran en el constructor del manejador de pagos: se apuntan
+	// para poder comprobar que están puestos sin un WordPress de verdad.
+	if ( ! function_exists( 'add_shortcode' ) ) {
+		function add_shortcode( $tag, $callback ) {
+			$GLOBALS['__gw_shortcodes'][ $tag ] = $callback;
+			return true;
+		}
+	}
+	if ( ! function_exists( 'get_current_screen' ) ) {
+		function get_current_screen() {
+			return null;
+		}
+	}
+	// `WP_List_Table` pide `convert_to_screen()` para construir la pantalla; sin este doble,
+	// el constructor intenta cargar wp-admin/includes/screen.php y la prueba se cae antes de
+	// empezar (no hay WordPress en el runner).
+	if ( ! function_exists( 'convert_to_screen' ) ) {
+		function convert_to_screen( $hook_name = '' ) {
+			return (object) array(
+				'id'   => $hook_name,
+				'base' => $hook_name,
+			);
+		}
+	}
+	if ( ! function_exists( 'number_format_i18n' ) ) {
+		function number_format_i18n( $number, $decimals = 0 ) {
+			return number_format( (float) $number, (int) $decimals, ',', '.' );
+		}
 	}
 // --- Transients y caché de meta (los usa Dashboard_Widget) ---------------------------------
 if ( ! defined( 'DAY_IN_SECONDS' ) ) {

@@ -54,25 +54,6 @@ class CSV_Exporter {
 
 		$filename = 'pagos-convoca-' . current_time( 'Y-m-d-His' ) . '.csv';
 
-		// Las filas se generan de una en una: 5.000 pagos construidos de golpe son 5.000 arrays vivos.
-		$filas = ( static function () use ( $payments ) {
-			foreach ( $payments as $post ) {
-				$meta = CPT_Pago::get_meta( $post->ID );
-
-				yield array(
-					$post->ID,
-					$meta['order_id'],
-					number_format( $meta['amount_cents'] / 100, 2, ',', '.' ),
-					ucfirst( $meta['method'] ),
-					CPT_Pago::status()[ $meta['status'] ] ?? $meta['status'],
-					self::format_origin( $meta['origin'] ),
-					self::get_user_email( (string) $meta['origin'], (int) $meta['origin_id'] ),
-					$meta['created_at'],
-					$meta['paid_at'] ?: '—',
-				);
-			}
-		} )();
-
 		// La ceremonia —cabeceras, BOM, separador y la protección contra fórmulas— vive en un solo sitio
 		// del núcleo (issue convoca-core#16). Aquí estaba copiada a mano y **más corta** que el ayudante
 		// del ecosistema: cubría `= + - @` pero no el tabulador, el retorno de carro ni el `;`, que sí
@@ -90,10 +71,38 @@ class CSV_Exporter {
 				__( 'Fecha Creación', 'convoca-gateway' ),
 				__( 'Fecha Pago', 'convoca-gateway' ),
 			),
-			$filas
+			self::filas( $payments )
 		);
 
 		exit;
+	}
+
+	/**
+	 * Las filas del CSV, de una en una y ya formateadas.
+	 *
+	 * Estaba dentro de `export()`, que termina en `exit`: así no había manera de comprobar qué se
+	 * escribe en cada columna sin cortar el proceso. 5.000 pagos construidos de golpe serían 5.000
+	 * arrays vivos, de ahí el generador.
+	 *
+	 * @param array<int, object> $payments Pagos ya consultados (WP_Post).
+	 * @return iterable<int, array<int, mixed>>
+	 */
+	public static function filas( array $payments ): iterable {
+		foreach ( $payments as $post ) {
+			$meta = CPT_Pago::get_meta( $post->ID );
+
+			yield array(
+				$post->ID,
+				$meta['order_id'],
+				number_format( $meta['amount_cents'] / 100, 2, ',', '.' ),
+				ucfirst( $meta['method'] ),
+				CPT_Pago::status()[ $meta['status'] ] ?? $meta['status'],
+				self::format_origin( $meta['origin'] ),
+				self::get_user_email( (string) $meta['origin'], (int) $meta['origin_id'] ),
+				$meta['created_at'],
+				$meta['paid_at'] ?: '—',
+			);
+		}
 	}
 
 	/**
