@@ -139,6 +139,36 @@ class AdminLinksColumnasTest extends TestCase
         $this->assertStringContainsString('2026-10-01', $html);
     }
 
+    public function test_el_importe_del_enlace_sale_formateado(): void
+    {
+        $html = $this->admin()->column_amount($this->enlace(22, ['amount_cents' => 1500, 'open_amount' => 0]));
+
+        $this->assertStringContainsString('15,00', $html);
+    }
+
+    public function test_un_enlace_de_importe_libre_lo_dice(): void
+    {
+        $html = $this->admin()->column_amount($this->enlace(23, ['amount_cents' => 0, 'open_amount' => 1]));
+
+        $this->assertStringContainsString('libre', strtolower($html), 'un donativo no tiene importe fijo');
+    }
+
+    public function test_el_metodo_y_el_origen_se_pintan(): void
+    {
+        $metodo = $this->admin()->column_method($this->enlace(24, ['method' => 'bizum']));
+        $origen = $this->admin()->column_origin($this->enlace(25, ['origin' => 'link_payment']));
+
+        $this->assertStringContainsString('Bizum', $metodo);
+        $this->assertNotSame('', strip_tags($origen));
+    }
+
+    public function test_el_pedido_del_enlace_se_ve(): void
+    {
+        $html = $this->admin()->column_order_id($this->enlace(26, ['order_id' => 'LINK-026']));
+
+        $this->assertStringContainsString('LINK-026', $html);
+    }
+
     public function test_las_columnas_declaran_lo_necesario_para_gestionar_enlaces(): void
     {
         $claves = implode(' ', array_keys($this->admin()->get_columns()));
