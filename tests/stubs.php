@@ -358,6 +358,50 @@ namespace {
 			return $GLOBALS['__gw_nonce_ok'] ?? true;
 		}
 	}
+	if ( ! function_exists( 'check_ajax_referer' ) ) {
+		/**
+		 * Como `check_admin_referer`, pero para AJAX: corta si el nonce no vale.
+		 *
+		 * @param string|int $action Acción.
+		 * @param string     $campo  Campo del nonce.
+		 * @return true
+		 */
+		function check_ajax_referer( $action = -1, $campo = '_ajax_nonce' ) {
+			unset( $action, $campo );
+			if ( ! ( $GLOBALS['__gw_nonce_ok'] ?? true ) ) {
+				throw new RuntimeException( 'wp_die: nonce inválido' );
+			}
+			return true;
+		}
+	}
+	if ( ! function_exists( 'wp_send_json_error' ) ) {
+		/**
+		 * Respuesta AJAX de error: apunta y **corta**, como `wp_die` en WordPress.
+		 *
+		 * @param mixed $datos  Datos.
+		 * @param int   $estado Estado HTTP.
+		 * @return never
+		 */
+		function wp_send_json_error( $datos = null, $estado = null ) {
+			$GLOBALS['__gw_json'][] = array( 'ok' => false, 'datos' => $datos, 'estado' => $estado );
+			$mensaje                = is_array( $datos ) && isset( $datos['message'] ) ? (string) $datos['message'] : '';
+			throw new RuntimeException( 'json_error: ' . $mensaje );
+		}
+	}
+	if ( ! function_exists( 'wp_send_json_success' ) ) {
+		/**
+		 * Respuesta AJAX correcta: apunta y **corta** (en WordPress termina la petición).
+		 *
+		 * @param mixed $datos  Datos.
+		 * @param int   $estado Estado HTTP.
+		 * @return never
+		 */
+		function wp_send_json_success( $datos = null, $estado = null ) {
+			$GLOBALS['__gw_json'][] = array( 'ok' => true, 'datos' => $datos, 'estado' => $estado );
+			$mensaje                = is_array( $datos ) && isset( $datos['message'] ) ? (string) $datos['message'] : '';
+			throw new RuntimeException( 'json_ok: ' . $mensaje );
+		}
+	}
 	if ( ! function_exists( 'wp_create_nonce' ) ) {
 		function wp_create_nonce( $action = -1 ) {
 			return 'nonce-de-pruebas';
