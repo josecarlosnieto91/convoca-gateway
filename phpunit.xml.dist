@@ -8,9 +8,11 @@
       <directory suffix="Test.php">./tests/Integration</directory>
     </testsuite>
   </testsuites>
+  <!-- `admin/` (pantalla de ajustes del gateway) es lógica: entra. -->
   <source>
     <include>
       <directory suffix=".php">./includes</directory>
+      <directory suffix=".php">./admin</directory>
     </include>
   </source>
 </phpunit>
