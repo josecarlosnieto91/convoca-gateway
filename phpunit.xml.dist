@@ -13,6 +13,8 @@
     <include>
       <directory suffix=".php">./includes</directory>
       <directory suffix=".php">./admin</directory>
+      <file>./convoca-gateway.php</file>
+      <file>./uninstall.php</file>
     </include>
   </source>
 </phpunit>
