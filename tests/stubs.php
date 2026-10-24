@@ -198,9 +198,25 @@ namespace {
 	// ── Posts y metadatos ─────────────────────────────────────────────
 	function get_post( $post = null ) {
 		$id = (int) $post;
+		// Si la prueba ha puesto el post en el almacén, se devuelve **tal cual**: con su estado y su contenido. Antes
+		// solo se miraba `__gw_meta`/`__gw_inserted` y una página en borrador o sin shortcode era indistinguible.
+		if ( isset( $GLOBALS['_wp_stores']['posts'][ $id ] ) ) {
+			return $GLOBALS['_wp_stores']['posts'][ $id ];
+		}
 		$existe = isset( $GLOBALS['__gw_meta'][ $id ] ) || isset( $GLOBALS['__gw_inserted'][ $id ] );
 		return $existe ? new WP_Post( $id ) : null;
 	}
+	/**
+	 * ¿El contenido lleva el shortcode? Como WordPress: busca `[tag` (admite atributos).
+	 *
+	 * @param string $content Contenido.
+	 * @param string $tag     Shortcode.
+	 * @return bool
+	 */
+	function has_shortcode( $content, $tag ) {
+		return false !== strpos( (string) $content, '[' . $tag );
+	}
+
 	function get_post_type( $post = null ) {
 		$id = is_object( $post ) ? (int) $post->ID : (int) $post;
 		return $GLOBALS['__gw_posts'][ $id ] ?? false;
