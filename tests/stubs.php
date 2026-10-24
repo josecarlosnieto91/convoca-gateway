@@ -316,7 +316,25 @@ namespace {
 			'user_login'   => 'admin',
 		);
 	}
-	function wp_verify_nonce( $nonce, $action = -1 ) { return 1; }
+	/**
+	 * Comprueba un nonce.
+	 *
+	 * Por defecto **acepta** (comportamiento histórico del arnés, del que dependen muchas pruebas). Una prueba que
+	 * quiera medir el rechazo declara los válidos en `$GLOBALS['__gw_nonces']`; así el camino de «nonce inválido»
+	 * deja de ser inalcanzable sin romper lo que ya había.
+	 *
+	 * @param string     $nonce  Nonce recibido.
+	 * @param string|int $action Acción.
+	 * @return int|false
+	 */
+	function wp_verify_nonce( $nonce, $action = -1 ) {
+		unset( $action );
+		$validos = $GLOBALS['__gw_nonces'] ?? null;
+		if ( null === $validos ) {
+			return 1;
+		}
+		return in_array( (string) $nonce, array_map( 'strval', (array) $validos ), true ) ? 1 : false;
+	}
 	function wp_nonce_field( $action, $name = '_wpnonce' ) {
 		echo '<input type="hidden" name="' . $name . '">';
 	}
