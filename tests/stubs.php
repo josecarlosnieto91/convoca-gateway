@@ -223,7 +223,29 @@ namespace {
 	}
 	function get_posts( $args = array() ) { return $GLOBALS['__gw_hijos'] ?? array(); }
 	function post_type_exists( $tipo ) { return 'pago' === $tipo; }
+	/**
+	 * Busca una página por su slug, como WordPress: devuelve la que exista, sea cual sea su estado.
+	 *
+	 * @param string $slug Slug.
+	 * @param string $output Sin usar.
+	 * @param string $post_type Sin usar.
+	 * @return object|null
+	 */
+	function get_page_by_path( $slug, $output = 'OBJECT', $post_type = 'page' ) {
+		unset( $output, $post_type );
+		foreach ( $GLOBALS['_wp_stores']['posts'] ?? array() as $post ) {
+			if ( isset( $post->post_name ) && $post->post_name === $slug ) {
+				return $post;
+			}
+		}
+		return null;
+	}
+
 	function wp_insert_post( $data, $error = false ) {
+		unset( $error );
+		if ( ! empty( $GLOBALS['__gw_insert_falla'] ) ) {
+			return 0;
+		}
 		$id = 9000 + count( $GLOBALS['__gw_inserted'] );
 		$GLOBALS['__gw_inserted'][ $id ] = $data;
 		return $id;
