@@ -342,7 +342,7 @@ class Admin_Payments extends \WP_List_Table {
 			return esc_html__( 'Importe libre', 'convoca-gateway' );
 		}
 
-		return CPT_Pago::format_amount( $meta['amount_cents'] );
+		return CPT_Pago::format_amount( (int) ( $meta['amount_cents'] ?? 0 ) );
 	}
 
 	/**
@@ -487,7 +487,7 @@ class Admin_Payments extends \WP_List_Table {
 									</tr>
 									<tr>
 										<th><?php esc_html_e( 'Importe', 'convoca-gateway' ); ?></th>
-										<td><strong><?php echo CPT_Pago::format_amount( $meta['amount_cents'] ); // phpcs:ignore WordPress.Security.EscapeOutput.OutputNotEscaped -- format_amount returns escaped output ?></strong></td>
+										<td><strong><?php echo CPT_Pago::format_amount( (int) ( $meta['amount_cents'] ?? 0 ) ); // phpcs:ignore WordPress.Security.EscapeOutput.OutputNotEscaped -- format_amount returns escaped output ?></strong></td>
 									</tr>
 									<tr>
 										<th><?php esc_html_e( 'Método', 'convoca-gateway' ); ?></th>

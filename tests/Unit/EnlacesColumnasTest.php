@@ -133,6 +133,38 @@ final class EnlacesColumnasTest extends TestCase {
 	}
 
 	/**
+	 * **Un enlace sin importe no tumba la pantalla.**
+	 *
+	 * `CPT_Pago::get_meta()` devuelve lo que da `get_post_meta( ..., true )`, que para un meta escalar es
+	 * **cadena** y para un meta que no existe es cadena vacía. Pasarla a `format_amount( int $cents )` lanza
+	 * `TypeError` en PHP 8 —la cadena vacía no es numérica— y el listado de enlaces entero se quedaba sin pintar:
+	 * basta un registro antiguo, una importación a medias o un cobro creado por otra vía (gateway#11).
+	 */
+	public function test_un_enlace_sin_importe_no_revienta(): void {
+		$html = $this->listado->column_amount(
+			$this->enlace( array( '_convoca_amount_cents' => '' ) )
+		);
+
+		$this->assertStringContainsString( '0,00', $html, 'sin importe se enseña cero, no un fatal' );
+	}
+
+	/**
+	 * Y tampoco si la meta no está: `get_post_meta` devuelve `''` y el cast lo deja en cero.
+	 */
+	public function test_un_enlace_sin_la_meta_de_importe_no_revienta(): void {
+		$GLOBALS['__gw_meta'][50] = array(
+			'_convoca_product_desc' => 'Cuota anual',
+			'_convoca_link_key'     => 'abc123',
+			'_convoca_method'       => 'tarjeta',
+		);
+
+		$html = $this->listado->column_amount( (object) array( 'ID' => 50 ) );
+
+		$this->assertStringContainsString( '0,00', $html );
+		$this->assertStringNotContainsString( 'Importe libre', $html, 'sin open_amount no es un donativo abierto' );
+	}
+
+	/**
 	 * Un importe fijo se formatea.
 	 */
 	public function test_importe_fijo(): void {

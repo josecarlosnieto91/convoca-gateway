@@ -210,7 +210,7 @@ class Admin_Links extends \WP_List_Table {
 			return esc_html__( 'Importe libre', 'convoca-gateway' );
 		}
 
-		return CPT_Pago::format_amount( $meta['amount_cents'] );
+		return CPT_Pago::format_amount( (int) ( $meta['amount_cents'] ?? 0 ) );
 	}
 
 	/**
