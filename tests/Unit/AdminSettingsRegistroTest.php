@@ -13,6 +13,7 @@ namespace Convoca\Gateway\Tests;
 
 use Convoca\Gateway\Admin_Settings;
 use Convoca\Gateway\Tests\License_Manager_Doble;
+use PHPUnit\Framework\Attributes\RunInSeparateProcess;
 use PHPUnit\Framework\TestCase;
 
 require_once dirname(__DIR__, 2) . '/includes/Admin_Settings.php';
@@ -122,6 +123,16 @@ class AdminSettingsRegistroTest extends TestCase
         $this->assertStringContainsString('Nueve dígitos', $html, 'y su ayuda');
     }
 
+    /**
+     * En proceso APARTE: este caso necesita que `CONVOCA_GATEWAY_SECRET_KEY` NO esté definida, y `define()` no se
+     * puede deshacer. Otras dos suites (`RedsysClientTest`, `PagoNotificacionYRetornoTest`) la definen para poder
+     * firmar, así que en el mismo proceso esta rama es inalcanzable en cuanto una de ellas corre antes — y con orden
+     * aleatorio eso es la mitad de las veces (gateway#12).
+     *
+     * El proceso hijo arranca un PHP limpio: la constante no existe y la rama se ejerce de verdad. Lo único que se
+     * pierde es el aporte de cobertura de ESTE caso al padre, que es un precio razonable por medir la rama.
+     */
+    #[RunInSeparateProcess]
     public function test_un_campo_de_clave_no_enseña_la_clave(): void
     {
         // Se guarda cifrada con el prefijo «enc:»: la pantalla no puede volcar el cifrado ni la clave.
@@ -171,11 +182,13 @@ class AdminSettingsRegistroTest extends TestCase
     }
 
     /*
-     * La rama «el valor viene de una constante de wp-config» (CONVOCA_GATEWAY_MERCHANT_CODE y
-     * CONVOCA_GATEWAY_SECRET_KEY) NO se prueba aquí, y el motivo es concreto: definir() no se puede
-     * deshacer, y dejar esa constante definida hace que el resto de la suite crea que el TPV está
-     * configurado —rompió tres pruebas de SinMetodosDePagoTest—. Aislarla en otro proceso tampoco
-     * vale: PHPUnit con cobertura activa revienta al ejecutar un test en un proceso hijo.
-     * Queda escrito como excepción, no como olvido.
+     * La rama «el valor viene de una constante de wp-config» para CONVOCA_GATEWAY_MERCHANT_CODE sigue sin probarse
+     * aquí: definir() no se puede deshacer y dejar esa constante puesta hace que el resto de la suite crea que el TPV
+     * está configurado (rompió tres pruebas de SinMetodosDePagoTest).
+     *
+     * CORRECCIÓN de la nota anterior: decía que «aislarla en otro proceso tampoco vale porque PHPUnit con cobertura
+     * activa revienta». NO es cierto — se hizo en convoca-theme (theme#15) con la cobertura activa y funcionó. Lo
+     * que ocurre es más simple: el proceso HIJO no aporta su cobertura al padre. Eso es un precio, no un impedimento,
+     * y por eso el caso de la clave secreta sí está aislado arriba.
      */
 }

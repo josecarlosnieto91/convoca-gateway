@@ -19,10 +19,26 @@ namespace Convoca\Gateway\Tests {
 		}
 
 		protected function setUp(): void {
+			// Escenario limpio: `default_expiry_days()` lee `expiry_days` de los ajustes, y casos de otras suites
+			// dejan ahí su valor (3, por ejemplo). Este fichero comprueba los VALORES POR DEFECTO, así que los
+			// ajustes tienen que estar vacíos — no se hereda el estado (gateway#12).
+			$GLOBALS['__gw_options'] = array();
+			gw_reset_settings_cache();
+
 			$this->loadClass( 'Link_Expiry.php' );
 			$this->loadClass( 'Receipt_Generator.php' );
 			$this->loadClass( 'Payment_Handler.php' );
 			$this->loadClass( 'Redsys_Client.php' );
+		}
+
+		/**
+		 * Devuelve el escenario a como estaba.
+		 *
+		 * @return void
+		 */
+		protected function tearDown(): void {
+			$GLOBALS['__gw_options'] = array();
+			gw_reset_settings_cache();
 		}
 
 		// ── D23/D24: cálculo de numeración anual ───────────────────────

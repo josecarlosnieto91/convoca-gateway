@@ -55,6 +55,11 @@ namespace Convoca\Gateway\Tests {
 			foreach ( array( 'convoca_gateway_methods_cache', 'convoca_gateway_settings_cache' ) as $k ) {
 				unset( $GLOBALS['__gw_options'][ $k ] );
 			}
+
+			// La caché de VERDAD es la propiedad estática de `Redsys_Client`, no esas dos opciones: con la caché
+			// llena este caso cree que hay credenciales configuradas y sus tres pruebas del aviso fallan
+			// (gateway#12). Un «resetCaches» que no vacía la caché que el producto usa no resetea nada.
+			gw_reset_settings_cache();
 		}
 
 		/**

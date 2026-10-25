@@ -776,6 +776,33 @@ namespace {
 		}
 	}
 
+	if ( ! function_exists( 'gw_reset_settings_cache' ) ) {
+		/**
+		 * Vacía la caché estática de ajustes de `Redsys_Client`.
+		 *
+		 * `Redsys_Client::settings()` cachea `convoca_gateway_settings` en `private static ?array $settings` y no la
+		 * invalida nunca. En producción es correcto —un proceso PHP atiende una petición y los ajustes se leen una
+		 * vez— pero en las pruebas el proceso es el mismo para toda la suite: el primer caso que lee los ajustes deja
+		 * el valor cacheado para los demás, y de ahí el `merchant_mismatch` de `PaymentConfirmationTest` según qué
+		 * hubiera corrido antes (gateway#12).
+		 *
+		 * Se hace por REFLEXIÓN y no añadiendo un método al producto: la caché no está mal, lo que falta es poder
+		 * reiniciarla desde una prueba. Si el producto necesitara invalidarla de verdad, sería otro cambio y otro
+		 * issue.
+		 *
+		 * @return void
+		 */
+		function gw_reset_settings_cache(): void {
+			if ( ! class_exists( '\\Convoca\\Gateway\\Redsys_Client' ) ) {
+				return;
+			}
+
+			$prop = new ReflectionProperty( '\\Convoca\\Gateway\\Redsys_Client', 'settings' );
+			$prop->setAccessible( true );
+			$prop->setValue( null, null );
+		}
+	}
+
 	if ( ! function_exists( 'flush_rewrite_rules' ) ) {
 		/**
 		 * Refresco de reglas: se apunta.

@@ -28,6 +28,7 @@ namespace Convoca\Gateway\Tests {
 		 */
 		protected function tearDown(): void {
 			unset( $_SERVER['REMOTE_ADDR'] );
+			gw_reset_settings_cache();
 		}
 
 		protected function setUp(): void {
@@ -40,6 +41,10 @@ namespace Convoca\Gateway\Tests {
 				}
 				self::$cargado = true;
 			}
+
+			// La caché de ajustes del cliente es estática y sobrevive a la suite: si otro caso leyó
+			// `convoca_gateway_settings` antes, aquí el `merchant_code` sería el suyo (gateway#12).
+			gw_reset_settings_cache();
 
 			$_GET  = array();
 			$_POST = array();
