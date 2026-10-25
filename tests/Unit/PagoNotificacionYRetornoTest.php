@@ -161,6 +161,7 @@ class PagoNotificacionYRetornoTest extends TestCase
     public function test_una_notificacion_de_una_ip_desconocida_se_rechaza(): void
     {
         $_SERVER['REMOTE_ADDR'] = '8.8.8.8';
+        // Se limpia al terminar el caso (ver `tearDown`): dejarla puesta decide el rate limit de otra suite.
 
         $resultado = (new Payment_Handler())->process_notification($this->notificacion($this->parametros(3000)));
 

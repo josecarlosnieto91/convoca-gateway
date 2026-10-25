@@ -248,6 +248,10 @@ class ArranqueTest extends TestCase
         );
 
         // Abuso: más de 30 avisos por minuto desde la misma IP.
+        // La IP se FIJA aquí: el producto la lee de `$_SERVER['REMOTE_ADDR']`, y si otra suite la dejó puesta el
+        // contador de este caso no es el que el manejador consulta — el 429 no salta y la prueba falla por lo que
+        // hizo la anterior (gateway#11).
+        $_SERVER['REMOTE_ADDR'] = 'unknown';
         $ip = md5('unknown');
         set_transient('convoca_notify_rt_' . $ip, 31, 60);
         $respuesta = $callback(new \WP_REST_Request());

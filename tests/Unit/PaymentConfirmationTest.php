@@ -17,6 +17,19 @@ namespace Convoca\Gateway\Tests {
 
 		private static $cargado = false;
 
+		/**
+		 * Devuelve el entorno a como estaba.
+		 *
+		 * Este caso fija `$_SERVER['REMOTE_ADDR']` y no lo limpiaba, así que el rate limit por IP de
+		 * `ArranqueTest` consultaba un contador de OTRA IP y su 429 no saltaba (gateway#11). Lo que una prueba deja
+		 * puesto decide el resultado de la siguiente.
+		 *
+		 * @return void
+		 */
+		protected function tearDown(): void {
+			unset( $_SERVER['REMOTE_ADDR'] );
+		}
+
 		protected function setUp(): void {
 			if ( ! self::$cargado ) {
 				foreach ( array( 'CPT_Pago', 'Redsys_Client', 'Link_Expiry', 'Payment_Handler' ) as $class ) {
