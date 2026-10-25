@@ -186,7 +186,11 @@ namespace {
 	function current_time( $format ) { return '2025-01-01 00:00:00'; }
 	function wp_date( $format, $timestamp = null ) { return gmdate( $format, $timestamp ?? time() ); }
 	function wp_next_scheduled( $hook, $args = array() ) { return false; }
-	function wp_schedule_event( $timestamp, $recurrence, $hook, $args = array() ) { return true; }
+	// WordPress guarda el evento: el arnés lo apunta para poder afirmar qué cron queda programado.
+	function wp_schedule_event( $timestamp, $recurrence, $hook, $args = array() ) {
+		$GLOBALS['__gw_cron_programados'][] = array( (string) $hook, (string) $recurrence );
+		return true;
+	}
 
 	// ── Red / HTTP ────────────────────────────────────────────────────
 	function wp_json_encode( $data, $options = 0, $depth = 512 ) { return json_encode( $data, $options, $depth ); }
@@ -620,6 +624,442 @@ if ( ! function_exists( 'update_meta_cache' ) ) {
 				echo $r;
 			}
 			return $r;
+		}
+	}
+}
+
+namespace {
+
+	// ── Dobles del arranque del plugin ───────────────────────────────
+	// El fichero principal y el desinstalador estaban FUERA del <source> hasta el 24-10:
+	// sus 160 statements no se medían. Para medirlos hacen falta estas funciones de
+	// WordPress, que el arnés no tenía porque ninguna prueba cargaba el arranque.
+
+	if ( ! function_exists( 'get_file_data' ) ) {
+		/**
+		 * Cabecera del plugin, como WordPress (aquí, la versión del fichero real).
+		 *
+		 * @param string $file    Fichero.
+		 * @param array  $headers Cabeceras pedidas.
+		 * @param string $context Contexto.
+		 * @return array<string, string>
+		 */
+		function get_file_data( $file, $headers = array(), $context = '' ) {
+			unset( $file, $context );
+			$salida = array();
+			foreach ( array_keys( (array) $headers ) as $clave ) {
+				$salida[ $clave ] = $GLOBALS['__gw_file_data'][ $clave ] ?? '';
+			}
+			return $salida;
+		}
+	}
+
+	if ( ! function_exists( 'is_admin' ) ) {
+		/**
+		 * Si la petición es del panel. La prueba lo fija con `__gw_is_admin`.
+		 *
+		 * @return bool
+		 */
+		function is_admin() {
+			return (bool) ( $GLOBALS['__gw_is_admin'] ?? false );
+		}
+	}
+
+	if ( ! function_exists( 'plugin_dir_path' ) ) {
+		/**
+		 * Ruta del plugin.
+		 *
+		 * @param string $file Fichero.
+		 * @return string
+		 */
+		function plugin_dir_path( $file ) {
+			return rtrim( dirname( (string) $file ), '/' ) . '/';
+		}
+	}
+
+	if ( ! function_exists( 'plugin_dir_url' ) ) {
+		/**
+		 * URL del plugin.
+		 *
+		 * @param string $file Fichero.
+		 * @return string
+		 */
+		function plugin_dir_url( $file ) {
+			unset( $file );
+			return 'https://example.com/wp-content/plugins/convoca-gateway/';
+		}
+	}
+
+	if ( ! function_exists( 'plugin_basename' ) ) {
+		/**
+		 * Nombre del plugin relativo a plugins/.
+		 *
+		 * @param string $file Fichero.
+		 * @return string
+		 */
+		function plugin_basename( $file ) {
+			return 'convoca-gateway/' . basename( (string) $file );
+		}
+	}
+
+	if ( ! function_exists( 'wp_set_script_translations' ) ) {
+		/**
+		 * Traducciones de los scripts: se apunta la llamada.
+		 *
+		 * @param string $handle Nombre del script.
+		 * @param string $domain Dominio.
+		 * @param string $path   Ruta.
+		 * @return bool
+		 */
+		function wp_set_script_translations( $handle, $domain = 'default', $path = '' ) {
+			$GLOBALS['__gw_traducciones_scripts'][] = array( $handle, $domain, $path );
+			return true;
+		}
+	}
+
+	if ( ! function_exists( 'load_plugin_textdomain' ) ) {
+		/**
+		 * Carga del textdomain: se apunta la llamada.
+		 *
+		 * @param string $domain Dominio.
+		 * @param bool   $deprecated Sin uso.
+		 * @param string $path   Ruta.
+		 * @return bool
+		 */
+		function load_plugin_textdomain( $domain, $deprecated = false, $path = '' ) {
+			unset( $deprecated );
+			$GLOBALS['__gw_textdomains'][] = array( $domain, $path );
+			return true;
+		}
+	}
+
+	if ( ! function_exists( 'register_activation_hook' ) ) {
+		/**
+		 * Engancha la activación y la apunta.
+		 *
+		 * @param string   $file     Fichero del plugin.
+		 * @param callable $callback Devolución de llamada.
+		 * @return void
+		 */
+		function register_activation_hook( $file, $callback ) {
+			unset( $file );
+			$GLOBALS['__gw_activacion'] = $callback;
+		}
+	}
+
+	if ( ! function_exists( 'register_deactivation_hook' ) ) {
+		/**
+		 * Engancha la desactivación y la apunta.
+		 *
+		 * @param string   $file     Fichero del plugin.
+		 * @param callable $callback Devolución de llamada.
+		 * @return void
+		 */
+		function register_deactivation_hook( $file, $callback ) {
+			unset( $file );
+			$GLOBALS['__gw_desactivacion'] = $callback;
+		}
+	}
+
+	if ( ! function_exists( 'register_rest_route' ) ) {
+		/**
+		 * Registra una ruta REST y guarda sus argumentos.
+		 *
+		 * @param string $namespace Espacio de nombres.
+		 * @param string $route     Ruta.
+		 * @param array  $args      Argumentos.
+		 * @return bool
+		 */
+		function register_rest_route( $namespace, $route, $args = array() ) {
+			$GLOBALS['__gw_rutas'][ $namespace . $route ] = $args;
+			return true;
+		}
+	}
+
+	if ( ! function_exists( 'flush_rewrite_rules' ) ) {
+		/**
+		 * Refresco de reglas: se apunta.
+		 *
+		 * @return void
+		 */
+		function flush_rewrite_rules() {
+			$GLOBALS['__gw_rewrites'] = ( $GLOBALS['__gw_rewrites'] ?? 0 ) + 1;
+		}
+	}
+
+	if ( ! function_exists( 'add_option' ) ) {
+		/**
+		 * Añade una opción si no existe (como WordPress).
+		 *
+		 * @param string $key     Clave.
+		 * @param mixed  $value   Valor.
+		 * @param string $deprecated Sin uso.
+		 * @param mixed  $autoload Autocarga.
+		 * @return bool
+		 */
+		function add_option( $key, $value = '', $deprecated = '', $autoload = null ) {
+			unset( $deprecated, $autoload );
+			if ( array_key_exists( $key, $GLOBALS['__gw_options'] ) ) {
+				return false;
+			}
+			$GLOBALS['__gw_options'][ $key ] = $value;
+			return true;
+		}
+	}
+
+	if ( ! function_exists( 'wp_clear_scheduled_hook' ) ) {
+		/**
+		 * Limpia un cron y lo apunta.
+		 *
+		 * @param string $hook Gancho.
+		 * @param array  $args Argumentos.
+		 * @return int
+		 */
+		function wp_clear_scheduled_hook( $hook, $args = array() ) {
+			unset( $args );
+			$GLOBALS['__gw_cron_limpiados'][] = $hook;
+			return 1;
+		}
+	}
+
+	if ( ! class_exists( 'WP_REST_Request' ) ) {
+		/**
+		 * Petición REST mínima: parámetros y cuerpo.
+		 */
+		class WP_REST_Request {
+
+			/**
+			 * Parámetros de la petición.
+			 *
+			 * @var array<string, mixed>
+			 */
+			public $params = array();
+
+			/**
+			 * Cuerpo crudo.
+			 *
+			 * @var string
+			 */
+			public $body = '';
+
+			/**
+			 * Construye la petición.
+			 *
+			 * @param array  $params Parámetros.
+			 * @param string $body   Cuerpo.
+			 */
+			public function __construct( $params = array(), $body = '' ) {
+				$this->params = (array) $params;
+				$this->body   = (string) $body;
+			}
+
+			/**
+			 * Parámetros de la petición.
+			 *
+			 * @return array<string, mixed>
+			 */
+			public function get_params() {
+				return $this->params;
+			}
+
+			/**
+			 * Cuerpo crudo.
+			 *
+			 * @return string
+			 */
+			public function get_body() {
+				return $this->body;
+			}
+		}
+	}
+
+	if ( ! class_exists( 'WP_REST_Response' ) ) {
+		/**
+		 * Respuesta REST mínima: datos y estado.
+		 */
+		class WP_REST_Response {
+
+			/**
+			 * Datos de la respuesta.
+			 *
+			 * @var mixed
+			 */
+			public $data;
+
+			/**
+			 * Código de estado.
+			 *
+			 * @var int
+			 */
+			public $status;
+
+			/**
+			 * Construye la respuesta.
+			 *
+			 * @param mixed $data   Datos.
+			 * @param int   $status Estado.
+			 */
+			public function __construct( $data = null, $status = 200 ) {
+				$this->data   = $data;
+				$this->status = (int) $status;
+			}
+
+			/**
+			 * Datos.
+			 *
+			 * @return mixed
+			 */
+			public function get_data() {
+				return $this->data;
+			}
+
+			/**
+			 * Estado.
+			 *
+			 * @return int
+			 */
+			public function get_status() {
+				return $this->status;
+			}
+		}
+	}
+
+	if ( ! function_exists( '__return_true' ) ) {
+		/**
+		 * Devuelve true (lo usa WordPress para permisos abiertos).
+		 *
+		 * @return bool
+		 */
+		function __return_true() {
+			return true;
+		}
+	}
+}
+
+namespace Convoca\Core {
+
+	// El gateway hereda del gestor de actualizaciones del núcleo, que estos tests unitarios no cargan.
+	// El doble copia el CONTRATO real (init/maybe_upgrade/force_version_check y las cuatro consultas
+	// abstractas): antes ni existía, así que el subclase del gateway no se podía ni construir y sus
+	// migraciones no se medían.
+	if ( ! class_exists( 'Convoca\Core\Upgrade_Manager' ) ) {
+
+		/**
+		 * Gestor de actualizaciones (doble fiel del núcleo).
+		 */
+		abstract class Upgrade_Manager {
+
+			/**
+			 * Engancha la comprobación de versión.
+			 *
+			 * @return void
+			 */
+			public function init(): void {
+				add_action( 'admin_init', array( $this, 'maybe_upgrade' ) );
+				add_action( 'upgrader_process_complete', array( $this, 'force_version_check' ), 10, 2 );
+			}
+
+			/**
+			 * Comprueba si toca migrar y ejecuta lo que falte.
+			 *
+			 * @return void
+			 */
+			public function maybe_upgrade(): void {
+				$guardada = $this->get_saved_version();
+				$actual   = $this->get_db_version();
+
+				if ( version_compare( $guardada, $actual, '>=' ) ) {
+					return;
+				}
+
+				foreach ( $this->get_upgrade_callbacks() as $version => $callback ) {
+					if ( version_compare( (string) $version, $guardada, '>' ) && version_compare( (string) $version, $actual, '<=' ) ) {
+						call_user_func( $callback );
+					}
+				}
+
+				update_option( $this->get_option_name(), $actual );
+			}
+
+			/**
+			 * Fuerza la comprobación (tras actualizar el plugin).
+			 *
+			 * @param mixed ...$args Argumentos del gancho.
+			 * @return void
+			 */
+			public function force_version_check( ...$args ): void {
+				unset( $args );
+				$this->maybe_upgrade();
+			}
+
+			/**
+			 * Versión guardada en la base.
+			 *
+			 * @return string
+			 */
+			protected function get_saved_version(): string {
+				return (string) get_option( $this->get_option_name(), '0.0.0' );
+			}
+
+			/**
+			 * Versión de la base que pide el plugin.
+			 *
+			 * @return string
+			 */
+			abstract protected function get_db_version(): string;
+
+			/**
+			 * Clave de la opción donde vive la versión.
+			 *
+			 * @return string
+			 */
+			abstract protected function get_option_name(): string;
+
+			/**
+			 * Prefijo de los transients del gestor.
+			 *
+			 * @return string
+			 */
+			abstract protected function get_transient_prefix(): string;
+
+			/**
+			 * Migraciones por versión.
+			 *
+			 * @return array<string, callable>
+			 */
+			abstract protected function get_upgrade_callbacks(): array;
+		}
+	}
+}
+
+namespace {
+
+	if ( ! function_exists( 'register_post_type' ) ) {
+		/**
+		 * Registra un tipo de contenido y apunta lo registrado.
+		 *
+		 * @param string $tipo Tipo.
+		 * @param array  $args Argumentos.
+		 * @return object
+		 */
+		function register_post_type( $tipo, $args = array() ) {
+			$GLOBALS['__gw_post_types'][ $tipo ] = (array) $args;
+			return (object) array( 'name' => $tipo );
+		}
+	}
+
+	if ( ! function_exists( 'register_taxonomy' ) ) {
+		/**
+		 * Registra una taxonomía y apunta lo registrado.
+		 *
+		 * @param string $taxonomia Taxonomía.
+		 * @param array  $tipos     Tipos de contenido.
+		 * @param array  $args      Argumentos.
+		 * @return object
+		 */
+		function register_taxonomy( $taxonomia, $tipos = array(), $args = array() ) {
+			$GLOBALS['__gw_taxonomias'][ $taxonomia ] = array( $tipos, (array) $args );
+			return (object) array( 'name' => $taxonomia );
 		}
 	}
 }
