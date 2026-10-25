@@ -35,6 +35,15 @@ final class RegresionRetornoFirmadoTest extends TestCase {
 		if ( file_exists( $ruta ) && ! class_exists( '\\Convoca\\Gateway\\Redsys_Client' ) ) {
 			require_once $ruta;
 		}
+
+		// **La caché estática de ajustes hay que soltarla.** `Redsys_Client` guarda los ajustes en una propiedad
+		// `static` que nadie limpia sola: si antes corrió una prueba que los dejó con otros valores —`Redsys_Client`
+		// los cachea en la primera lectura—, el `update_option()` de arriba no le llega y la firma se calcula con la
+		// clave anterior. El resultado es «un retorno bien firmado no se acepta», y solo con ciertas semillas
+		// (gateway#12). `PaymentConfirmationTest` y `ReceiptExpiryTest` ya lo hacían; esta prueba se lo saltaba.
+		if ( function_exists( 'gw_reset_settings_cache' ) ) {
+			gw_reset_settings_cache();
+		}
 	}
 
 	/**
