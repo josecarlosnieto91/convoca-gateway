@@ -259,7 +259,7 @@ class Dashboard_Widget {
 			$key           = wp_date( 'Y-m-d', $ts );
 			$last_7_days[] = array(
 				'label'       => wp_date( 'd M', $ts ),
-				'extra_label' => ucfirst( wp_date( 'D d', $ts ) ),
+				'extra_label' => ucfirst( (string) wp_date( 'D d', $ts ) ),
 				'count'       => $day_map[ $key ]['count'] ?? 0,
 				'total'       => $day_map[ $key ]['total'] ?? 0,
 			);

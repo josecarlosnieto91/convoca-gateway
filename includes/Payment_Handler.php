@@ -1242,7 +1242,7 @@ class Payment_Handler {
 			});
 		</script>
 		<?php
-		return ob_get_clean();
+		return (string) ob_get_clean();
 	}
 
 	/**
@@ -2042,7 +2042,7 @@ class Payment_Handler {
 		</div>
 		<?php wp_enqueue_style( 'convoca-gateway' ); ?>
 		<?php
-		return ob_get_clean();
+		return (string) ob_get_clean();
 	}
 
 	public function render_ko_page( $atts ): string {
@@ -2072,7 +2072,7 @@ class Payment_Handler {
 		</div>
 		<?php wp_enqueue_style( 'convoca-gateway' ); ?>
 		<?php
-		return ob_get_clean();
+		return (string) ob_get_clean();
 	}
 
 	/**
@@ -2120,7 +2120,7 @@ class Payment_Handler {
 			<button type="submit" name="convoca_gateway_regenerate" class="wp-block-button__link"><?php echo esc_html( $label ); ?></button>
 		</form>
 		<?php
-		return ob_get_clean();
+		return (string) ob_get_clean();
 	}
 
 	/**

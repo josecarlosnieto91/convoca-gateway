@@ -463,7 +463,7 @@ class Admin_Links extends \WP_List_Table {
 					<tr>
 						<th scope="row"><label for="convoca_expires"><?php esc_html_e( 'Caducidad', 'convoca-gateway' ); ?></label></th>
 						<td>
-							<input type="date" name="expires" id="convoca_expires" value="<?php echo esc_attr( $fecha ); ?>">
+							<input type="date" name="expires" id="convoca_expires" value="<?php echo esc_attr( (string) $fecha ); ?>">
 							<label style="margin-left:1rem;">
 								<input type="checkbox" name="never_expires" value="1" <?php checked( $nunca ); ?>>
 								<?php esc_html_e( 'Sin caducidad', 'convoca-gateway' ); ?>

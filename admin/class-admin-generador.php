@@ -169,7 +169,7 @@ class Admin_Generador {
 							</th>
 							<td>
 								<input type="date" name="convoca_gateway_expires" id="convoca_gateway_expires" class="regular-text"
-										min="<?php echo esc_attr( wp_date( 'Y-m-d', strtotime( '+1 day' ) ) ); ?>">
+										min="<?php echo esc_attr( (string) wp_date( 'Y-m-d', strtotime( '+1 day' ) ) ); ?>">
 								<p class="description">Dejar vacío para usar la validez por defecto (7 días)</p>
 								<label style="display: block; margin-top: 10px;">
 									<input type="checkbox" name="convoca_gateway_never_expires" id="convoca_gateway_never_expires" value="1">

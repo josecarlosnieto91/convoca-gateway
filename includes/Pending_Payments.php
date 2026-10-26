@@ -189,7 +189,7 @@ class Pending_Payments {
 				'<tr><td><a href="%s">%s</a><br><span style="color:#666;">%s · %s · %s</span></td><td style="text-align:right;white-space:nowrap;">%s</td></tr>',
 				esc_url( (string) get_edit_post_link( $id ) ),
 				esc_html( '' !== (string) $meta['product_desc'] ? (string) $meta['product_desc'] : (string) $meta['order_id'] ),
-				esc_html( $fecha ? wp_date( 'd/m/Y H:i', $fecha ) : '—' ),
+				esc_html( $fecha ? (string) wp_date( 'd/m/Y H:i', $fecha ) : '—' ),
 				esc_html( CPT_Pago::method_label( (string) $meta['method'] ) ),
 				'' !== $correo
 					? esc_html__( 'con correo', 'convoca-gateway' )
