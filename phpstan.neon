@@ -1,8 +1,9 @@
 includes:
-    # - phpstan-baseline.neon (temporal)
+    - phpstan-baseline.neon
 
 parameters:
-    level: 5
+    level: 8
+    reportUnmatchedIgnoredErrors: false
     paths:
         - admin
         - includes

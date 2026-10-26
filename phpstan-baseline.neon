@@ -1,0 +1,625 @@
+parameters:
+	ignoreErrors:
+		-
+			message: '#^Method Convoca\\Gateway\\Admin_Generador\:\:get_offline_methods\(\) return type has no value type specified in iterable type array\.$#'
+			identifier: missingType.iterableValue
+			count: 1
+			path: admin/class-admin-generador.php
+
+		-
+			message: '#^Method Convoca\\Gateway\\Admin_Generador\:\:process_generation\(\) has parameter \$post with no value type specified in iterable type array\.$#'
+			identifier: missingType.iterableValue
+			count: 1
+			path: admin/class-admin-generador.php
+
+		-
+			message: '#^Method Convoca\\Gateway\\Admin_Generador\:\:process_generation\(\) return type has no value type specified in iterable type array\.$#'
+			identifier: missingType.iterableValue
+			count: 1
+			path: admin/class-admin-generador.php
+
+		-
+			message: '#^Parameter \#1 \$text of function esc_attr expects string, string\|false given\.$#'
+			identifier: argument.type
+			count: 1
+			path: admin/class-admin-generador.php
+
+		-
+			message: '#^Function Convoca\\Gateway\\convoca_gateway_create_payment\(\) has parameter \$args with no value type specified in iterable type array\.$#'
+			identifier: missingType.iterableValue
+			count: 1
+			path: convoca-gateway.php
+
+		-
+			message: '#^Function Convoca\\Gateway\\convoca_gateway_create_payment\(\) return type has no value type specified in iterable type array\.$#'
+			identifier: missingType.iterableValue
+			count: 1
+			path: convoca-gateway.php
+
+		-
+			message: '#^Function Convoca\\Gateway\\convoca_get_gateway_settings\(\) return type has no value type specified in iterable type array\.$#'
+			identifier: missingType.iterableValue
+			count: 1
+			path: convoca-gateway.php
+
+		-
+			message: '#^Method Convoca\\Gateway\\Admin_Links\:\:column_active\(\) has parameter \$item with no type specified\.$#'
+			identifier: missingType.parameter
+			count: 1
+			path: includes/Admin_Links.php
+
+		-
+			message: '#^Parameter \#1 \$text of function esc_attr expects string, string\|false given\.$#'
+			identifier: argument.type
+			count: 1
+			path: includes/Admin_Links.php
+
+		-
+			message: '#^Property WP_List_Table\:\:\$items \(array\<int\|string, mixed\>\) does not accept array\<int\|WP_Post\>\|null\.$#'
+			identifier: assign.propertyType
+			count: 1
+			path: includes/Admin_Links.php
+
+		-
+			message: '#^Method Convoca\\Gateway\\Admin_Payments\:\:build_export_query_args\(\) return type has no value type specified in iterable type array\.$#'
+			identifier: missingType.iterableValue
+			count: 1
+			path: includes/Admin_Payments.php
+
+		-
+			message: '#^Property Convoca\\Gateway\\Admin_Payments\:\:\$_column_headers type has no value type specified in iterable type array\.$#'
+			identifier: missingType.iterableValue
+			count: 1
+			path: includes/Admin_Payments.php
+
+		-
+			message: '#^Property WP_List_Table\:\:\$items \(array\<int\|string, mixed\>\) does not accept array\<int\|WP_Post\>\|null\.$#'
+			identifier: assign.propertyType
+			count: 1
+			path: includes/Admin_Payments.php
+
+		-
+			message: '#^Method Convoca\\Gateway\\Admin_Settings\:\:render_form_field\(\) has parameter \$field with no value type specified in iterable type array\.$#'
+			identifier: missingType.iterableValue
+			count: 1
+			path: includes/Admin_Settings.php
+
+		-
+			message: '#^Method Convoca\\Gateway\\Admin_Settings\:\:sanitize\(\) has parameter \$input with no value type specified in iterable type array\.$#'
+			identifier: missingType.iterableValue
+			count: 1
+			path: includes/Admin_Settings.php
+
+		-
+			message: '#^Method Convoca\\Gateway\\Admin_Settings\:\:sanitize\(\) return type has no value type specified in iterable type array\.$#'
+			identifier: missingType.iterableValue
+			count: 1
+			path: includes/Admin_Settings.php
+
+		-
+			message: '#^Method Convoca\\Gateway\\Block_Gateway\:\:render_ko\(\) has parameter \$attrs with no value type specified in iterable type array\.$#'
+			identifier: missingType.iterableValue
+			count: 1
+			path: includes/Block_Gateway.php
+
+		-
+			message: '#^Method Convoca\\Gateway\\Block_Gateway\:\:render_ok\(\) has parameter \$attrs with no value type specified in iterable type array\.$#'
+			identifier: missingType.iterableValue
+			count: 1
+			path: includes/Block_Gateway.php
+
+		-
+			message: '#^Method Convoca\\Gateway\\Block_Gateway\:\:render_pago\(\) has parameter \$attrs with no value type specified in iterable type array\.$#'
+			identifier: missingType.iterableValue
+			count: 1
+			path: includes/Block_Gateway.php
+
+		-
+			message: '#^Method Convoca\\Gateway\\CPT_Pago\:\:create\(\) has parameter \$data with no value type specified in iterable type array\.$#'
+			identifier: missingType.iterableValue
+			count: 1
+			path: includes/CPT_Pago.php
+
+		-
+			message: '#^Method Convoca\\Gateway\\CPT_Pago\:\:create_link_payment\(\) has parameter \$data with no value type specified in iterable type array\.$#'
+			identifier: missingType.iterableValue
+			count: 1
+			path: includes/CPT_Pago.php
+
+		-
+			message: '#^Method Convoca\\Gateway\\CPT_Pago\:\:get_meta\(\) return type has no value type specified in iterable type array\.$#'
+			identifier: missingType.iterableValue
+			count: 1
+			path: includes/CPT_Pago.php
+
+		-
+			message: '#^Method Convoca\\Gateway\\CPT_Pago\:\:status\(\) return type has no value type specified in iterable type array\.$#'
+			identifier: missingType.iterableValue
+			count: 1
+			path: includes/CPT_Pago.php
+
+		-
+			message: '#^Access to an undefined property object\:\:\$ID\.$#'
+			identifier: property.notFound
+			count: 2
+			path: includes/CSV_Exporter.php
+
+		-
+			message: '#^Method Convoca\\Gateway\\CSV_Exporter\:\:export\(\) has parameter \$args with no value type specified in iterable type array\.$#'
+			identifier: missingType.iterableValue
+			count: 1
+			path: includes/CSV_Exporter.php
+
+		-
+			message: '#^Parameter \#1 \$payments of static method Convoca\\Gateway\\CSV_Exporter\:\:filas\(\) expects array\<int, object\>, array\<int\|WP_Post\>\|null given\.$#'
+			identifier: argument.type
+			count: 1
+			path: includes/CSV_Exporter.php
+
+		-
+			message: '#^Method Convoca\\Gateway\\Dashboard_Widget\:\:get_dashboard_data\(\) return type has no value type specified in iterable type array\.$#'
+			identifier: missingType.iterableValue
+			count: 1
+			path: includes/Dashboard_Widget.php
+
+		-
+			message: '#^Parameter \#1 \$string of function ucfirst expects string, string\|false given\.$#'
+			identifier: argument.type
+			count: 1
+			path: includes/Dashboard_Widget.php
+
+		-
+			message: '#^Method Convoca\\Gateway\\Diagnostic\:\:check_database\(\) return type has no value type specified in iterable type array\.$#'
+			identifier: missingType.iterableValue
+			count: 1
+			path: includes/Diagnostic.php
+
+		-
+			message: '#^Method Convoca\\Gateway\\Diagnostic\:\:check_environment\(\) return type has no value type specified in iterable type array\.$#'
+			identifier: missingType.iterableValue
+			count: 1
+			path: includes/Diagnostic.php
+
+		-
+			message: '#^Method Convoca\\Gateway\\Diagnostic\:\:check_merchant_code\(\) return type has no value type specified in iterable type array\.$#'
+			identifier: missingType.iterableValue
+			count: 1
+			path: includes/Diagnostic.php
+
+		-
+			message: '#^Method Convoca\\Gateway\\Diagnostic\:\:check_offline_methods\(\) return type has no value type specified in iterable type array\.$#'
+			identifier: missingType.iterableValue
+			count: 1
+			path: includes/Diagnostic.php
+
+		-
+			message: '#^Method Convoca\\Gateway\\Diagnostic\:\:check_openssl\(\) return type has no value type specified in iterable type array\.$#'
+			identifier: missingType.iterableValue
+			count: 1
+			path: includes/Diagnostic.php
+
+		-
+			message: '#^Method Convoca\\Gateway\\Diagnostic\:\:check_php_version\(\) return type has no value type specified in iterable type array\.$#'
+			identifier: missingType.iterableValue
+			count: 1
+			path: includes/Diagnostic.php
+
+		-
+			message: '#^Method Convoca\\Gateway\\Diagnostic\:\:check_privacidad\(\) return type has no value type specified in iterable type array\.$#'
+			identifier: missingType.iterableValue
+			count: 1
+			path: includes/Diagnostic.php
+
+		-
+			message: '#^Method Convoca\\Gateway\\Diagnostic\:\:check_return_pages\(\) return type has no value type specified in iterable type array\.$#'
+			identifier: missingType.iterableValue
+			count: 1
+			path: includes/Diagnostic.php
+
+		-
+			message: '#^Method Convoca\\Gateway\\Diagnostic\:\:check_terminal\(\) return type has no value type specified in iterable type array\.$#'
+			identifier: missingType.iterableValue
+			count: 1
+			path: includes/Diagnostic.php
+
+		-
+			message: '#^Method Convoca\\Gateway\\Diagnostic\:\:fix_create_pages\(\) return type has no value type specified in iterable type array\.$#'
+			identifier: missingType.iterableValue
+			count: 1
+			path: includes/Diagnostic.php
+
+		-
+			message: '#^Method Convoca\\Gateway\\Diagnostic\:\:fix_default_terminal\(\) return type has no value type specified in iterable type array\.$#'
+			identifier: missingType.iterableValue
+			count: 1
+			path: includes/Diagnostic.php
+
+		-
+			message: '#^Method Convoca\\Gateway\\Diagnostic\:\:get_menu_badge\(\) return type has no value type specified in iterable type array\.$#'
+			identifier: missingType.iterableValue
+			count: 1
+			path: includes/Diagnostic.php
+
+		-
+			message: '#^Method Convoca\\Gateway\\Diagnostic\:\:has_errors\(\) has parameter \$results with no value type specified in iterable type array\.$#'
+			identifier: missingType.iterableValue
+			count: 1
+			path: includes/Diagnostic.php
+
+		-
+			message: '#^Method Convoca\\Gateway\\Diagnostic\:\:has_warnings\(\) has parameter \$results with no value type specified in iterable type array\.$#'
+			identifier: missingType.iterableValue
+			count: 1
+			path: includes/Diagnostic.php
+
+		-
+			message: '#^Method Convoca\\Gateway\\Diagnostic\:\:result\(\) has parameter \$fix_callback with no type specified\.$#'
+			identifier: missingType.parameter
+			count: 1
+			path: includes/Diagnostic.php
+
+		-
+			message: '#^Method Convoca\\Gateway\\Diagnostic\:\:result\(\) return type has no value type specified in iterable type array\.$#'
+			identifier: missingType.iterableValue
+			count: 1
+			path: includes/Diagnostic.php
+
+		-
+			message: '#^Method Convoca\\Gateway\\Diagnostic\:\:run_all\(\) return type has no value type specified in iterable type array\.$#'
+			identifier: missingType.iterableValue
+			count: 1
+			path: includes/Diagnostic.php
+
+		-
+			message: '#^Method Convoca\\Gateway\\Email_Notifications\:\:created_ts\(\) has parameter \$meta with no value type specified in iterable type array\.$#'
+			identifier: missingType.iterableValue
+			count: 1
+			path: includes/Email_Notifications.php
+
+		-
+			message: '#^Method Convoca\\Gateway\\Email_Notifications\:\:get_template_vars\(\) has parameter \$extra with no value type specified in iterable type array\.$#'
+			identifier: missingType.iterableValue
+			count: 1
+			path: includes/Email_Notifications.php
+
+		-
+			message: '#^Method Convoca\\Gateway\\Email_Notifications\:\:get_template_vars\(\) return type has no value type specified in iterable type array\.$#'
+			identifier: missingType.iterableValue
+			count: 1
+			path: includes/Email_Notifications.php
+
+		-
+			message: '#^Method Convoca\\Gateway\\Email_Notifications\:\:maybe_send\(\) has parameter \$extra with no value type specified in iterable type array\.$#'
+			identifier: missingType.iterableValue
+			count: 1
+			path: includes/Email_Notifications.php
+
+		-
+			message: '#^Method Convoca\\Gateway\\Email_Notifications\:\:register_schedule\(\) has parameter \$schedules with no value type specified in iterable type array\.$#'
+			identifier: missingType.iterableValue
+			count: 1
+			path: includes/Email_Notifications.php
+
+		-
+			message: '#^Method Convoca\\Gateway\\Email_Notifications\:\:register_schedule\(\) return type has no value type specified in iterable type array\.$#'
+			identifier: missingType.iterableValue
+			count: 1
+			path: includes/Email_Notifications.php
+
+		-
+			message: '#^Method Convoca\\Gateway\\Email_Notifications\:\:reminder_email\(\) has parameter \$meta with no value type specified in iterable type array\.$#'
+			identifier: missingType.iterableValue
+			count: 1
+			path: includes/Email_Notifications.php
+
+		-
+			message: '#^Method Convoca\\Gateway\\Email_Notifications\:\:send_success_email\(\) has parameter \$data with no value type specified in iterable type array\.$#'
+			identifier: missingType.iterableValue
+			count: 1
+			path: includes/Email_Notifications.php
+
+		-
+			message: '#^Method Convoca\\Gateway\\Email_Notifications\:\:should_remind\(\) has parameter \$meta with no value type specified in iterable type array\.$#'
+			identifier: missingType.iterableValue
+			count: 1
+			path: includes/Email_Notifications.php
+
+		-
+			message: '#^Method Convoca\\Gateway\\Gateway_Upgrade_Manager\:\:get_upgrade_callbacks\(\) return type has no value type specified in iterable type array\.$#'
+			identifier: missingType.iterableValue
+			count: 1
+			path: includes/Gateway_Upgrade_Manager.php
+
+		-
+			message: '#^Access to an undefined property object\:\:\$ID\.$#'
+			identifier: property.notFound
+			count: 2
+			path: includes/PDF_Exporter.php
+
+		-
+			message: '#^Method Convoca\\Gateway\\PDF_Exporter\:\:export\(\) has parameter \$args with no value type specified in iterable type array\.$#'
+			identifier: missingType.iterableValue
+			count: 1
+			path: includes/PDF_Exporter.php
+
+		-
+			message: '#^Parameter \#1 \$payments of static method Convoca\\Gateway\\PDF_Exporter\:\:build_document\(\) expects array\<int, object\>, array\<int\|WP_Post\>\|null given\.$#'
+			identifier: argument.type
+			count: 1
+			path: includes/PDF_Exporter.php
+
+		-
+			message: '#^Method Convoca\\Gateway\\Payment_Handler\:\:apply_charge_result\(\) has parameter \$charge with no value type specified in iterable type array\.$#'
+			identifier: missingType.iterableValue
+			count: 1
+			path: includes/Payment_Handler.php
+
+		-
+			message: '#^Method Convoca\\Gateway\\Payment_Handler\:\:create_payment\(\) has parameter \$data with no value type specified in iterable type array\.$#'
+			identifier: missingType.iterableValue
+			count: 1
+			path: includes/Payment_Handler.php
+
+		-
+			message: '#^Method Convoca\\Gateway\\Payment_Handler\:\:emitir_cobro_del_enlace\(\) has parameter \$meta with no value type specified in iterable type array\.$#'
+			identifier: missingType.iterableValue
+			count: 1
+			path: includes/Payment_Handler.php
+
+		-
+			message: '#^Method Convoca\\Gateway\\Payment_Handler\:\:get_payment_page_url\(\) should return string but returns string\|false\.$#'
+			identifier: return.type
+			count: 1
+			path: includes/Payment_Handler.php
+
+		-
+			message: '#^Method Convoca\\Gateway\\Payment_Handler\:\:handle_link_use\(\) has parameter \$meta with no value type specified in iterable type array\.$#'
+			identifier: missingType.iterableValue
+			count: 1
+			path: includes/Payment_Handler.php
+
+		-
+			message: '#^Method Convoca\\Gateway\\Payment_Handler\:\:handle_link_use\(\) has parameter \$params with no value type specified in iterable type array\.$#'
+			identifier: missingType.iterableValue
+			count: 1
+			path: includes/Payment_Handler.php
+
+		-
+			message: '#^Method Convoca\\Gateway\\Payment_Handler\:\:process_notification\(\) has parameter \$post_data with no value type specified in iterable type array\.$#'
+			identifier: missingType.iterableValue
+			count: 1
+			path: includes/Payment_Handler.php
+
+		-
+			message: '#^Method Convoca\\Gateway\\Payment_Handler\:\:process_return\(\) has parameter \$get_data with no value type specified in iterable type array\.$#'
+			identifier: missingType.iterableValue
+			count: 1
+			path: includes/Payment_Handler.php
+
+		-
+			message: '#^Method Convoca\\Gateway\\Payment_Handler\:\:render_donation_form\(\) has parameter \$meta with no value type specified in iterable type array\.$#'
+			identifier: missingType.iterableValue
+			count: 1
+			path: includes/Payment_Handler.php
+
+		-
+			message: '#^Method Convoca\\Gateway\\Payment_Handler\:\:render_ko_page\(\) has parameter \$atts with no type specified\.$#'
+			identifier: missingType.parameter
+			count: 1
+			path: includes/Payment_Handler.php
+
+		-
+			message: '#^Method Convoca\\Gateway\\Payment_Handler\:\:render_ko_page\(\) should return string but returns string\|false\.$#'
+			identifier: return.type
+			count: 1
+			path: includes/Payment_Handler.php
+
+		-
+			message: '#^Method Convoca\\Gateway\\Payment_Handler\:\:render_link_form\(\) has parameter \$meta with no value type specified in iterable type array\.$#'
+			identifier: missingType.iterableValue
+			count: 1
+			path: includes/Payment_Handler.php
+
+		-
+			message: '#^Method Convoca\\Gateway\\Payment_Handler\:\:render_link_form\(\) has parameter \$params with no value type specified in iterable type array\.$#'
+			identifier: missingType.iterableValue
+			count: 1
+			path: includes/Payment_Handler.php
+
+		-
+			message: '#^Method Convoca\\Gateway\\Payment_Handler\:\:render_method_cards\(\) has parameter \$args with no value type specified in iterable type array\.$#'
+			identifier: missingType.iterableValue
+			count: 1
+			path: includes/Payment_Handler.php
+
+		-
+			message: '#^Method Convoca\\Gateway\\Payment_Handler\:\:render_method_picker\(\) has parameter \$args with no value type specified in iterable type array\.$#'
+			identifier: missingType.iterableValue
+			count: 1
+			path: includes/Payment_Handler.php
+
+		-
+			message: '#^Method Convoca\\Gateway\\Payment_Handler\:\:render_method_selector\(\) has parameter \$meta with no value type specified in iterable type array\.$#'
+			identifier: missingType.iterableValue
+			count: 1
+			path: includes/Payment_Handler.php
+
+		-
+			message: '#^Method Convoca\\Gateway\\Payment_Handler\:\:render_ok_page\(\) has parameter \$atts with no type specified\.$#'
+			identifier: missingType.parameter
+			count: 1
+			path: includes/Payment_Handler.php
+
+		-
+			message: '#^Method Convoca\\Gateway\\Payment_Handler\:\:render_ok_page\(\) should return string but returns string\|false\.$#'
+			identifier: return.type
+			count: 1
+			path: includes/Payment_Handler.php
+
+		-
+			message: '#^Method Convoca\\Gateway\\Payment_Handler\:\:render_payment_page\(\) has parameter \$atts with no type specified\.$#'
+			identifier: missingType.parameter
+			count: 1
+			path: includes/Payment_Handler.php
+
+		-
+			message: '#^Method Convoca\\Gateway\\Payment_Handler\:\:render_redsys_redirect\(\) has parameter \$meta with no value type specified in iterable type array\.$#'
+			identifier: missingType.iterableValue
+			count: 1
+			path: includes/Payment_Handler.php
+
+		-
+			message: '#^Method Convoca\\Gateway\\Payment_Handler\:\:render_regenerate_form\(\) should return string but returns string\|false\.$#'
+			identifier: return.type
+			count: 1
+			path: includes/Payment_Handler.php
+
+		-
+			message: '#^Method Convoca\\Gateway\\Payment_Handler\:\:render_transfer_instructions\(\) has parameter \$meta with no value type specified in iterable type array\.$#'
+			identifier: missingType.iterableValue
+			count: 1
+			path: includes/Payment_Handler.php
+
+		-
+			message: '#^Method Convoca\\Gateway\\Payment_Handler\:\:render_transfer_instructions\(\) should return string but returns string\|false\.$#'
+			identifier: return.type
+			count: 1
+			path: includes/Payment_Handler.php
+
+		-
+			message: '#^Parameter \#1 \$url of function set_url_scheme expects string, string\|false given\.$#'
+			identifier: argument.type
+			count: 1
+			path: includes/Payment_Handler.php
+
+		-
+			message: '#^Method Convoca\\Gateway\\Pending_Payments\:\:is_stuck\(\) has parameter \$meta with no value type specified in iterable type array\.$#'
+			identifier: missingType.iterableValue
+			count: 1
+			path: includes/Pending_Payments.php
+
+		-
+			message: '#^Parameter \#1 \$text of function esc_html expects string, string\|false given\.$#'
+			identifier: argument.type
+			count: 1
+			path: includes/Pending_Payments.php
+
+		-
+			message: '#^Method Convoca\\Gateway\\Receipt_View\:\:html\(\) has parameter \$datos with no value type specified in iterable type array\.$#'
+			identifier: missingType.iterableValue
+			count: 1
+			path: includes/Receipt_View.php
+
+		-
+			message: '#^Method Convoca\\Gateway\\Redsys_Client\:\:build_form\(\) has parameter \$params with no value type specified in iterable type array\.$#'
+			identifier: missingType.iterableValue
+			count: 1
+			path: includes/Redsys_Client.php
+
+		-
+			message: '#^Method Convoca\\Gateway\\Redsys_Client\:\:build_merchant_params\(\) has parameter \$params with no value type specified in iterable type array\.$#'
+			identifier: missingType.iterableValue
+			count: 1
+			path: includes/Redsys_Client.php
+
+		-
+			message: '#^Method Convoca\\Gateway\\Redsys_Client\:\:build_rest_charge_params\(\) has parameter \$params with no value type specified in iterable type array\.$#'
+			identifier: missingType.iterableValue
+			count: 1
+			path: includes/Redsys_Client.php
+
+		-
+			message: '#^Method Convoca\\Gateway\\Redsys_Client\:\:charge_token\(\) has parameter \$params with no value type specified in iterable type array\.$#'
+			identifier: missingType.iterableValue
+			count: 1
+			path: includes/Redsys_Client.php
+
+		-
+			message: '#^Method Convoca\\Gateway\\Redsys_Client\:\:charge_token\(\) return type has no value type specified in iterable type array\.$#'
+			identifier: missingType.iterableValue
+			count: 1
+			path: includes/Redsys_Client.php
+
+		-
+			message: '#^Method Convoca\\Gateway\\Redsys_Client\:\:encrypt_3des\(\) should return string but returns string\|false\.$#'
+			identifier: return.type
+			count: 1
+			path: includes/Redsys_Client.php
+
+		-
+			message: '#^Method Convoca\\Gateway\\Redsys_Client\:\:render_redsys_redirect\(\) has parameter \$params with no value type specified in iterable type array\.$#'
+			identifier: missingType.iterableValue
+			count: 1
+			path: includes/Redsys_Client.php
+
+		-
+			message: '#^Method Convoca\\Gateway\\Redsys_Client\:\:settings\(\) return type has no value type specified in iterable type array\.$#'
+			identifier: missingType.iterableValue
+			count: 1
+			path: includes/Redsys_Client.php
+
+		-
+			message: '#^Method Convoca\\Gateway\\Redsys_Client\:\:settings\(\) should return array but returns array\|null\.$#'
+			identifier: return.type
+			count: 1
+			path: includes/Redsys_Client.php
+
+		-
+			message: '#^Method Convoca\\Gateway\\Redsys_Client\:\:verify_notification\(\) has parameter \$post_data with no value type specified in iterable type array\.$#'
+			identifier: missingType.iterableValue
+			count: 1
+			path: includes/Redsys_Client.php
+
+		-
+			message: '#^Method Convoca\\Gateway\\Redsys_Client\:\:verify_notification\(\) return type has no value type specified in iterable type array\.$#'
+			identifier: missingType.iterableValue
+			count: 1
+			path: includes/Redsys_Client.php
+
+		-
+			message: '#^Method Convoca\\Gateway\\Redsys_Client\:\:verify_rest_response\(\) has parameter \$payload with no value type specified in iterable type array\.$#'
+			identifier: missingType.iterableValue
+			count: 1
+			path: includes/Redsys_Client.php
+
+		-
+			message: '#^Method Convoca\\Gateway\\Redsys_Client\:\:verify_rest_response\(\) return type has no value type specified in iterable type array\.$#'
+			identifier: missingType.iterableValue
+			count: 1
+			path: includes/Redsys_Client.php
+
+		-
+			message: '#^Parameter \#1 \$data of static method Convoca\\Gateway\\Redsys_Client\:\:base64url_encode\(\) expects string, string\|false given\.$#'
+			identifier: argument.type
+			count: 1
+			path: includes/Redsys_Client.php
+
+		-
+			message: '#^Parameter \#1 \$json of function json_decode expects string, string\|false given\.$#'
+			identifier: argument.type
+			count: 2
+			path: includes/Redsys_Client.php
+
+		-
+			message: '#^Parameter \#1 \$string of function base64_encode expects string, string\|false given\.$#'
+			identifier: argument.type
+			count: 1
+			path: includes/Redsys_Client.php
+
+		-
+			message: '#^Parameter \#1 \$string of function strlen expects string, string\|false given\.$#'
+			identifier: argument.type
+			count: 1
+			path: includes/Redsys_Client.php
+
+		-
+			message: '#^Parameter \#2 \$args of function wp_remote_post expects array\{method\?\: string, timeout\?\: float, redirection\?\: int, httpversion\?\: string, user\-agent\?\: string, reject_unsafe_urls\?\: bool, blocking\?\: bool, headers\?\: array\|string, \.\.\.\}, array\{timeout\: 30, headers\: array\{Content\-Type\: ''application/json'', Content\-Length\: int\<0, max\>\}, body\: non\-empty\-string\|false\} given\.$#'
+			identifier: argument.type
+			count: 1
+			path: includes/Redsys_Client.php
+
+		-
+			message: '#^Property Convoca\\Gateway\\Redsys_Client\:\:\$settings type has no value type specified in iterable type array\.$#'
+			identifier: missingType.iterableValue
+			count: 1
+			path: includes/Redsys_Client.php
