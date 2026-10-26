@@ -555,7 +555,12 @@ if ( ! function_exists( 'update_meta_cache' ) ) {
 		define( 'CONVOCA_GATEWAY_URL', 'https://example.test/wp-content/plugins/convoca-gateway/' );
 	}
 	if ( ! defined( 'CONVOCA_GATEWAY_VERSION' ) ) {
-		define( 'CONVOCA_GATEWAY_VERSION', '2.13.22' );
+		// La versión sale de la cabecera real: clavarla a mano hace que cada subida de versión ponga la suite en
+		// rojo por un dato del arnés y no por el producto.
+		$convoca_gateway_cabecera = (string) file_get_contents( dirname( __DIR__ ) . '/convoca-gateway.php' );
+		preg_match( '/^\s*\*\s*Version:\s*([0-9][0-9.]*)/m', $convoca_gateway_cabecera, $convoca_gateway_m );
+		define( 'CONVOCA_GATEWAY_VERSION', $convoca_gateway_m[1] ?? '0.0.0' );
+		unset( $convoca_gateway_cabecera, $convoca_gateway_m );
 	}
 	if ( ! function_exists( 'wp_register_script' ) ) {
 		function wp_register_script( $handle, $src = '', $deps = array(), $ver = false, $footer = false ) {

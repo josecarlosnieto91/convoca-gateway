@@ -68,7 +68,11 @@ class ArranqueTest extends TestCase
         $GLOBALS['__gw_rewrites'] = 0;
         $GLOBALS['__gw_cron_programados'] = [];
         $GLOBALS['__gw_is_admin'] = false;
-        $GLOBALS['__gw_file_data'] = ['Version' => '2.13.22'];
+        // La versión sale de la **cabecera real**, no clavada: con el literal, cada subida de versión ponía la
+        // suite en rojo por un dato del test y no por el producto (medido al subir a 2.13.23).
+        $cabecera = (string) file_get_contents(dirname(__DIR__, 2) . '/convoca-gateway.php');
+        preg_match('/^\s*\*\s*Version:\s*([0-9][0-9.]*)/m', $cabecera, $m);
+        $GLOBALS['__gw_file_data'] = ['Version' => $m[1] ?? ''];
         unset($GLOBALS['__gw_activacion'], $GLOBALS['__gw_desactivacion']);
 
         self::cargarArranque();

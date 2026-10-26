@@ -1,3 +1,11 @@
+## [2.13.23] — 2026-10-26
+
+### Cambiado
+
+- **importes y cache de ajustes**
+- El importe de un pago deja de reventar cuando la meta llega como cadena.
+- La cache de ajustes se puede soltar entre pruebas.
+
 ## [2.13.22] — 2026-10-21
 
 ### Añadido
