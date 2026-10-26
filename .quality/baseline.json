@@ -1,0 +1,10 @@
+{
+  "repo": "convoca-gateway",
+  "fecha": "2026-10-26",
+  "phpstan_errors": 0,
+  "phpmd_total": 90,
+  "semgrep_errors": 0,
+  "composer_advisories": 0,
+  "secretos": 0,
+  "nota": "Ratchet: estos numeros solo pueden bajar. Subirlos exige justificarlo en el PR."
+}

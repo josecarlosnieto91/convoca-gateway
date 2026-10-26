@@ -305,3 +305,8 @@ jobs:
             -o "$RUNNER_TEMP/acoplamiento.py" \
             https://raw.githubusercontent.com/josecarlosnieto91/convoca-health-check/main/scripts/check-acoplamiento.py
           python3 "$RUNNER_TEMP/acoplamiento.py" . --reglas R1,R2,R3 --avisos R4
+
+  # Puerta de calidad con ratchet: dependencias, secretos, Semgrep propio, PHPMD y PHPStan.
+  # Los números de .quality/baseline.json solo pueden bajar.
+  calidad:
+    uses: josecarlosnieto91/convoca-health-check/.github/workflows/quality.yml@main
