@@ -493,12 +493,6 @@ parameters:
 			path: includes/Redsys_Client.php
 
 		-
-			message: '#^Method Convoca\\Gateway\\Redsys_Client\:\:encrypt_3des\(\) should return string but returns string\|false\.$#'
-			identifier: return.type
-			count: 1
-			path: includes/Redsys_Client.php
-
-		-
 			message: '#^Method Convoca\\Gateway\\Redsys_Client\:\:render_redsys_redirect\(\) has parameter \$params with no value type specified in iterable type array\.$#'
 			identifier: missingType.iterableValue
 			count: 1
@@ -537,36 +531,6 @@ parameters:
 		-
 			message: '#^Method Convoca\\Gateway\\Redsys_Client\:\:verify_rest_response\(\) return type has no value type specified in iterable type array\.$#'
 			identifier: missingType.iterableValue
-			count: 1
-			path: includes/Redsys_Client.php
-
-		-
-			message: '#^Parameter \#1 \$data of static method Convoca\\Gateway\\Redsys_Client\:\:base64url_encode\(\) expects string, string\|false given\.$#'
-			identifier: argument.type
-			count: 1
-			path: includes/Redsys_Client.php
-
-		-
-			message: '#^Parameter \#1 \$json of function json_decode expects string, string\|false given\.$#'
-			identifier: argument.type
-			count: 2
-			path: includes/Redsys_Client.php
-
-		-
-			message: '#^Parameter \#1 \$string of function base64_encode expects string, string\|false given\.$#'
-			identifier: argument.type
-			count: 1
-			path: includes/Redsys_Client.php
-
-		-
-			message: '#^Parameter \#1 \$string of function strlen expects string, string\|false given\.$#'
-			identifier: argument.type
-			count: 1
-			path: includes/Redsys_Client.php
-
-		-
-			message: '#^Parameter \#2 \$args of function wp_remote_post expects array\{method\?\: string, timeout\?\: float, redirection\?\: int, httpversion\?\: string, user\-agent\?\: string, reject_unsafe_urls\?\: bool, blocking\?\: bool, headers\?\: array\|string, \.\.\.\}, array\{timeout\: 30, headers\: array\{Content\-Type\: ''application/json'', Content\-Length\: int\<0, max\>\}, body\: non\-empty\-string\|false\} given\.$#'
-			identifier: argument.type
 			count: 1
 			path: includes/Redsys_Client.php
 

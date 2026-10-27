@@ -230,7 +230,7 @@ class Redsys_Client {
 			$data['DS_MERCHANT_COF_TYPE']   = 'R';
 		}
 
-		return base64_encode( wp_json_encode( $data, JSON_UNESCAPED_UNICODE ) );
+		return base64_encode( (string) wp_json_encode( $data, JSON_UNESCAPED_UNICODE ) );
 	}
 
 	/**
@@ -255,6 +255,9 @@ class Redsys_Client {
 
 		// Derive key using 3DES encryption of the Order ID.
 		$derived_key = self::encrypt_3des( $order_id, $decoded_secret );
+		if ( '' === $derived_key ) {
+			return '';
+		}
 
 		// HMAC-SHA256 of the Base64 params.
 		$hmac = hash_hmac( 'sha256', $merchant_params_b64, $derived_key, true );
@@ -276,13 +279,21 @@ class Redsys_Client {
 		// 3DES-CBC with zero IV.
 		$iv = str_repeat( "\0", 8 );
 
-		return openssl_encrypt(
+		$cifrado = openssl_encrypt(
 			$data,
 			'des-ede3-cbc',
 			$key,
 			OPENSSL_RAW_DATA | OPENSSL_NO_PADDING,
 			$iv
 		);
+
+		if ( false === $cifrado ) {
+			// Sin clave derivada no hay firma posible: se devuelve vacío y `sign()` lo trata como fallo.
+			\Convoca\Core\Logger::error( 'No se pudo cifrar la clave derivada de Redsys.', 'Gateway/Redsys' );
+			return '';
+		}
+
+		return $cifrado;
 	}
 
 	/**
@@ -468,7 +479,8 @@ class Redsys_Client {
 		}
 
 		// Decodificar base64url (Redsys puede usar '-' y '_') con modo estricto.
-		$decoded = json_decode( base64_decode( strtr( $mp_b64, '-_', '+/' ), true ), true );
+		$json_mp = base64_decode( strtr( $mp_b64, '-_', '+/' ), true );
+		$decoded = false === $json_mp ? null : json_decode( $json_mp, true );
 		if ( ! is_array( $decoded ) ) {
 			return false;
 		}
@@ -593,7 +605,7 @@ class Redsys_Client {
 			$data['DS_MERCHANT_PRODUCTDESCRIPTION'] = $desc;
 		}
 
-		return self::base64url_encode( wp_json_encode( $data ) );
+		return self::base64url_encode( (string) wp_json_encode( $data ) );
 	}
 
 	/**
@@ -634,7 +646,7 @@ class Redsys_Client {
 			return new \WP_Error( 'sign_failed', 'No se pudo firmar la petición de cobro.' );
 		}
 
-		$body = wp_json_encode(
+		$body = (string) wp_json_encode(
 			array(
 				'Ds_SignatureVersion'   => 'HMAC_SHA512_V2',
 				'Ds_MerchantParameters' => $mp_b64,
@@ -712,7 +724,8 @@ class Redsys_Client {
 			return false;
 		}
 
-		$decoded = json_decode( base64_decode( strtr( $mp_b64, '-_', '+/' ), true ), true );
+		$json_mp = base64_decode( strtr( $mp_b64, '-_', '+/' ), true );
+		$decoded = false === $json_mp ? null : json_decode( $json_mp, true );
 		if ( ! is_array( $decoded ) ) {
 			return false;
 		}
