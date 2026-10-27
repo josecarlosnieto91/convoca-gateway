@@ -49,14 +49,8 @@ class PDF_Exporter {
 		$args['paged']          = 1;
 		$args['no_found_rows']  = true;
 
-		$query = new \WP_Query( $args );
-
-		/**
-		 * Pagos consultados.
-		 *
-		 * @var array<int, \WP_Post> $payments
-		 */
-		$payments = (array) $query->posts;
+		$query    = new \WP_Query( $args );
+		$payments = self::pagos_de( $query );
 
 		$html = self::build_document( $payments );
 
@@ -158,5 +152,21 @@ class PDF_Exporter {
 				sprintf( __( 'Generado automáticamente por %1$s — %2$s', 'convoca-gateway' ), $site_name, $date )
 			) . '</p>'
 			. '</body></html>';
+	}
+
+	/**
+	 * Pagos de la consulta, ya como WP_Post.
+	 *
+	 * @param \WP_Query $query Consulta de pagos.
+	 * @return array<int, \WP_Post>
+	 */
+	private static function pagos_de( \WP_Query $query ): array {
+		/**
+		 * Pagos como WP_Post (el stub de WP_Query admite int en la lista).
+		 *
+		 * @var array<int, \WP_Post> $pagos
+		 */
+		$pagos = (array) $query->posts;
+		return $pagos;
 	}
 }

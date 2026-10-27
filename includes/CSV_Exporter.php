@@ -50,7 +50,6 @@ class CSV_Exporter {
 		$args['no_found_rows']  = true;
 
 		$query = new \WP_Query( $args );
-
 		/**
 		 * Pagos consultados.
 		 *
