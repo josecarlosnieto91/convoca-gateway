@@ -183,7 +183,7 @@ class Payment_Handler {
 	 *
 	 * @param int    $pago_id  Payment ID.
 	 * @param string $order_id Redsys order ID.
-	 * @param array  $charge   Result of Redsys_Client::charge_token().
+	 * @param array<string, mixed> $charge   Result of Redsys_Client::charge_token().
 	 * @return true
 	 */
 	private static function apply_charge_result( int $pago_id, string $order_id, array $charge ): true {
@@ -226,7 +226,7 @@ class Payment_Handler {
 	/**
 	 * Create a payment and return the URL to the payment page.
 	 *
-	 * @param array $data {
+	 * @param array<string, mixed> $data {
 	 *     @type int    $amount_cents   Amount in cents. (> 0)
 	 *     @type string $method         tarjeta | bizum (optional, user chooses).
 	 *     @type string $origin         enroll | members.
@@ -323,6 +323,9 @@ class Payment_Handler {
 
 		if ( $page_id ) {
 			$url = get_permalink( $page_id );
+			if ( false === $url ) {
+				$url = home_url( '/pago/' );
+			}
 		} else {
 			$url = home_url( '/pago/' );
 		}
@@ -387,6 +390,8 @@ class Payment_Handler {
 
 	/**
 	 * Render the payment method selection + Redsys redirect.
+	 *
+	 * @param array<string, mixed>|string $atts Atributos del shortcode.
 	 */
 	public function render_payment_page( $atts ): string {
 		// Regenerate an expired/failed link keeping the same payment (D21c/D22c).
@@ -524,12 +529,12 @@ class Payment_Handler {
 	 * página: una visita (o un rastreador) no deja registros sueltos.
 	 *
 	 * @param int    $enlace_id        ID del enlace (plantilla).
-	 * @param array  $meta             Metadatos del enlace.
+	 * @param array<string, mixed> $meta             Metadatos del enlace.
 	 * @param string $product_desc     Concepto del enlace.
 	 * @param int    $amount_cents     Importe del enlace en céntimos.
 	 * @param string $suggested_method Método sugerido.
 	 * @param string $recipient_email  Email de notificación guardado en el enlace.
-	 * @param array  $params           Datos adicionales del enlace.
+	 * @param array<string, mixed> $params           Datos adicionales del enlace.
 	 */
 	private function handle_link_use( int $enlace_id, array $meta, string $product_desc, int $amount_cents, string $suggested_method, string $recipient_email, array $params ): string {
 		if ( ! isset( $_POST['convoca_link_nonce'] ) ) {
@@ -567,7 +572,7 @@ class Payment_Handler {
 	 * Emite el registro de pago de un uso del enlace.
 	 *
 	 * @param int    $enlace_id   ID del enlace.
-	 * @param array  $meta        Metadatos del enlace.
+	 * @param array<string, mixed> $meta        Metadatos del enlace.
 	 * @param string $method      Método elegido.
 	 * @param string $payer_email Email de quien paga (recibo), si lo dejó.
 	 * @return int|\WP_Error ID del cobro emitido.
@@ -616,6 +621,9 @@ class Payment_Handler {
 
 	/**
 	 * Render payment form for link-generated payments.
+	 *
+	 * @param array<string, mixed> $meta
+	 * @param array<string, mixed> $params
 	 */
 	private function render_link_form( int $pago_id, array $meta, string $product_desc, int $amount_cents, string $suggested_method, string $recipient_email, array $params, bool $es_plantilla = true ): string {
 		$amount_display = CPT_Pago::format_amount( $amount_cents );
@@ -800,7 +808,7 @@ class Payment_Handler {
 	 * transferencia a lo ancho debajo.
 	 *
 	 * @param string $base_url  URL del paso 1 (sin convoca_gateway_method).
-	 * @param array  $args      Argumentos extra que añadir a cada enlace.
+	 * @param array<string, mixed> $args      Argumentos extra que añadir a cada enlace.
 	 * @param string $suggested Slug a destacar con la etiqueta «Recomendado».
 	 */
 	private function render_method_cards( string $base_url, array $args = array(), string $suggested = '', bool $enviar_formulario = false ): string {
@@ -859,7 +867,7 @@ class Payment_Handler {
 	 *
 	 * @param string $base_url  URL del paso 1 (sin convoca_gateway_method).
 	 * @param string $heading   Título del selector.
-	 * @param array  $args      Argumentos extra que añadir a cada enlace.
+	 * @param array<string, mixed> $args      Argumentos extra que añadir a cada enlace.
 	 * @param string $suggested Slug a destacar, si procede.
 	 */
 	private function render_method_picker( string $base_url, string $heading, array $args = array(), string $suggested = '', bool $enviar_formulario = false ): string {
@@ -933,7 +941,7 @@ class Payment_Handler {
 	 * sirve para tantas aportaciones como quiera hacer la gente.
 	 *
 	 * @param int    $pago_id Enlace de donativo (registro plantilla).
-	 * @param array  $meta    Metadatos del enlace.
+	 * @param array<string, mixed> $meta    Metadatos del enlace.
 	 * @param string $error   Mensaje de error a mostrar.
 	 * @param string $amount  Importe tecleado, para repoblarlo si hubo error.
 	 * @param string $email   Email tecleado, para repoblarlo si hubo error.
@@ -1125,6 +1133,8 @@ class Payment_Handler {
 
 	/**
 	 * Render bank transfer instructions.
+	 *
+	 * @param array<string, mixed> $meta
 	 */
 	private function render_transfer_instructions( int $pago_id, array $meta ): string {
 		$settings = get_option( 'convoca_gateway_settings', array() );
@@ -1531,6 +1541,8 @@ class Payment_Handler {
 
 	/**
 	 * Render payment method selection screen.
+	 *
+	 * @param array<string, mixed> $meta
 	 */
 	private function render_method_selector( int $pago_id, array $meta ): string {
 		$amount_display = CPT_Pago::format_amount( (int) $meta['amount_cents'] );
@@ -1584,6 +1596,8 @@ class Payment_Handler {
 
 	/**
 	 * Render the Redsys auto-submit redirect.
+	 *
+	 * @param array<string, mixed> $meta
 	 */
 	private function render_redsys_redirect( int $pago_id, array $meta, string $method ): string {
 		// Check if already paid to prevent double payment attempts.
@@ -1743,7 +1757,7 @@ class Payment_Handler {
 	/**
 	 * Core processing logic for Redsys notifications.
 	 *
-	 * @param array $post_data Data from Redsys POST.
+	 * @param array<string, mixed> $post_data Data from Redsys POST.
 	 * @return bool|\WP_Error True on success, error otherwise.
 	 */
 	public function process_notification( array $post_data ): bool|\WP_Error {
@@ -1911,7 +1925,7 @@ class Payment_Handler {
 	 * without IP restrictions since the user's browser IP is arbitrary) and, if
 	 * the payment is approved and not yet paid, applies the confirmation.
 	 *
-	 * @param array $get_data Unsanitized $_GET.
+	 * @param array<string, mixed> $get_data Unsanitized $_GET.
 	 */
 	public function process_return( array $get_data ): true|\WP_Error {
 		$data = Redsys_Client::verify_notification( $get_data );
@@ -1979,6 +1993,12 @@ class Payment_Handler {
 
 	/* ── Return pages ──────────────────────────── */
 
+	/**
+	 * Página de pago correcto.
+	 *
+	 * @param array<string, mixed>|string $atts Atributos del shortcode.
+	 * @return string
+	 */
 	public function render_ok_page( $atts ): string {
 		$pago_id = (int) ( wp_unslash( $_GET['convoca_gateway_pago'] ?? 0 ) );
 
@@ -2045,6 +2065,12 @@ class Payment_Handler {
 		return (string) ob_get_clean();
 	}
 
+	/**
+	 * Página de pago fallido.
+	 *
+	 * @param array<string, mixed>|string $atts Atributos del shortcode.
+	 * @return string
+	 */
 	public function render_ko_page( $atts ): string {
 		$pago_id = (int) ( wp_unslash( $_GET['convoca_gateway_pago'] ?? 0 ) );
 

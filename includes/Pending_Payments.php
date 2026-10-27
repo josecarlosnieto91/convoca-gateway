@@ -49,7 +49,7 @@ class Pending_Payments {
 	 * importe (un enlace de donativo sin usar). El enlace caducado **no** lo excluye:
 	 * justo entonces es cuando hay que mirarlo.
 	 *
-	 * @param array $meta    Meta del pago.
+	 * @param array<string, mixed> $meta    Meta del pago.
 	 * @param int   $now     Momento actual.
 	 * @param int   $min_age Segundos mínimos desde la creación.
 	 * @return bool

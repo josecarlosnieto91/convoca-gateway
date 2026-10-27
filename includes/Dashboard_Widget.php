@@ -154,6 +154,8 @@ class Dashboard_Widget {
 
 	/**
 	 * Get data for the dashboard widget with caching.
+	 *
+	 * @return array<string, mixed>
 	 */
 	private function get_dashboard_data(): array {
 		global $wpdb;

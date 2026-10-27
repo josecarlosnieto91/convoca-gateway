@@ -69,6 +69,11 @@ class Diagnostic {
 		return $bloques;
 	}
 
+	/**
+	 * Ejecuta todas las comprobaciones del diagnóstico.
+	 *
+	 * @return array<int, array<string, mixed>>
+	 */
 	public static function run_all( bool $force = false ): array {
 		$huella = self::huella_ajustes();
 
@@ -124,7 +129,7 @@ class Diagnostic {
 	/**
 	 * Check environment and secret key.
 	 *
-	 * @return array
+	 * @return array<string, mixed>
 	 */
 	public static function check_environment(): array {
 		$settings    = get_option( 'convoca_gateway_settings', array() );
@@ -176,7 +181,7 @@ class Diagnostic {
 	/**
 	 * Check merchant code (FUC).
 	 *
-	 * @return array
+	 * @return array<string, mixed>
 	 */
 	public static function check_merchant_code(): array {
 		$settings      = get_option( 'convoca_gateway_settings', array() );
@@ -197,7 +202,7 @@ class Diagnostic {
 	/**
 	 * Check terminal.
 	 *
-	 * @return array
+	 * @return array<string, mixed>
 	 */
 	public static function check_terminal(): array {
 		$settings = get_option( 'convoca_gateway_settings', array() );
@@ -220,7 +225,7 @@ class Diagnostic {
 	 * con el nombre del sitio, y este check lo dice para que alguien lo revise: un texto genérico cumple el
 	 * expediente, pero el responsable del tratamiento es de cada entidad.
 	 *
-	 * @return array
+	 * @return array<string, mixed>
 	 */
 	public static function check_privacidad(): array {
 		$settings = get_option( 'convoca_gateway_settings', array() );
@@ -268,7 +273,7 @@ class Diagnostic {
 	/**
 	 * Check return pages (OK and KO).
 	 *
-	 * @return array
+	 * @return array<string, mixed>
 	 */
 	public static function check_return_pages(): array {
 		$settings   = get_option( 'convoca_gateway_settings', array() );
@@ -352,7 +357,7 @@ class Diagnostic {
 	/**
 	 * Check offline payment methods.
 	 *
-	 * @return array
+	 * @return array<string, mixed>
 	 */
 	public static function check_offline_methods(): array {
 		$settings = get_option( 'convoca_gateway_settings', array() );
@@ -373,7 +378,7 @@ class Diagnostic {
 	/**
 	 * Check PHP version.
 	 *
-	 * @return array
+	 * @return array<string, mixed>
 	 */
 	public static function check_php_version(): array {
 		$version     = PHP_VERSION;
@@ -389,7 +394,7 @@ class Diagnostic {
 	/**
 	 * Check OpenSSL extension.
 	 *
-	 * @return array
+	 * @return array<string, mixed>
 	 */
 	public static function check_openssl(): array {
 		if ( extension_loaded( 'openssl' ) && defined( 'OPENSSL_VERSION_TEXT' ) ) {
@@ -402,7 +407,7 @@ class Diagnostic {
 	/**
 	 * Check database connectivity and logs table.
 	 *
-	 * @return array
+	 * @return array<string, mixed>
 	 */
 	public static function check_database(): array {
 		global $wpdb;
@@ -419,7 +424,7 @@ class Diagnostic {
 	/**
 	 * Get menu badge data.
 	 *
-	 * @return array {severity, message}
+	 * @return array<string, mixed> {severity, message}
 	 */
 	public static function get_menu_badge(): array {
 		$cached = get_option( self::CACHE_KEY, false );
@@ -453,6 +458,8 @@ class Diagnostic {
 
 	/**
 	 * Fix: Set default terminal to 001.
+	 *
+	 * @return array<string, mixed>
 	 */
 	public static function fix_default_terminal(): array {
 		$settings             = get_option( 'convoca_gateway_settings', array() );
@@ -465,6 +472,11 @@ class Diagnostic {
 		);
 	}
 
+	/**
+	 * Crea las páginas de retorno que falten.
+	 *
+	 * @return array<string, mixed>
+	 */
 	public static function fix_create_pages(): array {
 		$settings = get_option( 'convoca_gateway_settings', array() );
 		$created  = array();
@@ -562,7 +574,13 @@ class Diagnostic {
 
 	// Helper methods.
 
-	private static function result( string $slug, string $title, string $message, string $severity, ?string $fix = null, $fix_callback = null ): array {
+	/**
+	 * Construye el resultado de una comprobación.
+	 *
+	 * @param callable|null $fix_callback Acción de arreglo, si la hay.
+	 * @return array<string, mixed>
+	 */
+	private static function result( string $slug, string $title, string $message, string $severity, ?string $fix = null, ?callable $fix_callback = null ): array {
 		return array(
 			'slug'         => $slug,
 			'title'        => $title,
@@ -573,6 +591,11 @@ class Diagnostic {
 		);
 	}
 
+	/**
+	 * ¿Hay algún error entre los resultados?
+	 *
+	 * @param array<int, array<string, mixed>> $results Resultados.
+	 */
 	public static function has_errors( array $results ): bool {
 		foreach ( $results as $result ) {
 			if ( isset( $result['children'] ) ) {
@@ -589,6 +612,11 @@ class Diagnostic {
 		return false;
 	}
 
+	/**
+	 * ¿Hay algún aviso entre los resultados?
+	 *
+	 * @param array<int, array<string, mixed>> $results Resultados.
+	 */
 	public static function has_warnings( array $results ): bool {
 		foreach ( $results as $result ) {
 			if ( isset( $result['children'] ) ) {

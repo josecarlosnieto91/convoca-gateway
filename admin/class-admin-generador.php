@@ -255,6 +255,12 @@ class Admin_Generador {
 		<?php
 	}
 
+	/**
+	 * Procesa una petición de generación de pago.
+	 *
+	 * @param array<string, mixed> $post
+	 * @return array<string, mixed>
+	 */
 	private function process_generation( array $post ): array|\WP_Error {
 		$raw_amount  = trim( (string) ( $post['convoca_gateway_amount'] ?? '' ) );
 		$open_amount = ( '' === $raw_amount ); // Sin cantidad = enlace de donativo de importe libre.
@@ -316,6 +322,11 @@ class Admin_Generador {
 		);
 	}
 
+	/**
+	 * Métodos de pago sin pasarela disponibles.
+	 *
+	 * @return array<int, string>
+	 */
 	private function get_offline_methods(): array {
 		$settings         = get_option( 'convoca_gateway_settings', array() );
 		$transfer_enabled = ! empty( $settings['iban'] );

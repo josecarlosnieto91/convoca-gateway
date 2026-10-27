@@ -228,8 +228,8 @@ if ( ! function_exists( 'convoca_gateway_create_payment' ) ) {
 	/**
 	 * Global wrapper to create a payment.
 	 *
-	 * @param array $args Payment arguments (amount_cents, origin, etc.).
-	 * @return array|\WP_Error Payment creation result with URL.
+	 * @param array<string, mixed> $args Payment arguments (amount_cents, origin, etc.).
+	 * @return array<string, mixed>|\WP_Error Payment creation result with URL.
 	 */
 	function convoca_gateway_create_payment( array $args ): array|\WP_Error {
 		return \Convoca\Gateway\Payment_Handler::create_payment( $args );
@@ -240,7 +240,7 @@ if ( ! function_exists( 'convoca_get_gateway_settings' ) ) {
 	/**
 	 * Retrieve Gateway settings.
 	 *
-	 * @return array
+	 * @return array<string, mixed>
 	 */
 	function convoca_get_gateway_settings(): array {
 		return get_option( 'convoca_gateway_settings', array() );

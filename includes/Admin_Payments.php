@@ -43,12 +43,12 @@ class Admin_Payments extends \WP_List_Table {
 	 * aqui se declarase `array` a secas, PHPStan lo caza como PHPDoc no covariante en la
 	 * propiedad sobrescrita (medido: el job de PHPStan del CI en rojo).
 	 *
-	 * @var array<int, array|string>|null
+	 * El nombre `$_column_headers` lo fija el contrato de WP_List_Table; renombrarla
+	 * romperia la herencia. Excepcion declarada, no estandar relajado.
+	 *
+	 * @var array<int, array<mixed>|string>|null
 	 */
-	// El nombre lo fija el contrato de WP_List_Table (WordPress la declara asi):
-	// renombrarla rompe la herencia. Excepcion declarada, no estandar relajado.
-	// phpcs:ignore PSR2.Classes.PropertyDeclaration.Underscore
-	protected $_column_headers = array();
+	protected $_column_headers = array(); // phpcs:ignore PSR2.Classes.PropertyDeclaration.Underscore
 
 	public function __construct() {
 		add_action( 'admin_menu', array( $this, 'add_menu' ) );
@@ -265,7 +265,7 @@ class Admin_Payments extends \WP_List_Table {
 		}
 
 		$query       = new \WP_Query( $args );
-		$this->items = $query->posts;
+		$this->items = (array) $query->posts;
 
 		$this->set_pagination_args(
 			array(
@@ -646,7 +646,7 @@ class Admin_Payments extends \WP_List_Table {
 	/**
 	 * Build WP_Query args for export (CSV/PDF), respecting list filters.
 	 *
-	 * @return array
+	 * @return array<string, mixed>
 	 */
 	private function build_export_query_args(): array {
 		$get_data = wp_unslash( $_GET );

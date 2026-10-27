@@ -105,7 +105,7 @@ class Admin_Links extends \WP_List_Table {
 		);
 
 		$query       = new \WP_Query( $args );
-		$this->items = $query->posts;
+		$this->items = (array) $query->posts;
 
 		$this->set_pagination_args(
 			array(
@@ -242,7 +242,13 @@ class Admin_Links extends \WP_List_Table {
 		return sprintf( '<span style="color:%s">%s</span>', $color, wp_date( 'd/m/Y H:i', $meta['expires_at'] ) );
 	}
 
-	public function column_active( $item ): string {
+	/**
+	 * Estado del enlace (activo, caducado o agotado).
+	 *
+	 * @param \WP_Post $item Fila de la tabla.
+	 * @return string
+	 */
+	public function column_active( \WP_Post $item ): string {
 		$meta = CPT_Pago::get_meta( $item->ID );
 
 		$expired = $meta['expires_at'] > 0 && $meta['expires_at'] < time();

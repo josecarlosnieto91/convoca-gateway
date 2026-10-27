@@ -57,16 +57,23 @@ class Redsys_Client {
 
 	/* ── Settings cache ──────────────────────── */
 
+	/**
+	 * Ajustes del gateway, cacheados por petición.
+	 *
+	 * @var array<string, mixed>|null
+	 */
 	private static ?array $settings = null;
 
 	/**
 	 * Get gateway settings from wp_options.
+	 *
+	 * @return array<string, mixed>
 	 */
 	public static function settings(): array {
 		if ( self::$settings === null ) {
 			self::$settings = get_option( 'convoca_gateway_settings', array() );
 		}
-		return self::$settings;
+		return self::$settings ?? array();
 	}
 
 	/**
@@ -191,7 +198,7 @@ class Redsys_Client {
 	/**
 	 * Build merchant parameters for a payment request.
 	 *
-	 * @param array $params {
+	 * @param array<string, mixed> $params {
 	 *     @type string $order_id      Unique order ID (12 chars).
 	 *     @type int    $amount_cents  Amount in cents (e.g. 3000 = 30.00€).
 	 *     @type string $product_desc  Product description for bank statement.
@@ -350,7 +357,7 @@ class Redsys_Client {
 	/**
 	 * Build the complete HTML form for Redsys redirect.
 	 *
-	 * @param array $params See build_merchant_params().
+	 * @param array<string, mixed> $params See build_merchant_params().
 	 * @return string HTML form (auto-submitting).
 	 */
 	public static function build_form( array $params ): string {
@@ -375,7 +382,7 @@ class Redsys_Client {
 	/**
 	 * Renders the Redsys redirect form.
 	 *
-	 * @param array $params See build_merchant_params().
+	 * @param array<string, mixed> $params See build_merchant_params().
 	 * @return string HTML form or error message.
 	 */
 	public static function render_redsys_redirect( array $params ): string {
@@ -465,8 +472,8 @@ class Redsys_Client {
 	 * Verify and decode a Redsys notification.
 	 * Soporta HMAC_SHA256_V1 y HMAC_SHA256_V2.
 	 *
-	 * @param array $post_data $_POST data from Redsys callback.
-	 * @return array|false Decoded parameters or false if invalid signature.
+	 * @param array<string, mixed> $post_data $_POST data from Redsys callback.
+	 * @return array<string, mixed>|false Decoded parameters or false if invalid signature.
 	 */
 	public static function verify_notification( array $post_data ): array|false {
 		$signature_version = $post_data['Ds_SignatureVersion'] ?? '';
@@ -578,7 +585,7 @@ class Redsys_Client {
 	 * where tokenize was requested) with DIRECTPAYMENT so Redsys charges the
 	 * stored card without the cardholder being present.
 	 *
-	 * @param array $params {
+	 * @param array<string, mixed> $params {
 	 *     @type string $order_id      Unique order ID (12 chars).
 	 *     @type int    $amount_cents  Amount in cents.
 	 *     @type string $product_desc  Product description.
@@ -618,8 +625,8 @@ class Redsys_Client {
 	/**
 	 * Execute a server-to-server token charge against Redsys REST.
 	 *
-	 * @param array $params See build_rest_charge_params().
-	 * @return array|\WP_Error {
+	 * @param array<string, mixed> $params See build_rest_charge_params().
+	 * @return array<string, mixed>|\WP_Error {
 	 *     @type bool   $approved    Whether Redsys approved the charge.
 	 *     @type string $response    Redsys response code (Ds_Response).
 	 *     @type string $auth_code   Authorisation code.
@@ -712,8 +719,8 @@ class Redsys_Client {
 	 * REST devuelve el mismo triple (Ds_SignatureVersion, Ds_MerchantParameters,
 	 * Ds_Signature) con la firma calculada por Redsys sobre los parámetros de salida.
 	 *
-	 * @param array $payload REST JSON response body.
-	 * @return array|false Decoded params or false.
+	 * @param array<string, mixed> $payload REST JSON response body.
+	 * @return array<string, mixed>|false Decoded params or false.
 	 */
 	public static function verify_rest_response( array $payload ): array|false {
 		$signature_version = $payload['Ds_SignatureVersion'] ?? '';

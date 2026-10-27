@@ -90,16 +90,31 @@ class Block_Gateway {
 		);
 	}
 
+	/**
+	 * Renderiza el bloque de pago.
+	 *
+	 * @param array<string, mixed> $attrs
+	 */
 	public function render_pago( array $attrs ): string {
 		$handler = new Payment_Handler();
 		return $handler->render_payment_page( $attrs );
 	}
 
+	/**
+	 * Renderiza el bloque de pago correcto.
+	 *
+	 * @param array<string, mixed> $attrs
+	 */
 	public function render_ok( array $attrs ): string {
 		$handler = new Payment_Handler();
 		return $handler->render_ok_page( $attrs );
 	}
 
+	/**
+	 * Renderiza el bloque de pago fallido.
+	 *
+	 * @param array<string, mixed> $attrs
+	 */
 	public function render_ko( array $attrs ): string {
 		$handler = new Payment_Handler();
 		return $handler->render_ko_page( $attrs );

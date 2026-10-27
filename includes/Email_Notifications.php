@@ -36,6 +36,8 @@ class Email_Notifications {
 
 	/**
 	 * Send success email.
+	 *
+	 * @param array<string, mixed> $data
 	 */
 	public function send_success_email( int $payment_id, string $origin, int $origin_id, array $data ): void {
 		$this->maybe_send( $payment_id, 'success' );
@@ -188,8 +190,8 @@ class Email_Notifications {
 	/**
 	 * Añade la frecuencia de cuarto de hora al listado de WordPress.
 	 *
-	 * @param array $schedules Frecuencias registradas.
-	 * @return array
+	 * @param array<string, array{interval: int, display: string}> $schedules Frecuencias registradas.
+	 * @return array<string, mixed>
 	 */
 	public static function register_schedule( array $schedules ): array {
 		$schedules[ self::REMINDER_SCHEDULE ] = array(
@@ -234,7 +236,7 @@ class Email_Notifications {
 	 * (`current_time('mysql')`), así que se interpreta con el desfase del sitio. Un
 	 * pago sin fecha reconocible no se recuerda: mejor no avisar que avisar mal.
 	 *
-	 * @param array $meta Meta del pago.
+	 * @param array<string, mixed> $meta Meta del pago.
 	 * @return int 0 si no se puede saber.
 	 */
 	public static function created_ts( array $meta ): int {
@@ -256,7 +258,7 @@ class Email_Notifications {
 	/**
 	 * ¿Toca recordar este pago? Reglas, todas juntas y sin consultar nada.
 	 *
-	 * @param array $meta Meta del pago.
+	 * @param array<string, mixed> $meta Meta del pago.
 	 * @param int   $now  Momento actual.
 	 * @return bool
 	 */
@@ -289,7 +291,7 @@ class Email_Notifications {
 	/**
 	 * El correo al que se avisa: el de quien paga y, si no lo hay, el del enlace.
 	 *
-	 * @param array $meta Meta del pago.
+	 * @param array<string, mixed> $meta Meta del pago.
 	 * @return string Cadena vacía si no hay ninguno válido.
 	 */
 	public static function reminder_email( array $meta ): string {
@@ -393,6 +395,11 @@ class Email_Notifications {
 		return $enviados;
 	}
 
+	/**
+	 * Envía el correo del pago si toca.
+	 *
+	 * @param array<string, mixed> $extra
+	 */
 	private function maybe_send( int $payment_id, string $type, array $extra = array() ): void {
 		$settings = get_option( 'convoca_gateway_settings', array() );
 		$enabled  = ( $settings['email_confirmation'] ?? '0' ) === '1';
@@ -457,6 +464,12 @@ class Email_Notifications {
 		return CPT_Pago::origin_label( $origin );
 	}
 
+	/**
+	 * Variables disponibles en la plantilla del correo.
+	 *
+	 * @param array<string, mixed> $extra
+	 * @return array<string, mixed>
+	 */
 	private function get_template_vars( int $payment_id, array $extra = array() ): array {
 		$amount_cents = (int) get_post_meta( $payment_id, '_convoca_amount_cents', true );
 		$method       = get_post_meta( $payment_id, '_convoca_method', true );

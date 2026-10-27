@@ -33,7 +33,7 @@ class CSV_Exporter {
 	/**
 	 * Export payments to CSV.
 	 *
-	 * @param array $args Filter arguments for WP_Query.
+	 * @param array<string, mixed> $args Filter arguments for WP_Query.
 	 */
 	public static function export( array $args ): void {
 		if ( ! current_user_can( 'convoca_view_payments' ) ) {
@@ -49,8 +49,14 @@ class CSV_Exporter {
 		$args['paged']          = 1;
 		$args['no_found_rows']  = true;
 
-		$query    = new \WP_Query( $args );
-		$payments = $query->posts;
+		$query = new \WP_Query( $args );
+
+		/**
+		 * Pagos consultados.
+		 *
+		 * @var array<int, \WP_Post> $payments
+		 */
+		$payments = (array) $query->posts;
 
 		$filename = 'pagos-convoca-' . current_time( 'Y-m-d-His' ) . '.csv';
 
@@ -84,7 +90,7 @@ class CSV_Exporter {
 	 * escribe en cada columna sin cortar el proceso. 5.000 pagos construidos de golpe serían 5.000
 	 * arrays vivos, de ahí el generador.
 	 *
-	 * @param array<int, object> $payments Pagos ya consultados (WP_Post).
+	 * @param array<int, \WP_Post> $payments Pagos ya consultados (WP_Post).
 	 * @return iterable<int, array<int, mixed>>
 	 */
 	public static function filas( array $payments ): iterable {

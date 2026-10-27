@@ -461,6 +461,8 @@ class Admin_Settings extends \Convoca\Core\Admin\Pantalla_Admin {
 
 	/**
 	 * Render a standard form field.
+	 *
+	 * @param array<string, mixed> $field
 	 */
 	private function render_form_field( string $key, array $field ): void {
 		// Check if constant is defined in wp-config.php.
@@ -564,6 +566,9 @@ class Admin_Settings extends \Convoca\Core\Admin\Pantalla_Admin {
 
 	/**
 	 * Sanitize settings before saving.
+	 *
+	 * @param array<string, mixed> $input
+	 * @return array<string, mixed>
 	 */
 	public function sanitize( array $input ): array {
 		// Invalidate diagnostic cache to reflect changes immediately.

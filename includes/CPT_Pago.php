@@ -63,7 +63,11 @@ class CPT_Pago {
 		'receipt_key',        // Unguessable access key for the receipt page.
 	);
 
-	/** Status labels. */
+	/**
+	 * Status labels.
+	 *
+	 * @return array<string, string>
+	 */
 	public static function status(): array {
 		return array(
 			'pending'  => __( 'Pendiente', 'convoca-gateway' ),
@@ -124,7 +128,7 @@ class CPT_Pago {
 	/**
 	 * Create a new payment record.
 	 *
-	 * @param array $data {
+	 * @param array<string, mixed> $data {
 	 *     @type int    $amount_cents   Amount in cents.
 	 *     @type string $method         Payment method (tarjeta|bizum).
 	 *     @type string $origin         Origin plugin (enroll|members).
@@ -223,6 +227,8 @@ class CPT_Pago {
 
 	/**
 	 * Get meta data for a payment.
+	 *
+	 * @return array<string, mixed>
 	 */
 	public static function get_meta( int $post_id ): array {
 		$data = array();
@@ -332,7 +338,7 @@ class CPT_Pago {
 	/**
 	 * Create a payment from the link generator.
 	 *
-	 * @param array $data {
+	 * @param array<string, mixed> $data {
 	 *     @type float  $amount     Amount in euros.
 	 *     @type string $concepto   Payment description.
 	 *     @type string $method     Payment method (tarjeta|bizum|transferencia|any).

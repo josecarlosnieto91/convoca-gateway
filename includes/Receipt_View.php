@@ -152,7 +152,7 @@ class Receipt_View {
 	/**
 	 * El documento completo, listo para imprimir. Sin imprimir nada.
 	 *
-	 * @param array $datos Salida de data().
+	 * @param array<string, mixed> $datos Salida de data().
 	 * @return string HTML.
 	 */
 	public static function html( array $datos ): string {

@@ -25,7 +25,7 @@ class PDF_Exporter {
 	/**
 	 * Export payments to PDF.
 	 *
-	 * @param array $args Filter arguments for WP_Query.
+	 * @param array<string, mixed> $args Filter arguments for WP_Query.
 	 */
 	public static function export( array $args ): void {
 		if ( ! current_user_can( 'convoca_view_payments' ) ) {
@@ -49,8 +49,14 @@ class PDF_Exporter {
 		$args['paged']          = 1;
 		$args['no_found_rows']  = true;
 
-		$query    = new \WP_Query( $args );
-		$payments = $query->posts;
+		$query = new \WP_Query( $args );
+
+		/**
+		 * Pagos consultados.
+		 *
+		 * @var array<int, \WP_Post> $payments
+		 */
+		$payments = (array) $query->posts;
 
 		$html = self::build_document( $payments );
 
@@ -84,7 +90,7 @@ class PDF_Exporter {
 	 * prueba: todo lo que decide el contenido —las filas, los totales, los rótulos y el caso de un
 	 * historial vacío— tiene que ser alcanzable sin mandar cabeceras ni cortar el proceso.
 	 *
-	 * @param array<int, object> $payments Pagos ya consultados (WP_Post).
+	 * @param array<int, \WP_Post> $payments Pagos ya consultados (WP_Post).
 	 * @return string Documento HTML completo.
 	 */
 	public static function build_document( array $payments ): string {

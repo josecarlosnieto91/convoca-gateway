@@ -54,6 +54,11 @@ class Gateway_Upgrade_Manager extends Upgrade_Manager {
 		return 'conv';
 	}
 
+	/**
+	 * Callbacks de migración de versión.
+	 *
+	 * @return array<string, mixed>
+	 */
 	protected function get_upgrade_callbacks(): array {
 		return array(
 			// Add upgrade callbacks here as needed.
