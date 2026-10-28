@@ -396,6 +396,9 @@ class Payment_Handler {
 	public function render_payment_page( $atts ): string {
 		// Regenerate an expired/failed link keeping the same payment (D21c/D22c).
 		if ( isset( $_POST['convoca_gateway_regenerate'] ) && check_admin_referer( 'convoca_gateway_regenerate_action', 'convoca_gateway_regenerate_nonce' ) ) {
+			if ( ! License_Gate::puede_cobrar() ) {
+				return '<div class="convoca-alert convoca-alert--info">' . esc_html( License_Gate::aviso_publico() ) . '</div>';
+			}
 			return $this->handle_regenerate_link();
 		}
 
@@ -1351,6 +1354,11 @@ class Payment_Handler {
 	 * Render a manual payment form when no link is provided.
 	 */
 	private function render_manual_form( string $error = '' ): string {
+		License_Gate::registrar_uso();
+		if ( ! License_Gate::puede_cobrar() ) {
+			return '<div class="convoca-alert convoca-alert--info">' . esc_html( License_Gate::aviso_publico() ) . '</div>';
+		}
+
 		$method  = $this->requested_method();
 		$methods = $this->enabled_methods();
 		$base    = (string) ( get_permalink() ?: self::get_payment_page_url() );
@@ -1463,6 +1471,10 @@ class Payment_Handler {
 	 * Handle the manual form submission.
 	 */
 	private function handle_manual_payment_submission(): string {
+		if ( ! License_Gate::puede_cobrar() ) {
+			return '<div class="convoca-alert convoca-alert--info">' . esc_html( License_Gate::aviso_publico() ) . '</div>';
+		}
+
 		$amount = (float) str_replace( ',', '.', wp_unslash( $_POST['amount'] ?? 0 ) );
 		$desc   = sanitize_text_field( wp_unslash( $_POST['description'] ?? '' ) );
 		$email  = sanitize_email( wp_unslash( $_POST['email'] ?? '' ) );

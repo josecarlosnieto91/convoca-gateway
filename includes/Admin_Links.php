@@ -506,6 +506,11 @@ class Admin_Links extends \WP_List_Table {
 			wp_die( esc_html__( 'No tienes permiso para editar enlaces de pago.', 'convoca-gateway' ), 403 );
 		}
 
+		// Crear o editar un enlace de pago es crear un cobro: pasa por el mismo candado.
+		if ( ! License_Gate::puede_cobrar() ) {
+			wp_die( esc_html( License_Gate::aviso_admin() ), 403 );
+		}
+
 		$id = absint( wp_unslash( $_POST['id'] ?? 0 ) );
 		if ( ! $id || 'pago' !== get_post_type( $id ) ) {
 			wp_die( esc_html__( 'Enlace no encontrado.', 'convoca-gateway' ), 404 );

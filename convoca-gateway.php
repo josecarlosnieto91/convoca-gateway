@@ -3,7 +3,7 @@
  * Plugin Name:       Convoca Gateway — Payment Gateway
  * Plugin URI:        https://getconvoca.app
  * Description:       Redsys payment gateway (card + Bizum).
- * Version: 2.13.23
+ * Version: 2.14.0
  * Requires at least: 6.4
  * Requires PHP:      8.1
  * Tested up to:      7.1.3
@@ -54,6 +54,38 @@ if ( ! class_exists( '\\Convoca\\Core\\Utils' ) ) {
 	);
 	return;
 }
+
+/* ── Aviso de licencia / prueba del cobro ─────── */
+add_action(
+	'admin_notices',
+	function () {
+		if ( ! current_user_can( 'manage_options' ) ) {
+			return;
+		}
+
+		$estado = License_Gate::estado();
+		if ( 'licencia' === $estado['estado'] || 'sin_empezar' === $estado['estado'] ) {
+			return;
+		}
+
+		if ( $estado['puede'] ) {
+			if ( $estado['dias'] > 3 ) {
+				return;
+			}
+			$texto = sprintf(
+				/* translators: %d: días que quedan */
+				_n( 'Queda %d día de prueba para crear pagos nuevos.', 'Quedan %d días de prueba para crear pagos nuevos.', $estado['dias'], 'convoca-gateway' ),
+				$estado['dias']
+			);
+			echo '<div class="notice notice-warning"><p>' . esc_html( $texto ) . ' ' .
+				'<a href="' . esc_url( admin_url( 'admin.php?page=convoca-license' ) ) . '">' .
+				esc_html__( 'Activar licencia', 'convoca-gateway' ) . '</a></p></div>';
+			return;
+		}
+
+		echo '<div class="notice notice-error"><p>' . esc_html( License_Gate::aviso_admin() ) . '</p></div>';
+	}
+);
 
 /* ── Constants ────────────────────────────────── */
 if ( ! defined( 'CONVOCA_GATEWAY_VERSION' ) ) {

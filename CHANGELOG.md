@@ -1,3 +1,18 @@
+## [2.14.0] — 2026-10-28
+
+### Añadido
+
+- **el cobro pasa a ser de pago**, con **prueba de 14 días**. Se cuenta desde el primer pago que se
+  crea, no desde que se instala el plugin.
+- Aviso en el panel a falta de tres días y aviso bloqueante al terminar, con enlace a la licencia.
+
+### Importante
+
+- La **notificación de Redsys** y las **páginas OK/KO** quedan **fuera** del candado a propósito: son el
+  retorno del banco. Un pago lanzado antes de que caduque la licencia se cobra y se registra igual.
+- Los pagos ya creados se pueden consultar, exportar y completar sin licencia.
+- Reinstalar no reinicia la prueba: además de la fecha se guarda una huella del sitio.
+
 ## [2.13.23] — 2026-10-26
 
 ### Cambiado
