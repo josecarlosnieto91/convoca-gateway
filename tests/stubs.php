@@ -279,7 +279,20 @@ namespace {
 		$GLOBALS['__gw_emails'][] = compact( 'to', 'subject', 'message' );
 		return true;
 	}
-	function apply_filters( $tag, $value, ...$args ) { return $value; }
+	function apply_filters( $tag, $value, ...$args ) {
+		if ( empty( $GLOBALS['__gw_filtros'][ $tag ] ) ) {
+			return $value;
+		}
+		$registrados = $GLOBALS['__gw_filtros'][ $tag ];
+		ksort( $registrados );
+		foreach ( $registrados as $lista ) {
+			foreach ( (array) $lista as $callback ) {
+				$value = call_user_func_array( $callback, array_merge( array( $value ), $args ) );
+			}
+		}
+		return $value;
+	}
+	function __return_true() { return true; }
 	// Registro de filtros: el gateway se registra en la fachada del núcleo (convoca_payment_*) y hay
 	// que poder comprobar que los tres enganches están puestos sin un WordPress de verdad.
 	function add_filter( $hook, $callback, $priority = 10, $args = 1 ) {

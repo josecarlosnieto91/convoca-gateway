@@ -1,3 +1,18 @@
+## [2.15.0] — 2026-10-28
+
+### Añadido
+
+- **filtro `convoca_gateway_settings_locked`**: cuando un sitio lo pone a `true`, los datos del TPV
+  (comercio, terminal, clave secreta, comercio de Bizum y entorno) salen deshabilitados en el panel y
+  **no se pueden sobrescribir al guardar**. El resto de ajustes sigue editable.
+- Aviso en la pantalla de ajustes explicando que esos datos están fijados.
+
+### Por qué
+
+Una demo pública con las claves del TPV cargadas necesita que nadie pueda cambiar el comercio ni saltar
+a `production`: el visitante acabaría en un cobro real que no existe. El candado es del sitio, no del
+plugin: una instalación normal no nota nada.
+
 ## [2.14.0] — 2026-10-28
 
 ### Añadido

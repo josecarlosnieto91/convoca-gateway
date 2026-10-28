@@ -219,4 +219,45 @@ class AdminSettingsSanitizeTest extends TestCase
         $this->assertStringContainsString('vuelve a introducir la clave secreta', $con_aviso);
         $this->assertStringContainsString('page=conv-gateway-settings', $con_aviso, 'el aviso lleva a donde se arregla');
     }
+
+    // ── instalación con los datos del TPV fijados (la demo) ──────────────────────────────
+
+    public function test_por_defecto_los_datos_del_tpv_se_pueden_cambiar(): void
+    {
+        $this->assertFalse(Admin_Settings::settings_locked(), 'una instalación normal no bloquea nada');
+    }
+
+    public function test_con_el_filtro_puesto_los_datos_del_tpv_quedan_fijados(): void
+    {
+        add_filter('convoca_gateway_settings_locked', '__return_true');
+
+        $this->assertTrue(Admin_Settings::settings_locked());
+        $this->assertSame(
+            ['merchant_code', 'terminal', 'secret_key', 'bizum_merchant_code', 'environment'],
+            Admin_Settings::locked_fields()
+        );
+    }
+
+    public function test_bloqueado_no_se_pisa_el_comercio_ni_el_entorno(): void
+    {
+        $GLOBALS['__gw_options']['convoca_gateway_settings'] = [
+            'merchant_code' => '999008881',
+            'terminal'      => '100',
+            'environment'   => 'test',
+            'secret_key'    => 'enc:loquesea',
+        ];
+        add_filter('convoca_gateway_settings_locked', '__return_true');
+
+        $salida = $this->ajustes()->sanitize([
+            'merchant_code' => '161197496',
+            'terminal'      => '001',
+            'environment'   => 'production',
+            'secret_key'    => 'clave-nueva-que-no-debe-entrar',
+        ]);
+
+        $this->assertSame('999008881', $salida['merchant_code'], 'el comercio no se toca');
+        $this->assertSame('100', $salida['terminal'], 'el terminal no se toca');
+        $this->assertSame('test', $salida['environment'], 'la demo no salta a producción');
+        $this->assertSame('enc:loquesea', $salida['secret_key'], 'la clave se queda como estaba');
+    }
 }

@@ -460,6 +460,26 @@ class Admin_Settings extends \Convoca\Core\Admin\Pantalla_Admin {
 	}
 
 	/**
+	 * Campos que se fijan en una instalación concreta (una demo, por ejemplo).
+	 *
+	 * @return array<int, string>
+	 */
+	public static function locked_fields(): array {
+		return array( 'merchant_code', 'terminal', 'secret_key', 'bizum_merchant_code', 'environment' );
+	}
+
+	/**
+	 * ¿Están fijados los datos del TPV en esta instalación?
+	 *
+	 * El filtro lo activa el sitio. Una demo lo enciende para que nadie cambie las claves ni el
+	 * entorno desde el panel: si alguien pone `production` en una demo con comercio de pruebas,
+	 * el visitante acaba en un cobro real que no existe.
+	 */
+	public static function settings_locked(): bool {
+		return (bool) apply_filters( 'convoca_gateway_settings_locked', false );
+	}
+
+	/**
 	 * Render a standard form field.
 	 *
 	 * @param array<string, mixed> $field
@@ -472,6 +492,16 @@ class Admin_Settings extends \Convoca\Core\Admin\Pantalla_Admin {
 		}
 		if ( $key === 'merchant_code' && defined( 'CONVOCA_GATEWAY_MERCHANT_CODE' ) ) {
 			$is_constant = true;
+		}
+
+		if ( self::settings_locked() && in_array( $key, self::locked_fields(), true ) ) {
+			printf(
+				'<input type="text" value="%s" class="regular-text" disabled>
+                 <p class="description"><em>%s</em></p>',
+				esc_attr__( 'Fijado en esta instalación', 'convoca-gateway' ),
+				esc_html__( 'En esta instalación los datos del TPV no se pueden cambiar.', 'convoca-gateway' )
+			);
+			return;
 		}
 
 		if ( $is_constant ) {
@@ -575,23 +605,26 @@ class Admin_Settings extends \Convoca\Core\Admin\Pantalla_Admin {
 		Diagnostic::run_all( true );
 
 		$old_settings = get_option( self::OPTION, array() );
-		$new_secret   = $input['secret_key'] ?? '';
+		$locked       = self::settings_locked();
+		$new_secret   = $locked ? '' : ( $input['secret_key'] ?? '' );
 		$errors       = array();
 
 		// Validate merchant_code: must be exactly 9 digits (FUC).
-		$merchant_code = sanitize_text_field( $input['merchant_code'] ?? '' );
+		$merchant_code = $locked ? (string) ( $old_settings['merchant_code'] ?? '' ) : sanitize_text_field( $input['merchant_code'] ?? '' );
 		if ( ! empty( $merchant_code ) && ! preg_match( '/^\d{9}$/', $merchant_code ) ) {
 			$errors[] = __( 'El código de comercio debe tener exactamente 9 dígitos.', 'convoca-gateway' );
 		}
 
 		// Validate terminal: must be numeric, max 3 digits.
-		$terminal = sanitize_text_field( $input['terminal'] ?? '001' );
+		$terminal = $locked ? (string) ( $old_settings['terminal'] ?? '001' ) : sanitize_text_field( $input['terminal'] ?? '001' );
 		if ( ! empty( $terminal ) && ! preg_match( '/^\d{1,3}$/', $terminal ) ) {
 			$errors[] = __( 'El número de terminal debe tener entre 1 y 3 dígitos.', 'convoca-gateway' );
 		}
 
 		// Validate environment.
-		$environment = in_array( $input['environment'] ?? '', array( 'test', 'production' ), true ) ? $input['environment'] : 'test';
+		$environment = $locked
+			? (string) ( $old_settings['environment'] ?? 'test' )
+			: ( in_array( $input['environment'] ?? '', array( 'test', 'production' ), true ) ? $input['environment'] : 'test' );
 
 		// Validate IBAN format if provided.
 		$iban = sanitize_text_field( $input['iban'] ?? '' );
@@ -615,11 +648,11 @@ class Admin_Settings extends \Convoca\Core\Admin\Pantalla_Admin {
 		}
 
 		return array(
-			'merchant_code'            => sanitize_text_field( $input['merchant_code'] ?? '' ),
-			'terminal'                 => sanitize_text_field( $input['terminal'] ?? '001' ),
+			'merchant_code'            => $merchant_code,
+			'terminal'                 => $terminal,
 			'default_method'           => in_array( $input['default_method'] ?? '', array( 'any', 'tarjeta', 'bizum', 'transferencia' ), true ) ? $input['default_method'] : 'any',
 			'secret_key'               => $secret_to_save,
-			'environment'              => in_array( $input['environment'] ?? '', array( 'test', 'production' ), true ) ? $input['environment'] : 'test',
+			'environment'              => $environment,
 			'iban'                     => sanitize_text_field( $input['iban'] ?? '' ),
 			'beneficiary'              => sanitize_text_field( $input['beneficiary'] ?? '' ),
 			'instructions'             => sanitize_textarea_field( $input['instructions'] ?? '' ),
@@ -657,6 +690,12 @@ class Admin_Settings extends \Convoca\Core\Admin\Pantalla_Admin {
 		// Security Guard: Check if critical dependencies are missing.
 		if ( ! class_exists( '\\Convoca\\Core\\Utils' ) ) {
 			echo '<div class="notice notice-warning"><p>⚠️ ' . esc_html__( 'Convoca Core no está activo. Algunas funciones de la pasarela podrían no estar disponibles.', 'convoca-gateway' ) . '</p></div>';
+		}
+
+		if ( self::settings_locked() ) {
+			echo '<div class="notice notice-info"><p>' .
+				esc_html__( 'Los datos del TPV (comercio, terminal, clave y entorno) están fijados en esta instalación y no se pueden cambiar desde aquí.', 'convoca-gateway' ) .
+				'</p></div>';
 		}
 
 		$settings   = get_option( self::OPTION, array() );
