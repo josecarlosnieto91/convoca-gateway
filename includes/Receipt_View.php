@@ -111,25 +111,34 @@ class Receipt_View {
 		 */
 		$nombre_pagador = (string) apply_filters( 'convoca_gateway_receipt_payer_name', '', $pago_id );
 
+		// Si nadie lo aporta por el filtro, se usa el que viene guardado en el pago.
+		if ( '' === $nombre_pagador ) {
+			$nombre_pagador = (string) get_post_meta( $pago_id, '_convoca_payer_name', true );
+		}
+
 		return array(
-			'title'       => $es_donativo
+			'title'          => $es_donativo
 				? __( 'Justificante de donación', 'convoca-gateway' )
 				: __( 'Recibo de pago', 'convoca-gateway' ),
-			'number'      => Receipt_Generator::assign_number( $pago_id ),
-			'org'         => $org,
-			'logo'        => self::logo_url(),
-			'site'        => home_url( '/' ),
-			'site_name'   => get_bloginfo( 'name' ),
-			'concept'     => (string) $meta['product_desc'],
-			'amount'      => CPT_Pago::format_amount( (int) $meta['amount_cents'] ),
-			'method'      => CPT_Pago::method_label( (string) $meta['method'] ),
-			'reference'   => (string) $meta['order_id'],
-			'status'      => __( 'Pagado', 'convoca-gateway' ),
-			'paid_at'     => $paid_at_ts ? wp_date( 'd/m/Y H:i', $paid_at_ts ) : '',
-			'payer_name'  => $nombre_pagador,
-			'payer_email' => $pagador,
-			'legal'       => $es_donativo ? Receipt_Generator::donation_legal_text() : '',
-			'issued_at'   => wp_date( 'd/m/Y H:i' ),
+			'number'         => Receipt_Generator::assign_number( $pago_id ),
+			'org'            => $org,
+			'logo'           => self::logo_url(),
+			'site'           => home_url( '/' ),
+			'site_name'      => get_bloginfo( 'name' ),
+			'concept'        => (string) $meta['product_desc'],
+			'amount'         => CPT_Pago::format_amount( (int) $meta['amount_cents'] ),
+			'method'         => CPT_Pago::method_label( (string) $meta['method'] ),
+			'reference'      => (string) $meta['order_id'],
+			'status'         => __( 'Pagado', 'convoca-gateway' ),
+			'paid_at'        => $paid_at_ts ? wp_date( 'd/m/Y H:i', $paid_at_ts ) : '',
+			'payer_name'     => $nombre_pagador,
+			'payer_email'    => $pagador,
+			'payer_nif'      => (string) get_post_meta( $pago_id, '_convoca_payer_nif', true ),
+			'payer_business' => (string) get_post_meta( $pago_id, '_convoca_payer_business', true ),
+			'payer_address'  => (string) get_post_meta( $pago_id, '_convoca_payer_address', true ),
+			'needs_invoice'  => '1' === (string) get_post_meta( $pago_id, '_convoca_needs_invoice', true ),
+			'legal'          => $es_donativo ? Receipt_Generator::donation_legal_text() : '',
+			'issued_at'      => wp_date( 'd/m/Y H:i' ),
 		);
 	}
 
@@ -235,7 +244,7 @@ class Receipt_View {
 				<th><?php esc_html_e( 'Concepto', 'convoca-gateway' ); ?></th>
 				<td><?php echo esc_html( (string) $datos['concept'] ); ?></td>
 			</tr>
-			<?php if ( '' !== (string) $datos['payer_name'] || '' !== (string) $datos['payer_email'] ) : ?>
+			<?php if ( '' !== (string) $datos['payer_name'] || '' !== (string) $datos['payer_email'] || '' !== (string) $datos['payer_nif'] ) : ?>
 				<tr>
 					<th><?php esc_html_e( 'Pagador', 'convoca-gateway' ); ?></th>
 					<td>
@@ -248,6 +257,15 @@ class Receipt_View {
 								?>
 								<br><?php endif; ?>
 							<span class="emisor__dato"><?php echo esc_html( (string) $datos['payer_email'] ); ?></span>
+						<?php endif; ?>
+						<?php if ( '' !== (string) $datos['payer_business'] ) : ?>
+							<br><?php echo esc_html( (string) $datos['payer_business'] ); ?>
+						<?php endif; ?>
+						<?php if ( '' !== (string) $datos['payer_nif'] ) : ?>
+							<br><span class="emisor__dato"><?php echo esc_html( (string) $datos['payer_nif'] ); ?></span>
+						<?php endif; ?>
+						<?php if ( '' !== (string) $datos['payer_address'] ) : ?>
+							<br><span class="emisor__dato"><?php echo esc_html( (string) $datos['payer_address'] ); ?></span>
 						<?php endif; ?>
 					</td>
 				</tr>

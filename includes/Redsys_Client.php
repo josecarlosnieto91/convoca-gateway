@@ -50,6 +50,19 @@ class Redsys_Client {
 	/** Transaction type: authorization. */
 	public const TXTYPE_AUTH = '0';
 
+	/**
+	 * Devolución de un cobro ya realizado.
+	 *
+	 * Redsys devuelve `0900` cuando la acepta, no `0000`: el rango 0-99 son operaciones autorizadas
+	 * y por eso no vale reutilizar `is_approved()` para decidir si la devolución salió bien.
+	 */
+	public const TXTYPE_REFUND = '3';
+
+	/**
+	 * Código de respuesta de una devolución aceptada.
+	 */
+	public const RESPONSE_REFUND_OK = '0900';
+
 	/** Payment methods. */
 	public const METHOD_CARD  = 'T';
 	public const METHOD_BIZUM = 'z';
@@ -767,5 +780,107 @@ class Redsys_Client {
 		}
 
 		return $decoded;
+	}
+
+	/**
+	 * Devuelve todo o parte de un cobro.
+	 *
+	 * El `order_id` es el del cobro original: Redsys no admite inventarse uno para la devolución.
+	 *
+	 * @param array<string, mixed> $params {
+	 *     @type string $order_id     Order del cobro original.
+	 *     @type int    $amount_cents Importe a devolver, en céntimos.
+	 * }
+	 * @return array<string, mixed>|\WP_Error {
+	 *     @type bool   $approved Indica si Redsys aceptó la devolución.
+	 *     @type string $response Código de respuesta.
+	 *     @type string $order_id Order original.
+	 *     @type array  $decoded  Respuesta completa.
+	 * }
+	 */
+	public static function refund( array $params ): array|\WP_Error {
+		$order = (string) ( $params['order_id'] ?? '' );
+		$cents = (int) ( $params['amount_cents'] ?? 0 );
+
+		if ( '' === $order ) {
+			return new \WP_Error( 'missing_order', 'Falta la referencia del cobro que se quiere devolver.' );
+		}
+
+		if ( $cents <= 0 ) {
+			return new \WP_Error( 'invalid_amount', 'El importe a devolver debe ser mayor que cero.' );
+		}
+
+		$data = array(
+			'DS_MERCHANT_AMOUNT'          => (string) $cents,
+			'DS_MERCHANT_ORDER'           => $order,
+			'DS_MERCHANT_MERCHANTCODE'    => self::merchant_code(),
+			'DS_MERCHANT_CURRENCY'        => self::CURRENCY_EUR,
+			'DS_MERCHANT_TRANSACTIONTYPE' => self::TXTYPE_REFUND,
+			'DS_MERCHANT_TERMINAL'        => self::terminal(),
+		);
+
+		$mp_b64    = self::base64url_encode( (string) wp_json_encode( $data ) );
+		$signature = self::sign_sha512_v2( $mp_b64, $order );
+
+		if ( '' === $signature ) {
+			return new \WP_Error( 'sign_failed', 'No se pudo firmar la petición de devolución.' );
+		}
+
+		$body = (string) wp_json_encode(
+			array(
+				'Ds_SignatureVersion'   => 'HMAC_SHA512_V2',
+				'Ds_MerchantParameters' => $mp_b64,
+				'Ds_Signature'          => $signature,
+			)
+		);
+
+		$response = wp_remote_post(
+			self::rest_endpoint(),
+			array(
+				'timeout' => 30,
+				'headers' => array(
+					'Content-Type'   => 'application/json',
+					'Content-Length' => strlen( $body ),
+				),
+				'body'    => $body,
+			)
+		);
+
+		if ( is_wp_error( $response ) ) {
+			\Convoca\Core\Logger::error( 'Error de red en devolución: ' . $response->get_error_message(), 'Gateway/Redsys' );
+			return $response;
+		}
+
+		$status = (int) wp_remote_retrieve_response_code( $response );
+		if ( $status < 200 || $status >= 300 ) {
+			\Convoca\Core\Logger::error( "HTTP $status del TPV en devolución (order $order).", 'Gateway/Redsys' );
+			return new \WP_Error( 'http_' . $status, 'El TPV respondió con HTTP ' . $status );
+		}
+
+		$payload = json_decode( wp_remote_retrieve_body( $response ), true );
+		if ( ! is_array( $payload ) ) {
+			\Convoca\Core\Logger::error( "Respuesta REST no JSON en devolución (order $order).", 'Gateway/Redsys' );
+			return new \WP_Error( 'invalid_json', 'Respuesta no JSON del TPV' );
+		}
+
+		$decoded = self::verify_rest_response( $payload );
+		if ( false === $decoded ) {
+			\Convoca\Core\Logger::error( "Firma REST no válida en devolución (order $order).", 'Gateway/Redsys' );
+			return new \WP_Error( 'invalid_signature', 'Firma no válida en la respuesta REST' );
+		}
+
+		$response_code = (string) ( $decoded['Ds_Response'] ?? '9999' );
+
+		\Convoca\Core\Logger::info(
+			sprintf( 'Devolución (order %s): respuesta %s.', $order, $response_code ),
+			'Gateway/Redsys'
+		);
+
+		return array(
+			'approved' => self::RESPONSE_REFUND_OK === $response_code || '0000' === $response_code,
+			'response' => $response_code,
+			'order_id' => $order,
+			'decoded'  => $decoded,
+		);
 	}
 }

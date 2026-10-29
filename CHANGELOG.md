@@ -1,3 +1,9 @@
+## [2.16.0] — 2026-10-29
+
+### Cambiado
+
+- **devoluciones por Redsys y datos fiscales en el recibo**
+
 ## [2.15.0] — 2026-10-28
 
 ### Añadido

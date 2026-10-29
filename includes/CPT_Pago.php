@@ -52,6 +52,11 @@ class CPT_Pago {
 		'link_generated_by',  // Admin user ID who generated the link.
 		'open_amount',        // '1' = enlace de donativo: el importe lo elige quien aporta.
 		'payer_email',        // Email de quien paga (recibo). Puede venir del formulario.
+		'payer_name',         // Nombre de quien paga (recibo).
+		'payer_nif',          // NIF/CIF del comprador, si pidió factura.
+		'payer_business',     // Razón social, si pidió factura.
+		'payer_address',      // Dirección fiscal, si pidió factura.
+		'needs_invoice',      // '1' cuando el comprador pidió factura.
 		// Recurring payment fields.
 		'redsys_merchant_id', // Tokenized card identifier for recurring payments.
 		'proof_file',         // ID or URL of uploaded payment receipt.
@@ -191,6 +196,31 @@ class CPT_Pago {
 		$payer_email = sanitize_email( $data['payer_email'] ?? ( $data['email'] ?? '' ) );
 		if ( '' !== $payer_email ) {
 			update_post_meta( $post_id, '_convoca_payer_email', $payer_email );
+		}
+
+		// Nombre y datos fiscales: los envía el módulo que cobra (courses, enroll). Sin ellos el recibo
+		// sale a nombre de nadie y una factura no vale.
+		$fiscales = array(
+			'payer_name'     => 'payer_name',
+			'payer_nif'      => 'payer_nif',
+			'payer_business' => 'payer_business',
+			'payer_address'  => 'payer_address',
+		);
+
+		foreach ( $fiscales as $campo => $meta_key ) {
+			if ( ! isset( $data[ $campo ] ) || '' === (string) $data[ $campo ] ) {
+				continue;
+			}
+
+			$valor = 'payer_nif' === $campo
+				? strtoupper( sanitize_text_field( (string) $data[ $campo ] ) )
+				: sanitize_text_field( (string) $data[ $campo ] );
+
+			update_post_meta( $post_id, '_convoca_' . $meta_key, $valor );
+		}
+
+		if ( ! empty( $data['needs_invoice'] ) ) {
+			update_post_meta( $post_id, '_convoca_needs_invoice', '1' );
 		}
 		if ( ! empty( $data['receipt_always'] ) ) {
 			update_post_meta( $post_id, '_convoca_receipt_always', '1' );

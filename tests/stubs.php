@@ -1107,4 +1107,31 @@ namespace {
 			return (object) array( 'name' => $taxonomia );
 		}
 	}
+
+	if ( ! function_exists( 'remove_filter' ) ) {
+		/**
+		 * Quita un filtro (doble).
+		 *
+		 * @param string   $hook     Hook.
+		 * @param callable $callback Callback.
+		 * @param int      $priority Prioridad.
+		 * @return bool
+		 */
+		function remove_filter( $hook, $callback, $priority = 10 ) {
+			$prioridad = (int) $priority;
+
+			if ( empty( $GLOBALS['__gw_filtros'][ $hook ][ $prioridad ] ) ) {
+				return false;
+			}
+
+			foreach ( $GLOBALS['__gw_filtros'][ $hook ][ $prioridad ] as $i => $cb ) {
+				if ( $cb === $callback ) {
+					unset( $GLOBALS['__gw_filtros'][ $hook ][ $prioridad ][ $i ] );
+					return true;
+				}
+			}
+
+			return false;
+		}
+	}
 }
