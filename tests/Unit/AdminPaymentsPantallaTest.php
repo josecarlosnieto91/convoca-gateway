@@ -117,7 +117,8 @@ class AdminPaymentsPantallaTest extends TestCase
         $this->assertContains('admin_menu', $ganchos);
         $this->assertContains('admin_init', $ganchos);
         $this->assertContains('admin_post_convoca_gateway_export_payments_pdf', $ganchos, 'el PDF se pide por admin-post');
-        $this->assertSame(4, count($GLOBALS['__gw_hooks']), 'cuatro ganchos, ni uno más');
+        $this->assertContains('admin_post_convoca_gateway_refund', $ganchos, 'la devolución se pide por admin-post');
+        $this->assertSame(5, count($GLOBALS['__gw_hooks']), 'cinco ganchos, ni uno más');
     }
 
     public function test_la_tabla_se_construye_con_su_slug(): void
@@ -444,9 +445,15 @@ class AdminPaymentsPantallaTest extends TestCase
         $this->assertStringContainsString('Email reenviado', $html);
     }
 
-    public function test_el_reembolso_escribe_el_estado_y_avisa(): void
+    public function test_el_reembolso_devuelve_por_el_tpv(): void
     {
         $this->pago(43, ['order_id' => 'PED-43', 'status' => 'paid', 'amount_cents' => 100, 'origin' => 'members', 'origin_id' => 3]);
+
+        $aprobar = static function () {
+            return ['approved' => true, 'response' => '0900', 'order_id' => 'PED-43'];
+        };
+        add_filter('convoca_gateway_refund_result', $aprobar);
+
         $_GET = ['page' => 'conv-gateway-payments-detail', 'id' => 43];
         $_POST = ['convoca_gateway_refund_payment' => '1'];
 
@@ -454,10 +461,34 @@ class AdminPaymentsPantallaTest extends TestCase
         $this->pantalla()->render_page();
         $html = (string) ob_get_clean();
 
-        $this->assertSame('refunded', $GLOBALS['__gw_meta'][43]['_convoca_status'], 'reembolsar cambia el estado');
+        remove_filter('convoca_gateway_refund_result', $aprobar);
+
+        $this->assertSame('refunded', $GLOBALS['__gw_meta'][43]['_convoca_status'], 'reembolsar ejecuta la devolución');
+        $this->assertSame(100, $GLOBALS['__gw_meta'][43]['_convoca_refunded_cents']);
         $this->assertContains('convoca_gateway_payment_refunded', array_column($GLOBALS['__gw_actions'], 0));
-        $this->assertStringContainsString('reembolsado', $html);
-        $this->assertSame('Gateway/Refund', Logger::$escritos[0][2], 'y queda en el registro');
+        $this->assertStringContainsString('Devolución ejecutada', $html);
+    }
+
+    public function test_el_reembolso_rechazado_no_toca_el_pago(): void
+    {
+        $this->pago(45, ['order_id' => 'PED-45', 'status' => 'paid', 'amount_cents' => 100, 'origin' => 'members', 'origin_id' => 3]);
+
+        $rechazar = static function () {
+            return ['approved' => false, 'response' => '0190', 'order_id' => 'PED-45'];
+        };
+        add_filter('convoca_gateway_refund_result', $rechazar);
+
+        $_GET = ['page' => 'conv-gateway-payments-detail', 'id' => 45];
+        $_POST = ['convoca_gateway_refund_payment' => '1'];
+
+        ob_start();
+        $this->pantalla()->render_page();
+        $html = (string) ob_get_clean();
+
+        remove_filter('convoca_gateway_refund_result', $rechazar);
+
+        $this->assertSame('paid', $GLOBALS['__gw_meta'][45]['_convoca_status'], 'si el TPV rechaza, el pago no cambia');
+        $this->assertStringContainsString('No se pudo devolver', $html);
     }
 
     public function test_marcar_pagado_a_mano_cierra_el_pago(): void

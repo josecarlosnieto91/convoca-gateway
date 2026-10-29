@@ -1,3 +1,9 @@
+## [2.16.1] — 2026-10-29
+
+### Cambiado
+
+- **boton de devolucion en el panel**
+
 ## [2.16.0] — 2026-10-29
 
 ### Cambiado

@@ -54,6 +54,7 @@ class Admin_Payments extends \WP_List_Table {
 		add_action( 'admin_menu', array( $this, 'add_menu' ) );
 		add_action( 'admin_init', array( $this, 'handle_csv_export_early' ) );
 		add_action( 'admin_post_convoca_gateway_export_payments_pdf', array( $this, 'handle_pdf_export_request' ) );
+		add_action( 'admin_post_convoca_gateway_refund', array( $this, 'handle_refund_request' ) );
 		add_action( 'admin_init', array( $this, 'init_list_table' ) );
 	}
 
@@ -139,6 +140,7 @@ class Admin_Payments extends \WP_List_Table {
 			'status'   => __( 'Estado', 'convoca-gateway' ),
 			'origin'   => __( 'Origen', 'convoca-gateway' ),
 			'date'     => __( 'Fecha', 'convoca-gateway' ),
+			'refund'   => __( 'Devolución', 'convoca-gateway' ),
 		);
 	}
 
@@ -287,6 +289,70 @@ class Admin_Payments extends \WP_List_Table {
 	}
 
 	/**
+	 * Columna de devolución: solo aparece si se puede devolver.
+	 *
+	 * @param \WP_Post $item Pago.
+	 * @return string
+	 */
+	public function column_refund( $item ): string {
+		$pago_id = (int) $item->ID;
+
+		if ( ! Refunds::disponible( $pago_id ) ) {
+			return '—';
+		}
+
+		$url = wp_nonce_url(
+			admin_url( 'admin-post.php?action=convoca_gateway_refund&pago=' . $pago_id ),
+			'convoca_refund_' . $pago_id
+		);
+
+		$total = CPT_Pago::format_amount( Refunds::pendiente( $pago_id ) );
+
+		return sprintf(
+			'<a href="%1$s" class="button" onclick="return confirm(%2$s);">%3$s</a><br><small>%4$s</small>',
+			esc_url( $url ),
+			esc_js( sprintf( /* translators: %s: importe */ __( '¿Devolver %s? No se puede deshacer.', 'convoca-gateway' ), $total ) ),
+			esc_html__( 'Devolver', 'convoca-gateway' ),
+			esc_html( $total )
+		);
+	}
+
+	/**
+	 * Ejecuta la devolución pedida desde el listado.
+	 *
+	 * @return void
+	 */
+	public function handle_refund_request(): void {
+		$pago_id = isset( $_GET['pago'] ) ? absint( wp_unslash( $_GET['pago'] ) ) : 0;
+
+		check_admin_referer( 'convoca_refund_' . $pago_id );
+
+		if ( ! current_user_can( 'convoca_view_payments' ) ) {
+			wp_die( esc_html__( 'No tienes permiso para devolver pagos.', 'convoca-gateway' ) );
+		}
+
+		$resultado = Refunds::ejecutar( $pago_id, 0, __( 'Devolución desde el panel', 'convoca-gateway' ) );
+
+		$destino = admin_url( 'admin.php?page=conv-gateway-payments' );
+
+		if ( is_wp_error( $resultado ) ) {
+			wp_safe_redirect(
+				add_query_arg(
+					array(
+						'convoca_refund' => 'error',
+						'convoca_motivo' => rawurlencode( $resultado->get_error_message() ),
+					),
+					$destino
+				)
+			);
+			exit;
+		}
+
+		wp_safe_redirect( add_query_arg( 'convoca_refund', 'ok', $destino ) );
+		exit;
+	}
+
+	/**
 	 * Column renderer.
 	 *
 	 * @param \WP_Post $item Row item (WP_Post from WP_Query).
@@ -387,6 +453,18 @@ class Admin_Payments extends \WP_List_Table {
 
 	public function render_page(): void {
 
+		// Aviso de la devolución: verde si salió, rojo con el motivo si el TPV la rechazó.
+		// phpcs:disable WordPress.Security.NonceVerification.Recommended -- solo lectura de un aviso.
+		$refund = isset( $_GET['convoca_refund'] ) ? sanitize_key( wp_unslash( $_GET['convoca_refund'] ) ) : '';
+		$motivo = isset( $_GET['convoca_motivo'] ) ? sanitize_text_field( rawurldecode( wp_unslash( (string) $_GET['convoca_motivo'] ) ) ) : '';
+		// phpcs:enable WordPress.Security.NonceVerification.Recommended
+
+		if ( 'ok' === $refund ) {
+			echo '<div class="notice notice-success is-dismissible"><p>' . esc_html__( 'Devolución ejecutada.', 'convoca-gateway' ) . '</p></div>';
+		} elseif ( 'error' === $refund ) {
+			echo '<div class="notice notice-error"><p>' . esc_html__( 'No se pudo devolver: ', 'convoca-gateway' ) . esc_html( $motivo ) . '</p></div>';
+		}
+
 		// Borrado: la acción (de fila o en bloque) lleva a la pantalla de confirmación.
 		$borrado = Admin_Record_Actions::pending_action();
 		if ( 'convoca_delete' === $borrado || ( isset( $_GET['action'] ) && 'delete' === $_GET['action'] ) ) {
@@ -444,8 +522,14 @@ class Admin_Payments extends \WP_List_Table {
 
 		// Handle refund.
 		if ( isset( $_POST['convoca_gateway_refund_payment'] ) && check_admin_referer( 'convoca_gateway_refund_' . $id ) ) {
-			$this->handle_refund( $id );
-			echo '<div class="updated"><p>' . esc_html__( 'Pago marcado como reembolsado.', 'convoca-gateway' ) . '</p></div>';
+			$devolucion = $this->handle_refund( $id );
+
+			if ( is_wp_error( $devolucion ) ) {
+				echo '<div class="error"><p>' . esc_html__( 'No se pudo devolver: ', 'convoca-gateway' ) . esc_html( $devolucion->get_error_message() ) . '</p></div>';
+			} else {
+				echo '<div class="updated"><p>' . esc_html__( 'Devolución ejecutada.', 'convoca-gateway' ) . '</p></div>';
+			}
+
 			$meta = CPT_Pago::get_meta( $id ); // Refresh meta.
 		}
 
@@ -687,17 +771,16 @@ class Admin_Payments extends \WP_List_Table {
 	/**
 	 * Mark payment as refunded.
 	 */
-	private function handle_refund( int $id ): void {
-		update_post_meta( $id, '_convoca_status', 'refunded' );
-
-		\Convoca\Core\Logger::log(
-			__( 'Pago marcado como REEMBOLSADO manualmente.', 'convoca-gateway' ),
-			'info',
-			'Gateway/Refund',
-			$id
-		);
-
-		do_action( 'convoca_gateway_payment_refunded', $id );
+	/**
+	 * Devuelve el pago por el TPV.
+	 *
+	 * @param int $id Pago.
+	 * @return array<string,mixed>|\WP_Error
+	 */
+	private function handle_refund( int $id ): array|\WP_Error {
+		// Marcar «reembolsado» sin mover el dinero dejaba un pago que decía devuelto y seguía cobrado.
+		// Ahora se devuelve de verdad por el TPV.
+		return Refunds::ejecutar( $id, 0, __( 'Devolución desde el detalle del pago', 'convoca-gateway' ) );
 	}
 
 	/**
