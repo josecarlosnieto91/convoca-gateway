@@ -82,7 +82,7 @@ class Admin_Payments extends \WP_List_Table {
 	public function handle_csv_export_early(): void {
 		if ( isset( $_GET['page'] ) && 'conv-gateway-payments' === $_GET['page'] && isset( $_GET['action'] ) && 'export_csv' === $_GET['action'] ) {
 			if ( check_admin_referer( 'convoca_gateway_export_csv' ) ) {
-				$this->exportar( 'csv' );
+				CSV_Exporter::export( $this->build_export_query_args() );
 			}
 		}
 	}
@@ -92,7 +92,7 @@ class Admin_Payments extends \WP_List_Table {
 	 */
 	public function handle_pdf_export_request(): void {
 		if ( check_admin_referer( 'convoca_gateway_export_payments_pdf' ) ) {
-			$this->exportar( 'pdf' );
+			PDF_Exporter::export( $this->build_export_query_args() );
 		}
 	}
 
@@ -555,26 +555,6 @@ class Admin_Payments extends \WP_List_Table {
 	}
 
 	/* ── CSV Export ───────────────────────────────── */
-
-	/**
-	 * Exporta el listado, con los filtros puestos.
-	 *
-	 * Eran dos métodos de una línea cada uno; con la lista de métodos del listado en el límite de
-	 * PHPMD, se juntan en uno y dejan hueco para lo que sí importa.
-	 *
-	 * @param string $formato `csv` o `pdf`.
-	 * @return void
-	 */
-	private function exportar( string $formato ): void {
-		$args = $this->build_export_query_args();
-
-		if ( 'pdf' === $formato ) {
-			PDF_Exporter::export( $args );
-			return;
-		}
-
-		CSV_Exporter::export( $args );
-	}
 
 	/**
 	 * Build WP_Query args for export (CSV/PDF), respecting list filters.

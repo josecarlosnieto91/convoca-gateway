@@ -951,6 +951,8 @@ class Payment_Handler {
 	 * @return string HTML.
 	 */
 	private function render_donation_form( int $pago_id, array $meta, string $error = '', string $amount = '', string $email = '' ): string {
+		unset( $meta );
+
 		$concepto = get_post_meta( $pago_id, '_convoca_product_desc', true );
 		$concepto = $concepto ?: __( 'Donativo', 'convoca-gateway' );
 
@@ -962,81 +964,23 @@ class Payment_Handler {
 		$token   = (string) get_post_meta( $pago_id, '_convoca_link_key', true );
 		$base    = $token ? self::build_payment_url( $pago_id, $token ) : remove_query_arg( 'convoca_gateway_method' );
 
-		ob_start();
-		?>
-		<div class="conv-payment-wrapper convoca-form" role="region" aria-label="<?php esc_attr_e( 'Formulario de donativo', 'convoca-gateway' ); ?>">
-			<div class="conv-payment-summary">
-				<h3><?php echo esc_html( $concepto ); ?></h3>
-			</div>
-
-			<?php if ( '' !== $error ) : ?>
-				<div class="convoca-alert convoca-alert--danger"><?php echo esc_html( $error ); ?></div>
-			<?php endif; ?>
-
-			<?php if ( ! empty( $params ) ) : ?>
-			<div class="conv-params">
-				<h4><?php esc_html_e( 'Datos adicionales', 'convoca-gateway' ); ?></h4>
-				<ul class="conv-params-list">
-					<?php foreach ( $params as $k => $v ) : ?>
-					<li><span class="conv-param-key"><?php echo esc_html( $k ); ?>:</span> <span class="conv-param-value"><?php echo esc_html( $v ); ?></span></li>
-					<?php endforeach; ?>
-				</ul>
-			</div>
-			<?php endif; ?>
-
-			<?php if ( '' === $method ) : ?>
-				<?php
-				// Paso 1: método de pago. El importe y el correo llegan después.
-				echo $this->render_method_picker( $base, __( 'Selecciona un método de pago', 'convoca-gateway' ) ); // phpcs:ignore WordPress.Security.EscapeOutput.OutputNotEscaped -- Marcado propio, ya escapado.
-				?>
-			<?php else : ?>
-				<?php echo $this->render_chosen_method( $method, $base ); // phpcs:ignore WordPress.Security.EscapeOutput.OutputNotEscaped -- Marcado propio, ya escapado. ?>
-
-				<form method="post" action="" class="conv-link-form conv-donation-form">
-					<?php wp_nonce_field( 'convoca_donation_' . $pago_id, 'convoca_donation_nonce' ); ?>
-					<input type="hidden" name="convoca_gateway_method" value="<?php echo esc_attr( $method ); ?>">
-
-					<div class="conv-field">
-						<label for="convoca_donation_amount"><?php esc_html_e( 'Importe (€)', 'convoca-gateway' ); ?> *</label>
-						<input type="number" name="convoca_donation_amount" id="convoca_donation_amount"
-								class="regular-text" step="0.01" min="0.50" required
-								value="<?php echo esc_attr( $amount ); ?>" placeholder="0.00">
-						<p class="conv-help"><?php esc_html_e( 'Mínimo 0,50 €.', 'convoca-gateway' ); ?></p>
-					</div>
-
-					<div class="conv-email-field">
-						<label for="convoca_donation_email"><?php esc_html_e( 'Email para el recibo (opcional)', 'convoca-gateway' ); ?></label>
-						<input type="email" name="convoca_donation_email" id="convoca_donation_email"
-								class="regular-text" value="<?php echo esc_attr( $email ); ?>">
-						<p class="conv-help"><?php esc_html_e( 'Si lo indicas, te enviamos el recibo de tu aportación.', 'convoca-gateway' ); ?></p>
-					</div>
-
-					<div class="form-actions">
-						<button type="submit" class="wp-block-button__link">
-							<?php
-							printf(
-								/* translators: %s: payment method label (Tarjeta, Bizum o Transferencia). */
-								esc_html__( 'Continuar con %s', 'convoca-gateway' ),
-								esc_html( $methods[ $method ]['label'] )
-							);
-							?>
-							&rarr;
-						</button>
-					</div>
-				</form>
-			<?php endif; ?>
-
-			<p class="conv-security-note">
-				<?php if ( 'transferencia' === $method ) : ?>
-					🍀 <?php esc_html_e( 'Al continuar te mostraremos los datos para hacer el ingreso.', 'convoca-gateway' ); ?>
-				<?php else : ?>
-					🔒 <?php esc_html_e( 'Pago seguro gestionado por Redsys. No almacenamos tus datos bancarios.', 'convoca-gateway' ); ?>
-				<?php endif; ?>
-			</p>
-		</div>
-		<?php wp_enqueue_style( 'convoca-gateway' ); ?>
-		<?php
-		return $this->compact_html( (string) ob_get_clean() );
+		return $this->compact_html(
+			Payment_Views::donacion(
+				array(
+					'pago_id'         => $pago_id,
+					'concepto'        => $concepto,
+					'params'          => $params,
+					'metodo'          => $method,
+					'base'            => $base,
+					'error'           => $error,
+					'importe'         => $amount,
+					'correo'          => $email,
+					'etiqueta_metodo' => $methods[ $method ]['label'] ?? '',
+					'picker'          => '' === $method ? $this->render_method_picker( $base, __( 'Selecciona un método de pago', 'convoca-gateway' ) ) : '',
+					'elegido'         => '' === $method ? '' : $this->render_chosen_method( $method, $base ),
+				)
+			)
+		);
 	}
 
 	/**
