@@ -115,19 +115,21 @@ final class Admin_Payments_Detail {
 	 * @return string HTML.
 	 */
 	private function filas_base( array $meta ): string {
+		// Pares en vez de un array con claves: las claves con acento hacen que PHPCS cuente distinto
+		// en el runner y en local (bytes contra caracteres) y desalinea las flechas.
 		$filas = array(
-			__( 'ID Pedido', 'convoca-gateway' ) => '<code>' . esc_html( (string) ( $meta['order_id'] ?? '' ) ) . '</code>',
-			__( 'Estado', 'convoca-gateway' )    => CPT_Pago::badge( (string) ( $meta['status'] ?? '' ) ),
-			__( 'Importe', 'convoca-gateway' )   => '<strong>' . CPT_Pago::format_amount( (int) ( $meta['amount_cents'] ?? 0 ) ) . '</strong>',
-			__( 'Método', 'convoca-gateway' )   => esc_html( ucfirst( (string) ( $meta['method'] ?? '' ) ) ),
-			__( 'Origen', 'convoca-gateway' )    => esc_html( (string) ( $meta['origin'] ?? '' ) ) . ' (#' . (int) ( $meta['origin_id'] ?? 0 ) . ')',
-			__( 'Descripción producto', 'convoca-gateway' ) => esc_html( (string) ( $meta['product_desc'] ?? '' ) ),
-			__( 'Código Autorización', 'convoca-gateway' ) => esc_html( (string) ( $meta['redsys_auth_code'] ?? '' ) ?: '—' ),
+			array( __( 'ID Pedido', 'convoca-gateway' ), '<code>' . esc_html( (string) ( $meta['order_id'] ?? '' ) ) . '</code>' ),
+			array( __( 'Estado', 'convoca-gateway' ), CPT_Pago::badge( (string) ( $meta['status'] ?? '' ) ) ),
+			array( __( 'Importe', 'convoca-gateway' ), '<strong>' . CPT_Pago::format_amount( (int) ( $meta['amount_cents'] ?? 0 ) ) . '</strong>' ),
+			array( __( 'Método', 'convoca-gateway' ), esc_html( ucfirst( (string) ( $meta['method'] ?? '' ) ) ) ),
+			array( __( 'Origen', 'convoca-gateway' ), esc_html( (string) ( $meta['origin'] ?? '' ) ) . ' (#' . (int) ( $meta['origin_id'] ?? 0 ) . ')' ),
+			array( __( 'Descripción producto', 'convoca-gateway' ), esc_html( (string) ( $meta['product_desc'] ?? '' ) ) ),
+			array( __( 'Código Autorización', 'convoca-gateway' ), esc_html( (string) ( $meta['redsys_auth_code'] ?? '' ) ?: '—' ) ),
 		);
 
 		$html = '';
-		foreach ( $filas as $titulo => $valor ) {
-			$html .= '<tr><th>' . esc_html( $titulo ) . '</th><td>' . $valor . '</td></tr>'; // phpcs:ignore WordPress.Security.EscapeOutput.OutputNotEscaped -- el valor ya viene escapado.
+		foreach ( $filas as $fila ) {
+			$html .= '<tr><th>' . esc_html( $fila[0] ) . '</th><td>' . $fila[1] . '</td></tr>'; // phpcs:ignore WordPress.Security.EscapeOutput.OutputNotEscaped -- el valor ya viene escapado.
 		}
 
 		$respuesta = (string) ( $meta['redsys_response'] ?? '' );
