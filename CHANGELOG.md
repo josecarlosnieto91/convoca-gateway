@@ -1,3 +1,9 @@
+## [2.16.2] — 2026-11-01
+
+### Cambiado
+
+- **el formulario de donativo a Payment_Views**
+
 ## [2.16.1] — 2026-10-29
 
 ### Cambiado
