@@ -82,7 +82,7 @@ class Admin_Payments extends \WP_List_Table {
 	public function handle_csv_export_early(): void {
 		if ( isset( $_GET['page'] ) && 'conv-gateway-payments' === $_GET['page'] && isset( $_GET['action'] ) && 'export_csv' === $_GET['action'] ) {
 			if ( check_admin_referer( 'convoca_gateway_export_csv' ) ) {
-				$this->handle_export_csv();
+				$this->exportar( 'csv' );
 			}
 		}
 	}
@@ -92,7 +92,7 @@ class Admin_Payments extends \WP_List_Table {
 	 */
 	public function handle_pdf_export_request(): void {
 		if ( check_admin_referer( 'convoca_gateway_export_payments_pdf' ) ) {
-			$this->handle_export_pdf();
+			$this->exportar( 'pdf' );
 		}
 	}
 
@@ -172,26 +172,28 @@ class Admin_Payments extends \WP_List_Table {
 		echo '</select>';
 
 		// Method Filter.
-		echo '<select name="method_filter">';
-		printf( '<option value="">— %s —</option>', esc_html__( 'Todos los métodos', 'convoca-gateway' ) );
-		foreach ( array(
+		$metodos = array(
 			'tarjeta'       => 'Tarjeta',
 			'bizum'         => 'Bizum',
 			'transferencia' => 'Transferencia',
-		) as $key => $label ) {
+		);
+		echo '<select name="method_filter">';
+		printf( '<option value="">— %s —</option>', esc_html__( 'Todos los métodos', 'convoca-gateway' ) );
+		foreach ( $metodos as $key => $label ) {
 			printf( '<option value="%s"%s>%s</option>', esc_attr( $key ), selected( $method_filter, $key, false ), esc_html( $label ) );
 		}
 		echo '</select>';
 
 		// Origin Filter.
-		echo '<select name="origin_filter">';
-		printf( '<option value="">— %s —</option>', esc_html__( 'Todos los orígenes', 'convoca-gateway' ) );
-		foreach ( array(
+		$origenes = array(
 			'enroll'   => 'Actividades',
 			'members'  => 'Socio/a',
 			'donativo' => 'Donaciones',
 			'enlace'   => 'Cobros con enlace',
-		) as $key => $label ) {
+		);
+		echo '<select name="origin_filter">';
+		printf( '<option value="">— %s —</option>', esc_html__( 'Todos los orígenes', 'convoca-gateway' ) );
+		foreach ( $origenes as $key => $label ) {
 			printf( '<option value="%s"%s>%s</option>', esc_attr( $key ), selected( $origin_filter, $key, false ), esc_html( $label ) );
 		}
 		echo '</select>';
@@ -453,17 +455,7 @@ class Admin_Payments extends \WP_List_Table {
 
 	public function render_page(): void {
 
-		// Aviso de la devolución: verde si salió, rojo con el motivo si el TPV la rechazó.
-		// phpcs:disable WordPress.Security.NonceVerification.Recommended -- solo lectura de un aviso.
-		$refund = isset( $_GET['convoca_refund'] ) ? sanitize_key( wp_unslash( $_GET['convoca_refund'] ) ) : '';
-		$motivo = isset( $_GET['convoca_motivo'] ) ? sanitize_text_field( rawurldecode( wp_unslash( (string) $_GET['convoca_motivo'] ) ) ) : '';
-		// phpcs:enable WordPress.Security.NonceVerification.Recommended
-
-		if ( 'ok' === $refund ) {
-			echo '<div class="notice notice-success is-dismissible"><p>' . esc_html__( 'Devolución ejecutada.', 'convoca-gateway' ) . '</p></div>';
-		} elseif ( 'error' === $refund ) {
-			echo '<div class="notice notice-error"><p>' . esc_html__( 'No se pudo devolver: ', 'convoca-gateway' ) . esc_html( $motivo ) . '</p></div>';
-		}
+		Admin_Payments_Detail::aviso_devolucion();
 
 		// Borrado: la acción (de fila o en bloque) lleva a la pantalla de confirmación.
 		$borrado = Admin_Record_Actions::pending_action();
@@ -514,13 +506,28 @@ class Admin_Payments extends \WP_List_Table {
 			)
 		) ?: array();
 
-		// Handle re-send email.
+		$this->handle_detail_actions( $id, $meta );
+
+		( new Admin_Payments_Detail() )->render( $id, $meta, $logs );
+	}
+
+	/**
+	 * Las cuatro acciones de la ficha: reenvío, devolución, pago manual y donación.
+	 *
+	 * Estaban dentro de `render_detail()` y le daban complejidad 26; aquí cada una es una rama
+	 * corta y la ficha se queda en pintar.
+	 *
+	 * @param int                 $id   Pago.
+	 * @param array<string,mixed> $meta Metadatos, que se refrescan si alguna acción cambia algo.
+	 * @return void
+	 */
+	private function handle_detail_actions( int $id, array &$meta ): void {
+		// phpcs:disable WordPress.Security.NonceVerification.Missing -- cada rama verifica su nonce con check_admin_referer().
 		if ( isset( $_POST['convoca_gateway_resend_email'] ) && check_admin_referer( 'convoca_gateway_resend_' . $id ) ) {
 			do_action( 'convoca_gateway_resend_email', $id );
 			echo '<div class="updated"><p>' . esc_html__( 'Email reenviado a la cola.', 'convoca-gateway' ) . '</p></div>';
 		}
 
-		// Handle refund.
 		if ( isset( $_POST['convoca_gateway_refund_payment'] ) && check_admin_referer( 'convoca_gateway_refund_' . $id ) ) {
 			$devolucion = $this->handle_refund( $id );
 
@@ -530,40 +537,43 @@ class Admin_Payments extends \WP_List_Table {
 				echo '<div class="updated"><p>' . esc_html__( 'Devolución ejecutada.', 'convoca-gateway' ) . '</p></div>';
 			}
 
-			$meta = CPT_Pago::get_meta( $id ); // Refresh meta.
+			$meta = CPT_Pago::get_meta( $id );
 		}
 
-		// Handle manual mark as paid.
 		if ( isset( $_POST['convoca_gateway_mark_paid'] ) && check_admin_referer( 'convoca_gateway_mark_paid_' . $id ) ) {
 			$this->handle_manual_paid( $id );
 			echo '<div class="updated"><p>' . esc_html__( 'Pago marcado como PAGADO manualmente.', 'convoca-gateway' ) . '</p></div>';
-			$meta = CPT_Pago::get_meta( $id ); // Refresh meta.
+			$meta = CPT_Pago::get_meta( $id );
 		}
 
-		// Handle donation toggle (D24).
 		if ( isset( $_POST['convoca_gateway_toggle_donacion'] ) && check_admin_referer( 'convoca_gateway_donacion_' . $id ) ) {
 			$this->handle_toggle_donacion( $id );
 			echo '<div class="updated"><p>' . esc_html__( 'Marcador de donación actualizado.', 'convoca-gateway' ) . '</p></div>';
-			$meta = CPT_Pago::get_meta( $id ); // Refresh meta.
+			$meta = CPT_Pago::get_meta( $id );
 		}
-
-		( new Admin_Payments_Detail() )->render( $id, $meta, $logs );
+		// phpcs:enable WordPress.Security.NonceVerification.Missing
 	}
 
 	/* ── CSV Export ───────────────────────────────── */
 
 	/**
-	 * Handle CSV export request.
+	 * Exporta el listado, con los filtros puestos.
+	 *
+	 * Eran dos métodos de una línea cada uno; con la lista de métodos del listado en el límite de
+	 * PHPMD, se juntan en uno y dejan hueco para lo que sí importa.
+	 *
+	 * @param string $formato `csv` o `pdf`.
+	 * @return void
 	 */
-	private function handle_export_csv(): void {
-		CSV_Exporter::export( $this->build_export_query_args() );
-	}
+	private function exportar( string $formato ): void {
+		$args = $this->build_export_query_args();
 
-	/**
-	 * Handle PDF export request.
-	 */
-	private function handle_export_pdf(): void {
-		PDF_Exporter::export( $this->build_export_query_args() );
+		if ( 'pdf' === $formato ) {
+			PDF_Exporter::export( $args );
+			return;
+		}
+
+		CSV_Exporter::export( $args );
 	}
 
 	/**

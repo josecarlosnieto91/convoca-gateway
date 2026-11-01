@@ -21,6 +21,27 @@ if ( ! defined( 'ABSPATH' ) ) {
 final class Admin_Payments_Detail {
 
 	/**
+	 * Aviso de la devolución, si la hubo: verde si salió, rojo con el motivo si el TPV la rechazó.
+	 *
+	 * Estaba dentro de `render_page()` y le daba dos ramas de complejidad que no tienen que ver con
+	 * pintar el listado.
+	 *
+	 * @return void
+	 */
+	public static function aviso_devolucion(): void {
+		// phpcs:disable WordPress.Security.NonceVerification.Recommended -- solo lectura de un aviso.
+		$refund = isset( $_GET['convoca_refund'] ) ? sanitize_key( wp_unslash( $_GET['convoca_refund'] ) ) : '';
+		$motivo = isset( $_GET['convoca_motivo'] ) ? sanitize_text_field( rawurldecode( wp_unslash( (string) $_GET['convoca_motivo'] ) ) ) : '';
+		// phpcs:enable WordPress.Security.NonceVerification.Recommended
+
+		if ( 'ok' === $refund ) {
+			echo '<div class="notice notice-success is-dismissible"><p>' . esc_html__( 'Devolución ejecutada.', 'convoca-gateway' ) . '</p></div>';
+		} elseif ( 'error' === $refund ) {
+			echo '<div class="notice notice-error"><p>' . esc_html__( 'No se pudo devolver: ', 'convoca-gateway' ) . esc_html( $motivo ) . '</p></div>';
+		}
+	}
+
+	/**
 	 * Pinta la ficha completa.
 	 *
 	 * @param int                 $id   Pago.
