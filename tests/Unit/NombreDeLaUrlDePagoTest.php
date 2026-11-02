@@ -62,9 +62,17 @@ class NombreDeLaUrlDePagoTest extends \PHPUnit\Framework\TestCase {
 		);
 
 		$this->assertMatchesRegularExpression(
-			'/function get_payment_link\([^)]*\)[^{]*\{\s*return self::build_payment_url\(/s',
+			'/function get_payment_link\([^)]*\)[^{]*\{\s*return Pago_Cobros::enlace_de_pago\(/s',
 			$fuente,
-			'El alias tiene que delegar en build_payment_url(): el cuerpo tiene que ser solo esa llamada.'
+			'El alias tiene que delegar en el constructor de la URL: el cuerpo tiene que ser solo esa llamada.'
+		);
+
+		// Y el que construye de verdad no duplica la firma: llama al constructor de la URL.
+		$cobros = (string) file_get_contents( dirname( __DIR__, 2 ) . '/includes/Pago_Cobros.php' );
+		$this->assertMatchesRegularExpression(
+			'/function enlace_de_pago\([^)]*\)[^{]*\{\s*return self::url_de_pago\(/s',
+			$cobros,
+			'en Pago_Cobros, el alias tiene que delegar en url_de_pago().'
 		);
 	}
 

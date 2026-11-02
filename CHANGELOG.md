@@ -1,3 +1,17 @@
+## [2.16.4] — 2026-11-02
+
+### Cambiado
+
+- **las operaciones de cobro salen a `Pago_Cobros`**: crear el pago, renovarlo, aplicar el resultado
+  del TPV, el token del socio, la emisión desde un enlace y las tres URLs firmadas. Eran ocho
+  funciones estáticas que no tocaban la pantalla y vivían mezcladas con las 45 del manejador de página.
+  `Payment_Handler` conserva su API pública como delegado, porque `convoca_gateway_create_payment()`
+  y otros plugins la llaman: **la URL firmada sale idéntica byte a byte** (comprobada en el sitio con
+  un token y una caducidad fijos, antes y después).
+- La sal de la pasarela viaja con los cobros. Sigue siendo su propia opción, distinta de la del
+  ecosistema.
+- `Payment_Handler`: **2.020 → 1.730 líneas** (los delegados llevan su docblock).
+
 ## [2.16.3] — 2026-11-02
 
 ### Cambiado

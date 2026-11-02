@@ -19,13 +19,16 @@ use PHPUnit\Framework\TestCase;
 
 class PaymentSaltTest extends TestCase {
 
+	/**
+	 * La sal y la firma viven ahora en `Pago_Cobros`, con el resto de las operaciones de cobro.
+	 */
 	private function fuente(): string {
-		return (string) file_get_contents( dirname( __DIR__, 2 ) . '/includes/Payment_Handler.php' );
+		return (string) file_get_contents( dirname( __DIR__, 2 ) . '/includes/Pago_Cobros.php' );
 	}
 
 	public function test_la_firma_usa_su_propia_sal(): void {
 		$f = $this->fuente();
-		$this->assertMatchesRegularExpression( '/hash_hmac\([^;]*self::get_payment_salt\(\)/', $f, 'la firma se calcula con la sal de la pasarela' );
+		$this->assertMatchesRegularExpression( '/hash_hmac\([^;]*self::salt\(\)/', $f, 'la firma se calcula con la sal de la pasarela' );
 	}
 
 	public function test_usa_su_opcion_y_no_la_del_ecosistema(): void {
