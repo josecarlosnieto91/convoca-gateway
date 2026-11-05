@@ -142,18 +142,45 @@ namespace Convoca\Gateway\Tests {
 
 		// ── El aviso está en el formulario, no en un cajón ────────────
 
-		public function test_el_aviso_aparece_en_el_formulario_antes_del_boton(): void {
+		/**
+		 * El aviso sigue dentro del formulario y se ve: no se esconde ni se manda a otra página. Lo que
+		 * cambia es el orden visual: el botón va primero y la letra pequeña debajo, que es lo que se lee.
+		 */
+		public function test_el_aviso_sigue_en_el_formulario_y_no_se_oculta(): void {
 			$GLOBALS['__gw_options']['convoca_gateway_settings']['privacidad_texto'] = 'Responsable: Entidad de prueba.';
+			$GLOBALS['__gw_options']['convoca_gateway_settings']['privacidad_url']   = 'https://ejemplo.test/privacidad/';
 			$_GET['convoca_gateway_method']                                          = 'tarjeta';
 
 			$html = $this->call( 'render_manual_form' );
 
 			$this->assertStringContainsString( 'conv-privacy-note', $html, 'El aviso viaja DENTRO del formulario.' );
 			$this->assertStringContainsString( 'Responsable: Entidad de prueba', $html );
+			$this->assertStringContainsString( 'Política de privacidad', $html, 'Con su enlace a la política.' );
+			$this->assertStringNotContainsString( '<details', $html, 'No se pliega: el deber de información se ve.' );
 
 			$pos_aviso = strpos( $html, 'conv-privacy-note' );
-			$pos_boton = strpos( $html, 'form-actions' );
-			$this->assertLessThan( $pos_boton, $pos_aviso, 'Se informa ANTES de enviar, no después.' );
+			$pos_cierre = strpos( $html, '</form>' );
+			$this->assertLessThan( $pos_cierre, $pos_aviso );
+		}
+
+		/**
+		 * Los dos métodos manuales (tarjeta y Bizum) pintan el botón por encima del aviso.
+		 */
+		public function test_el_boton_va_por_encima_del_aviso_en_tarjeta_y_bizum(): void {
+			$GLOBALS['__gw_options']['convoca_gateway_settings']['privacidad_texto'] = 'Responsable: Entidad de prueba.';
+
+			foreach ( array( 'tarjeta', 'bizum' ) as $metodo ) {
+				$_GET['convoca_gateway_method'] = $metodo;
+
+				$html = $this->call( 'render_manual_form' );
+
+				$pos_boton = strpos( $html, 'form-actions' );
+				$pos_aviso = strpos( $html, 'conv-privacy-note' );
+
+				$this->assertNotFalse( $pos_boton, 'Hay botón en ' . $metodo );
+				$this->assertNotFalse( $pos_aviso, 'Hay aviso en ' . $metodo );
+				$this->assertLessThan( $pos_aviso, $pos_boton, 'En ' . $metodo . ' el botón va antes que el aviso.' );
+			}
 		}
 	}
 }

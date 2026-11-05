@@ -213,6 +213,75 @@ button.conv-method-card {
 .conv-donation-form .form-actions { margin-top: 1.5rem; }
 .conv-help { margin: .35rem 0 0; font-size: .85rem; opacity: .75; }
 
+/* ── Formulario manual (render_manual_form: tarjeta, Bizum, transferencia) ──
+   Antes no tenía estilos propios: heredaba los del tema y los campos salían
+   amontonados y con anchos distintos. Aquí: una columna, etiqueta arriba,
+   campo a todo el ancho y el mismo ritmo vertical en los tres. */
+.conv-manual-form {
+	display: grid;
+	gap: 1.15rem;
+	margin: 1.5rem 0 0;
+	text-align: left;
+}
+.conv-manual-form .form-group {
+	display: grid;
+	gap: .4rem;
+	margin: 0;
+}
+.conv-manual-form .form-group label {
+	font-weight: 600;
+	font-size: .95rem;
+	line-height: 1.3;
+}
+.conv-manual-form input[type="number"],
+.conv-manual-form input[type="text"],
+.conv-manual-form input[type="email"] {
+	box-sizing: border-box;
+	width: 100%;
+	max-width: none;
+	min-height: 3rem;
+	margin: 0;
+	padding: .7rem .9rem;
+	font-size: 1rem;
+	line-height: 1.4;
+	color: inherit;
+	background: #fff;
+	border: 1px solid rgba(0, 0, 0, .2);
+	border-radius: 10px;
+}
+.conv-manual-form input::placeholder { opacity: .55; }
+.conv-manual-form input:focus-visible {
+	outline: 2px solid currentColor;
+	outline-offset: 2px;
+	border-color: transparent;
+}
+.conv-manual-form .form-actions { margin: 0; }
+.conv-manual-form .form-actions .wp-block-button__link { width: 100%; }
+
+/* Deber de información (art. 13 RGPD): letra pequeña legible, no un muro. */
+.conv-privacy {
+	margin: .25rem 0 0;
+	padding: .9rem 1rem;
+	background: rgba(0, 0, 0, .035);
+	border-left: 3px solid rgba(0, 0, 0, .18);
+	border-radius: 8px;
+}
+.conv-privacy-title {
+	margin: 0 0 .35rem;
+	font-size: .75rem;
+	font-weight: 700;
+	letter-spacing: .04em;
+	text-transform: uppercase;
+	opacity: .75;
+}
+.conv-privacy-note {
+	margin: 0;
+	font-size: .78rem;
+	line-height: 1.6;
+	opacity: .8;
+}
+.conv-privacy-note a { text-decoration: underline; }
+
 /* ── Instrucciones de transferencia (render_transfer_instructions) ─ */
 .conv-transfer-view .conv-success-icon { font-size: 3rem; margin-bottom: 1rem; }
 .conv-transfer-details {

@@ -1,3 +1,21 @@
+## [2.16.5] — 2026-11-05
+
+### Cambiado
+
+- **El formulario de pago manual (tarjeta y Bizum) ya no sale amontonado**: una sola columna, etiqueta
+  encima y campo a todo el ancho, con el mismo ritmo vertical en los tres campos. Antes no tenía estilos
+  propios y heredaba los del tema, con anchos y separaciones distintos.
+
+- **El botón va por encima del aviso de privacidad**, en tarjeta y en Bizum. El aviso sigue dentro del
+  formulario y visible —no se pliega—, ahora como bloque de letra pequeña con su título y su enlace a la
+  política.
+
+### Pruebas
+
+- La prueba del aviso deja de exigir que vaya antes del botón (era una decisión de diseño, no una
+  obligación legal) y pasa a vigilar que siga dentro del formulario, con su enlace y sin plegarse; se
+  añade una que comprueba el orden en tarjeta y en Bizum.
+
 ## [2.16.4] — 2026-11-02
 
 ### Cambiado

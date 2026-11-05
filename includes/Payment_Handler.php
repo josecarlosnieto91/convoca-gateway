@@ -888,8 +888,6 @@ class Payment_Handler {
 						<input type="email" name="email" id="email" placeholder="tu@email.com" required>
 					</div>
 
-					<?php echo $this->privacy_notice(); // phpcs:ignore WordPress.Security.EscapeOutput.OutputNotEscaped -- Marcado propio, ya escapado. ?>
-
 					<div class="form-actions">
 						<button type="submit" class="wp-block-button__link">
 							<?php
@@ -902,6 +900,8 @@ class Payment_Handler {
 							&rarr;
 						</button>
 					</div>
+
+					<?php echo $this->privacy_notice(); // phpcs:ignore WordPress.Security.EscapeOutput.OutputNotEscaped -- Marcado propio, ya escapado. ?>
 				</form>
 			<?php endif; ?>
 
@@ -942,14 +942,16 @@ class Payment_Handler {
 			$url = (string) \get_privacy_policy_url();
 		}
 
-		$html = '<p class="conv-privacy-note">' . esc_html( $texto );
+		$html  = '<div class="conv-privacy">';
+		$html .= '<p class="conv-privacy-title">' . esc_html__( 'Información sobre tus datos', 'convoca-gateway' ) . '</p>';
+		$html .= '<p class="conv-privacy-note">' . esc_html( $texto );
 
 		if ( '' !== $url ) {
 			$html .= ' <a href="' . esc_url( $url ) . '" target="_blank" rel="noopener">'
 				. esc_html__( 'Política de privacidad', 'convoca-gateway' ) . '</a>';
 		}
 
-		return $html . '</p>';
+		return $html . '</p></div>';
 	}
 
 	/**
