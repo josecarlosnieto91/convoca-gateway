@@ -258,6 +258,16 @@ button.conv-method-card {
 .conv-manual-form .form-actions { margin: 0; }
 .conv-manual-form .form-actions .wp-block-button__link { width: 100%; }
 
+/* La nota del candado: si parte en dos líneas, la segunda sangra con el texto y no con el emoji. */
+.conv-security-note {
+	margin: 1rem 0 0;
+	padding-left: 1.4em;
+	text-indent: -1.4em;
+	font-size: .85rem;
+	line-height: 1.5;
+	opacity: .8;
+}
+
 /* Deber de información (art. 13 RGPD): letra pequeña legible, no un muro. */
 .conv-privacy {
 	margin: .25rem 0 0;

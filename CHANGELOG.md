@@ -1,3 +1,11 @@
+## [2.16.7] — 2026-11-05
+
+### Cambiado
+
+- El importe se pide con `placeholder` «0,00» (coma decimal) e `inputmode` decimal, que en móvil abre el
+  teclado numérico.
+- La nota del candado sangra en la segunda línea con el texto, no con el emoji.
+
 ## [2.16.6] — 2026-11-05
 
 ### Corregido

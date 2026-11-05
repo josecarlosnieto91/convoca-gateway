@@ -879,7 +879,7 @@ class Payment_Handler {
 
 					<div class="form-group">
 						<label for="amount"><?php esc_html_e( 'Importe (€)', 'convoca-gateway' ); ?></label>
-						<input type="number" name="amount" id="amount" step="0.01" min="0.50" placeholder="0.00" required>
+						<input type="number" name="amount" id="amount" step="0.01" min="0.50" placeholder="0,00" inputmode="decimal" required>
 					</div>
 
 					<div class="form-group">
