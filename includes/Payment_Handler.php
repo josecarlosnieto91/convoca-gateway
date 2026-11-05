@@ -839,6 +839,10 @@ class Payment_Handler {
 	 * Render a manual payment form when no link is provided.
 	 */
 	private function render_manual_form( string $error = '' ): string {
+		// Sin esto la pantalla de pago salía sin ninguna hoja de estilos del plugin: los campos heredaban
+		// los del tema y quedaban amontonados y con anchos distintos.
+		wp_enqueue_style( 'convoca-gateway' );
+
 		License_Gate::registrar_uso();
 		if ( ! License_Gate::puede_cobrar() ) {
 			return '<div class="convoca-alert convoca-alert--info">' . esc_html( License_Gate::aviso_publico() ) . '</div>';

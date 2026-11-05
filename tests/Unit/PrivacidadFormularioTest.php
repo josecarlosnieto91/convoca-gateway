@@ -164,6 +164,19 @@ namespace Convoca\Gateway\Tests {
 		}
 
 		/**
+		 * La pantalla de pago carga la hoja de estilos del plugin. Sin ella el formulario hereda los
+		 * estilos del tema y los campos salen amontonados: es la causa, no un detalle.
+		 */
+		public function test_el_formulario_manual_carga_la_hoja_de_estilos(): void {
+			$GLOBALS['__gw_enqueued_styles'] = array();
+			$_GET['convoca_gateway_method']  = 'bizum';
+
+			$this->call( 'render_manual_form' );
+
+			$this->assertContains( 'convoca-gateway', $GLOBALS['__gw_enqueued_styles'] );
+		}
+
+		/**
 		 * Los dos métodos manuales (tarjeta y Bizum) pintan el botón por encima del aviso.
 		 */
 		public function test_el_boton_va_por_encima_del_aviso_en_tarjeta_y_bizum(): void {

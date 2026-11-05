@@ -1,3 +1,16 @@
+## [2.16.6] — 2026-11-05
+
+### Corregido
+
+- **La pantalla de pago manual no cargaba la hoja de estilos del plugin.** Era la causa del «todo
+  amontonado»: el formulario de tarjeta y Bizum salía con los estilos del tema y sin los suyos. Ahora se
+  encola `convoca-gateway` al pintar el formulario.
+
+### Pruebas
+
+- Una prueba vigila que el formulario manual encola la hoja de estilos: si vuelve a faltar, se ve en el
+  CI, no en producción.
+
 ## [2.16.5] — 2026-11-05
 
 ### Cambiado

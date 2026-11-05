@@ -2,14 +2,14 @@
 # This file is distributed under the GPL-2.0-or-later.
 msgid ""
 msgstr ""
-"Project-Id-Version: Convoca Gateway — Payment Gateway 2.16.5\n"
+"Project-Id-Version: Convoca Gateway — Payment Gateway 2.16.6\n"
 "Report-Msgid-Bugs-To: https://wordpress.org/support/plugin/convoca-gateway\n"
 "Last-Translator: FULL NAME <EMAIL@ADDRESS>\n"
 "Language-Team: LANGUAGE <LL@li.org>\n"
 "MIME-Version: 1.0\n"
 "Content-Type: text/plain; charset=UTF-8\n"
 "Content-Transfer-Encoding: 8bit\n"
-"POT-Creation-Date: 2026-11-05T15:27:44+00:00\n"
+"POT-Creation-Date: 2026-11-05T15:28:41+00:00\n"
 "PO-Revision-Date: YEAR-MO-DA HO:MI+ZONE\n"
 "X-Generator: WP-CLI 2.12.0\n"
 "X-Domain: convoca-gateway\n"
@@ -329,7 +329,7 @@ msgstr ""
 
 #: includes/Admin_Links.php:445
 #: includes/CSV_Exporter.php:71
-#: includes/Payment_Handler.php:877
+#: includes/Payment_Handler.php:881
 #: includes/Payment_Views.php:130
 msgid "Importe (€)"
 msgstr ""
@@ -480,7 +480,7 @@ msgstr ""
 #: includes/Admin_Payments.php:498
 #: includes/Link_Expiry.php:112
 #: includes/Payment_Handler.php:137
-#: includes/Payment_Handler.php:1510
+#: includes/Payment_Handler.php:1514
 msgid "Pago no encontrado."
 msgstr ""
 
@@ -1088,7 +1088,7 @@ msgstr ""
 
 #. translators: %s: name of the user's bank entity (filterable).
 #: includes/Admin_Settings.php:748
-#: includes/Payment_Handler.php:1081
+#: includes/Payment_Handler.php:1085
 msgid "tu entidad bancaria"
 msgstr ""
 
@@ -1510,7 +1510,7 @@ msgstr ""
 
 #: includes/Payment_Handler.php:247
 #: includes/Payment_Handler.php:680
-#: includes/Payment_Handler.php:971
+#: includes/Payment_Handler.php:975
 msgid "Elige un método de pago."
 msgstr ""
 
@@ -1520,8 +1520,8 @@ msgstr ""
 
 #: includes/Payment_Handler.php:336
 #: includes/Payment_Handler.php:628
-#: includes/Payment_Handler.php:866
-#: includes/Payment_Handler.php:1071
+#: includes/Payment_Handler.php:870
+#: includes/Payment_Handler.php:1075
 msgid "Selecciona un método de pago"
 msgstr ""
 
@@ -1604,116 +1604,116 @@ msgstr ""
 msgid "El archivo es demasiado grande. El límite es de %sMB."
 msgstr ""
 
-#: includes/Payment_Handler.php:855
+#: includes/Payment_Handler.php:859
 msgid "Emitir Pago Nuevo"
 msgstr ""
 
-#: includes/Payment_Handler.php:856
+#: includes/Payment_Handler.php:860
 msgid "Introduce los datos para realizar un pago seguro."
 msgstr ""
 
-#: includes/Payment_Handler.php:882
+#: includes/Payment_Handler.php:886
 msgid "Concepto o Actividad"
 msgstr ""
 
-#: includes/Payment_Handler.php:883
+#: includes/Payment_Handler.php:887
 msgid "Ej: Inscripción Taller Aves"
 msgstr ""
 
-#: includes/Payment_Handler.php:887
+#: includes/Payment_Handler.php:891
 msgid "Email para el recibo"
 msgstr ""
 
 #. translators: %s: payment method label (Tarjeta, Bizum o Transferencia).
-#: includes/Payment_Handler.php:896
+#: includes/Payment_Handler.php:900
 #: includes/Payment_Views.php:102
 #, php-format
 msgid "Continuar con %s"
 msgstr ""
 
-#: includes/Payment_Handler.php:910
+#: includes/Payment_Handler.php:914
 #: includes/Payment_Views.php:158
 msgid "Al continuar te mostraremos los datos para hacer el ingreso."
 msgstr ""
 
-#: includes/Payment_Handler.php:912
+#: includes/Payment_Handler.php:916
 #: includes/Payment_Views.php:159
 msgid "Pago seguro gestionado por Redsys. No almacenamos tus datos bancarios."
 msgstr ""
 
 #. translators: %s: site name (the data controller).
-#: includes/Payment_Handler.php:935
+#: includes/Payment_Handler.php:939
 #, php-format
 msgid "Responsable: %s. Finalidad: gestionar tu pago y enviarte el justificante. Base jurídica: ejecución del contrato. Destinatarios: la pasarela de pago y la entidad bancaria. Puedes ejercer tus derechos de acceso, rectificación, supresión, limitación, portabilidad y oposición ante el responsable."
 msgstr ""
 
-#: includes/Payment_Handler.php:946
+#: includes/Payment_Handler.php:950
 msgid "Información sobre tus datos"
 msgstr ""
 
-#: includes/Payment_Handler.php:951
+#: includes/Payment_Handler.php:955
 msgid "Política de privacidad"
 msgstr ""
 
-#: includes/Payment_Handler.php:1014
+#: includes/Payment_Handler.php:1018
 msgid "Enlace de pago inválido o corrupto."
 msgstr ""
 
-#: includes/Payment_Handler.php:1018
+#: includes/Payment_Handler.php:1022
 msgid "El enlace de pago ha caducado. Por favor, solicita uno nuevo."
 msgstr ""
 
-#: includes/Payment_Handler.php:1023
+#: includes/Payment_Handler.php:1027
 msgid "✅ Este pago ya ha sido completado."
 msgstr ""
 
 #. translators: %s: name of the user's bank entity (filterable).
-#: includes/Payment_Handler.php:1086
+#: includes/Payment_Handler.php:1090
 #, php-format
 msgid "Pago seguro gestionado por Redsys (%s)."
 msgstr ""
 
-#: includes/Payment_Handler.php:1088
+#: includes/Payment_Handler.php:1092
 msgid "Tus datos bancarios nunca pasan por nuestro servidor."
 msgstr ""
 
-#: includes/Payment_Handler.php:1104
+#: includes/Payment_Handler.php:1108
 msgid "✅ Este pago ya ha sido completado correctamente. No es necesario realizarlo de nuevo."
 msgstr ""
 
-#: includes/Payment_Handler.php:1111
+#: includes/Payment_Handler.php:1115
 msgid "Error: El importe del pago no es válido (0.00€)."
 msgstr ""
 
-#: includes/Payment_Handler.php:1505
+#: includes/Payment_Handler.php:1509
 msgid "ID de pago no especificado."
 msgstr ""
 
-#: includes/Payment_Handler.php:1618
+#: includes/Payment_Handler.php:1622
 msgid "✅ Este enlace ya se ha cobrado"
 msgstr ""
 
-#: includes/Payment_Handler.php:1620
+#: includes/Payment_Handler.php:1624
 msgid "El enlace queda cerrado y no admite más pagos."
 msgstr ""
 
-#: includes/Payment_Handler.php:1628
+#: includes/Payment_Handler.php:1632
 msgid "Solicitar nuevo enlace"
 msgstr ""
 
-#: includes/Payment_Handler.php:1631
+#: includes/Payment_Handler.php:1635
 msgid "El enlace de pago ha caducado. Solicita un enlace nuevo para completar el pago."
 msgstr ""
 
-#: includes/Payment_Handler.php:1657
+#: includes/Payment_Handler.php:1661
 msgid "Pago no especificado."
 msgstr ""
 
-#: includes/Payment_Handler.php:1669
+#: includes/Payment_Handler.php:1673
 msgid "Generando nuevo enlace… Si no eres redirigido, haz clic aquí."
 msgstr ""
 
-#: includes/Payment_Handler.php:1669
+#: includes/Payment_Handler.php:1673
 msgid "Continuar"
 msgstr ""
 
