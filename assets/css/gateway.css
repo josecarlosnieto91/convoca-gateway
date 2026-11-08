@@ -1,3 +1,19 @@
+:root {
+	/* Tokens neutros del producto: cualquier sitio puede sobrescribirlos desde su CSS. */
+	--conv-bg: #ffffff;
+	--conv-surface: #f6f7f7;
+	--conv-fg: #1d2327;
+	--conv-muted: #50575e;
+	--conv-border: #dcdcde;
+	--conv-accent: #2271b1;
+	--conv-accent-strong: #135e96;
+	--conv-highlight: #8a6500;
+	--conv-ok: #0a7c3f;
+	--conv-accent-alt: #3858e9;
+	--conv-font-display: 'Outfit', system-ui, -apple-system, 'Segoe UI', Roboto, sans-serif;
+	--conv-font-body: 'Outfit', system-ui, -apple-system, 'Segoe UI', Roboto, sans-serif;
+}
+
 /**
  * Convoca Gateway — hoja única del front.
  *
@@ -33,7 +49,7 @@
 .conv-amount {
 	font-size: 2.5rem;
 	font-weight: 800;
-	color: var(--wp--preset--color--naranja, #ff8700);
+	color: var(--conv-accent);
 	margin: 0.5rem 0;
 }
 .conv-desc {
@@ -92,7 +108,7 @@
 }
 .conv-method-card:hover,
 .conv-method-card:focus-visible {
-	border-color: var(--wp--preset--color--naranja, #ff8700);
+	border-color: var(--conv-accent);
 	background: #fff;
 	transform: translateY(-4px);
 	box-shadow: 0 8px 20px rgba(255, 135, 0, 0.12);
@@ -127,7 +143,7 @@ button.conv-method-card {
 	align-items: center;
 }
 .conv-method--suggested {
-	border-color: var(--wp--preset--color--naranja, #ff8700);
+	border-color: var(--conv-accent);
 	background: rgba(255, 135, 0, 0.03);
 }
 .conv-method-icon {
@@ -149,7 +165,7 @@ button.conv-method-card {
 .conv-method-badge {
 	position: absolute;
 	top: -12px;
-	background: var(--wp--preset--color--naranja, #ff8700);
+	background: var(--conv-accent);
 	color: #fff;
 	padding: 4px 12px;
 	border-radius: 20px;
@@ -310,7 +326,7 @@ button.conv-method-card {
 .conv-detail-row:last-child { border-bottom: none; }
 .conv-detail-label { font-weight: 700; color: #666; font-size: 0.9rem; }
 .conv-detail-value { font-family: monospace; font-size: 1.1rem; color: #333; }
-.conv-highlight { color: var(--wp--preset--color--naranja, #ff8700); font-weight: 800; }
+.conv-highlight { color: var(--conv-accent); font-weight: 800; }
 .conv-copyable { cursor: pointer; position: relative; }
 .conv-copyable:hover { text-decoration: underline; }
 .conv-transfer-instructions {
@@ -353,7 +369,7 @@ button.conv-method-card {
 }
 
 .conv-payment-wrapper--compacto .conv-payment-summary {
-	background: var(--wp--preset--color--gris-suave, #f5f5f5);
+	background: var(--conv-border);
 	border-bottom: 0;
 	border-radius: 12px;
 	padding: 1.5rem;
@@ -363,7 +379,7 @@ button.conv-method-card {
 .conv-payment-wrapper--compacto .conv-amount {
 	font-size: 2rem;
 	font-weight: 700;
-	color: var(--wp--preset--color--naranja, #E86833);
+	color: var(--conv-accent);
 	margin: 0;
 }
 

@@ -1,3 +1,11 @@
+## [2.16.8] — 2026-11-08
+
+### Cambiado
+
+- **el CSS deja de depender de la paleta del tema**: La hoja del pago usa tokens neutros en vez de **7 presets** y **5 colores** de un cliente. La tarjeta mantiene su propio ámbito y su contraste medido. Los plugins usan tokens `--conv-*` con valor
+  neutro y el tema de Convoca los rellena con su paleta, así que su aspecto no cambia. Prueba nueva
+  (`CssTokensTest`) que falla si vuelven los presets o un color de cliente.
+
 ## [2.16.7] — 2026-11-05
 
 ### Cambiado

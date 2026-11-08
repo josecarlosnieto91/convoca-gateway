@@ -3,7 +3,7 @@
  * Plugin Name:       Convoca Gateway — Payment Gateway
  * Plugin URI:        https://getconvoca.app
  * Description:       Redsys payment gateway (card + Bizum).
- * Version: 2.16.7
+ * Version: 2.16.8
  * Requires at least: 6.4
  * Requires PHP:      8.2
  * Tested up to:      7.1.3
