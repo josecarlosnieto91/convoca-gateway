@@ -644,7 +644,7 @@ msgstr[1] "It has generated %d charges, which are not deleted with the link."
 
 #: includes/Admin_Record_Actions.php:316
 msgid "Si el enlace está publicado en una web o un email, dejará de funcionar."
-msgstr ""
+msgstr "If the link is published on a website or in an email, it will stop working."
 "If the link is published on a website or in an email, it will stop working."
 
 #: includes/Admin_Record_Actions.php:320
@@ -1344,7 +1344,7 @@ msgstr "You have not been charged anything."
 
 #: includes/Email_Notifications.php:139
 msgid "Si lo dejaste a medias sin querer, puedes retomarlo donde lo dejaste:"
-msgstr ""
+msgstr "If you left it unfinished by accident, you can pick it up where you left off:"
 "If you left it unfinished by accident, you can pick it up where you left off:"
 
 #: includes/Email_Notifications.php:141
