@@ -165,7 +165,10 @@ class Receipt_View {
 	 * @return string HTML.
 	 */
 	public static function html( array $datos ): string {
-		$naranja = '#ff8700';
+		// El recibo es un documento del sitio: su acento sale del ajuste, no de una constante (#16).
+		$acento = class_exists( '\\Convoca\\Core\\Site_Settings' )
+			? \Convoca\Core\Site_Settings::color( 'acento', '#2271b1' )
+			: '#2271b1';
 
 		ob_start();
 		?>
@@ -187,7 +190,7 @@ class Receipt_View {
 		.emisor__nombre { font-size: 17px; font-weight: 700; }
 		.emisor__dato { color: #4b5563; font-size: 13px; }
 		.titulo { text-align: right; }
-		.titulo h1 { margin: 0; font-size: 22px; color: <?php echo esc_attr( $naranja ); ?>; }
+		.titulo h1 { margin: 0; font-size: 22px; color: <?php echo esc_attr( $acento ); ?>; }
 		.titulo__numero { font-family: ui-monospace, SFMono-Regular, Menlo, monospace; font-size: 15px; font-weight: 700; color: #111827; }
 		.tabla { width: 100%; border-collapse: collapse; margin: 28px 0 0; table-layout: fixed; }
 		.tabla th, .tabla td { text-align: left; padding: 11px 12px; border-bottom: 1px solid #eef2f7; vertical-align: top; overflow-wrap: break-word; }
@@ -197,10 +200,10 @@ class Receipt_View {
 		.total__etiqueta { color: #4b5563; font-weight: 600; }
 		.total__importe { font-size: 24px; font-weight: 700; }
 		.estado { display: inline-block; padding: 3px 10px; border-radius: 999px; background: #dcfce7; color: #166534; font-size: 13px; font-weight: 600; }
-		.legal { margin-top: 26px; padding: 12px 14px; background: #f8fafc; border-left: 3px solid <?php echo esc_attr( $naranja ); ?>; color: #4b5563; font-size: 13px; }
+		.legal { margin-top: 26px; padding: 12px 14px; background: #f8fafc; border-left: 3px solid <?php echo esc_attr( $acento ); ?>; color: #4b5563; font-size: 13px; }
 		.pie { margin-top: 34px; padding-top: 12px; border-top: 1px solid #e5e7eb; color: #9ca3af; font-size: 12px; display: flex; justify-content: space-between; gap: 16px; }
 		.acciones { max-width: 210mm; margin: 0 auto 32px; text-align: right; }
-		.acciones button { font: inherit; font-weight: 600; color: #fff; background: <?php echo esc_attr( $naranja ); ?>; border: 0; border-radius: 8px; padding: 12px 22px; cursor: pointer; }
+		.acciones button { font: inherit; font-weight: 600; color: #fff; background: <?php echo esc_attr( $acento ); ?>; border: 0; border-radius: 8px; padding: 12px 22px; cursor: pointer; }
 		.error { max-width: 640px; margin: 48px auto; padding: 24px; background: #fff; border-radius: 10px; color: #991b1b; }
 		@media print {
 			body { background: #fff; }

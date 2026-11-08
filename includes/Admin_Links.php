@@ -233,7 +233,7 @@ class Admin_Links extends \WP_List_Table {
 	public function column_expires( $item ): string {
 		$meta = CPT_Pago::get_meta( $item->ID );
 		if ( ! $meta['expires_at'] ) {
-			return '<span style="color:#2d5a27; font-weight:600;">∞ ' . __( 'Nunca', 'convoca-gateway' ) . '</span>';
+			return '<span style="color:#00a32a; font-weight:600;">∞ ' . __( 'Nunca', 'convoca-gateway' ) . '</span>';
 		}
 
 		$expired = $meta['expires_at'] < time();
@@ -348,7 +348,7 @@ class Admin_Links extends \WP_List_Table {
 		function showSuccess(el) {
 			const originalText = el.textContent;
 			el.textContent = '¡Copiado!';
-			el.style.color = '#2d5a27';
+			el.style.color = '#00a32a';
 			setTimeout(() => {
 				el.textContent = originalText;
 				el.style.color = '';

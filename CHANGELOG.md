@@ -1,3 +1,13 @@
+## [2.16.9] — 2026-11-08
+
+### Corregido
+
+- **el recibo usa el acento del sitio** (#16): `Receipt_View` clavaba `#ff8700` en el titular, el filete
+  legal y el botón. Ahora lee `Site_Settings::color( 'acento' )`, con el neutro como respaldo.
+- Los avisos de «nunca» pasan del verde propio (`#2d5a27`) al verde de WordPress (`#00a32a`).
+
+Prueba nueva: el PHP del plugin no puede contener un color de la paleta de un cliente.
+
 ## [2.16.8] — 2026-11-08
 
 ### Cambiado
