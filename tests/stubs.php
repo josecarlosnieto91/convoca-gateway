@@ -816,7 +816,6 @@ namespace {
 			}
 
 			$prop = new ReflectionProperty( '\\Convoca\\Gateway\\Redsys_Client', 'settings' );
-			$prop->setAccessible( true );
 			$prop->setValue( null, null );
 		}
 	}
