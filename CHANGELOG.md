@@ -1,3 +1,10 @@
+## [2.16.10] — 2026-11-12
+
+### Cambiado
+
+- **catalogo en_US al dia**
+- Dos cadenas que faltaban en el catalogo ingles.
+
 ## [2.16.9] — 2026-11-08
 
 ### Corregido
